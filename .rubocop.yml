@@ -1,0 +1,37 @@
+AllCops:
+  NewCops: enable
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Metrics:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Exclude:
+    - 'spec/**/*'
+
+Style/BlockDelimiters:
+  EnforcedStyle: braces_for_chaining
+  FunctionalMethods:
+    - expect
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+inherit_from: .rubocop_todo.yml

@@ -1,0 +1,10 @@
+require 'roar/representer'
+require 'roar/json'
+require 'roar/json/hal'
+
+require 'discord-strava/api/presenters/paginated_presenter'
+require 'discord-strava/api/presenters/status_presenter'
+require 'discord-strava/api/presenters/team_presenter'
+require 'discord-strava/api/presenters/teams_presenter'
+require 'discord-strava/api/presenters/user_presenter'
+require 'discord-strava/api/presenters/root_presenter'

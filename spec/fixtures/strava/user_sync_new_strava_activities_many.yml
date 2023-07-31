@@ -1,0 +1,187 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.strava.com/api/v3/athlete/activities?after=1517443200&page=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer token
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 03 Apr 2018 13:04:44 GMT
+      Etag:
+      - W/"e166ce7490583b197964e3aba5b198d0"
+      Status:
+      - 200 OK
+      Strava-Athlete-Upload-Version:
+      - fb57d7ed2855de15116459e32e4c9f62
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-Ratelimit-Limit:
+      - '600,30000'
+      X-Ratelimit-Usage:
+      - '27,3070'
+      X-Request-Id:
+      - d7079bf0-2204-4c3b-aa82-6fe65a19f13d
+      X-Xss-Protection:
+      - 1; mode=block
+      Content-Length:
+      - '3875'
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Sponge
+        worthy ","distance":12153.9,"moving_time":3767,"elapsed_time":3770,"total_elevation_gain":96.5,"type":"Run","workout_type":0,"id":1392228282,"external_id":"1B9216F0-43B6-4B8A-8779-01446DF336F4","upload_id":1502339634,"start_date":"2018-02-04T21:56:56Z","start_date_local":"2018-02-04T16:56:56Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.682815,-73.914802],"end_latlng":[40.733786,-73.985987],"location_city":null,"location_state":null,"location_country":null,"start_latitude":40.682815,"start_longitude":-73.914802,"achievement_count":10,"kudos_count":1,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1392228282","summary_polyline":"qzhwFpncbMkN\\yEbI{b@|~@qCpLobAjnBUtHqOr`@mKjd@oG`L{Mnb@s`@nqBhIk`@rEeL`AeJcBa@TqEm[kKoz@wJ{DpAyHxIoEBgTpq@OtAfI~E`EdHwAvF","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.226,"max_speed":8.1,"has_heartrate":false,"elev_high":33.7,"elev_low":-7958.2,"pr_count":3,"total_photo_count":3,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Just
+        before it rained!","distance":14991.9,"moving_time":4397,"elapsed_time":4467,"total_elevation_gain":84.4,"type":"Run","workout_type":0,"id":1401038956,"external_id":"CAF8521A-4C87-435F-AB87-920499D37935","upload_id":1511870867,"start_date":"2018-02-10T15:57:36Z","start_date_local":"2018-02-10T10:57:36Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.737417,-73.992522],"end_latlng":[40.733764,-73.985951],"location_city":null,"location_state":null,"location_country":null,"start_latitude":40.737417,"start_longitude":-73.992522,"achievement_count":6,"kudos_count":5,"comment_count":1,"athlete_count":2,"photo_count":0,"map":{"id":"a1401038956","summary_polyline":"yoswFhtrbMtBbC}Sjq@KvDwB|BkKj^|CjGpPhFpcAtBpp@jH`KlCi@~TdYhChCs@f@aEhADxD~@n@pGdUjD~B}CjHfGxH_Cc@aD`C_RdH_BdBoBCkCjDsBcCmSwE_I{@_IwGqGgCh@sCqEqBmOsG}NmEkg@hAwMmGeGIuI_AiBv@gD_@uk@kF{Hmq@ySq{@kIaL~KaG[MbGkPjf@Y~D~GdF[nDbDjEQ|C","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.41,"max_speed":9.8,"has_heartrate":false,"elev_high":64.5,"elev_low":-50.1,"pr_count":1,"total_photo_count":2,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Consistent","distance":12626.7,"moving_time":3815,"elapsed_time":3863,"total_elevation_gain":51.5,"type":"Run","workout_type":0,"id":1408035109,"external_id":"C4B28B9D-248C-4329-8548-6210EEB350A4","upload_id":1519729876,"start_date":"2018-02-15T00:54:17Z","start_date_local":"2018-02-14T19:54:17Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.682955,-73.914896],"end_latlng":[40.733658,-73.98596],"location_city":null,"location_state":null,"location_country":null,"start_latitude":40.682955,"start_longitude":-73.914896,"achievement_count":5,"kudos_count":1,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1408035109","summary_polyline":"m{hwFbocbMCgAsMtAwH`M{`@v{@_AdHkIjKie@fgAyIlMyWpl@mYblA_Cx@eJf_@c^deBh@VhMyo@xBwH|@TgCaBEiEua@oK_t@oHiNpLuUdEkGdQi@jEbEpDqD|LbNfHeAhE|EjDm@nD","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.31,"max_speed":7.7,"has_heartrate":false,"elev_high":21.1,"elev_low":-0.8,"pr_count":0,"total_photo_count":1,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Pair
+        Programming","distance":10513.5,"moving_time":3562,"elapsed_time":3616,"total_elevation_gain":17.0,"type":"Run","workout_type":0,"id":1412110693,"external_id":"9A32E138-467F-4F44-AC85-0EE2FF3069C2","upload_id":1524156711,"start_date":"2018-02-17T14:57:37Z","start_date_local":"2018-02-17T09:57:37Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.731074,-74.006091],"end_latlng":[40.730862,-74.005676],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.731074,"start_longitude":-74.006091,"achievement_count":2,"kudos_count":4,"comment_count":0,"athlete_count":2,"photo_count":0,"map":{"id":"a1412110693","summary_polyline":"ehrwFbiubMaAl[uo@y@gIcEmm@gGqGbDcI]wMsDez@yi@iCwHaYuRuTqFvDvC`CsBlKrE|YnSdElIpG|E`j@b]`VjGr[sAl_@xFbItDze@vBxCaDbDRjB}Z","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":2.952,"max_speed":5.1,"has_heartrate":false,"elev_high":5.0,"elev_low":-3.2,"pr_count":0,"total_photo_count":1,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"A
+        bunch of 1s","distance":11521.8,"moving_time":3671,"elapsed_time":3700,"total_elevation_gain":24.8,"type":"Run","workout_type":0,"id":1418988295,"external_id":"041CA43F-97FE-49A8-AA73-9A49F0BC2047","upload_id":1531468970,"start_date":"2018-02-21T15:27:50Z","start_date_local":"2018-02-21T10:27:50Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.730896,-74.006214],"end_latlng":[40.730836,-74.0055],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.730896,"start_longitude":-74.006214,"achievement_count":16,"kudos_count":2,"comment_count":0,"athlete_count":2,"photo_count":0,"map":{"id":"a1418988295","summary_polyline":"agrwFziubMwA|PZdIbbA|Ka@vTlB}Pz@gB~B@lDr@q@nTl\\fDrAiHdGlBh@vGnUpC~A{CbLzFzDuA]}Cl@jBiArBcFv@wH_GcBvCsUgDeAkAHaEgF}@{A~Fa]oDv@}ScCy@aGFo@nSXaTeEsAa}@gHu@qAem@mAhAa@cAgC\\qQjLh@ZkC`S~@\\mBfFaC`AxAy@_HfDrAp@dE","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.139,"max_speed":6.6,"has_heartrate":false,"elev_high":8.3,"elev_low":-3.6,"pr_count":10,"total_photo_count":1,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Al
+        Gordon 4M","distance":6593.5,"moving_time":1823,"elapsed_time":1827,"total_elevation_gain":47.3,"type":"Run","workout_type":1,"id":1423421797,"external_id":"DF7F9B71-FBEF-4128-A49F-80BDAAF3824D","upload_id":1536052224,"start_date":"2018-02-24T13:04:17Z","start_date_local":"2018-02-24T08:04:17Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.660352,-73.970318],"end_latlng":[40.6602,-73.970509],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.660352,"start_longitude":-73.970318,"achievement_count":3,"kudos_count":2,"comment_count":0,"athlete_count":163,"photo_count":0,"map":{"id":"a1423421797","summary_polyline":"endwFninbMsH{B{BgEo@_TqOxD}KjNaH~AcHqB}C`Dh@dEfKbIrRz@nMnLpHvOnC~@tCeAdCmKhHuK`M{@jG}EdKTxCmFaHsReDuQ_FkFaHaB_QvD_PxIh@bVdLbG","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.609,"max_speed":5.0,"has_heartrate":false,"elev_high":48.2,"elev_low":17.9,"pr_count":1,"total_photo_count":2,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Willow
+        to Phoenicia","distance":12956.2,"moving_time":4464,"elapsed_time":4468,"total_elevation_gain":39.2,"type":"Run","workout_type":0,"id":1427453933,"external_id":"A8D42978-4209-4DBA-855F-FA007BE81E17","upload_id":1540274329,"start_date":"2018-02-26T17:47:06Z","start_date_local":"2018-02-26T12:47:06Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[42.074254,-74.233568],"end_latlng":[42.083656,-74.312885],"location_city":null,"location_state":null,"location_country":"","start_latitude":42.074254,"start_longitude":-74.233568,"achievement_count":0,"kudos_count":4,"comment_count":0,"athlete_count":2,"photo_count":0,"map":{"id":"a1427453933","summary_polyline":"asx_GxvadMz@yPwMeP@iB~QiT`[hL`Ihf@lJpV{@zQdCzKyC`RZhQlNlFlI~Rl@pJ|ErF|MzBjD|TxIxMhWlJ`Wvm@tF`a@aUhSyGhZ}W|s@c_@tk@}]~WwYHaYeOeQfG}UzOyPfPoDtNx@bQ","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":2.902,"max_speed":4.2,"has_heartrate":false,"elev_high":338.6,"elev_low":214.0,"pr_count":0,"total_photo_count":3,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Running
+        Late For a Call with Singapore","distance":10086.3,"moving_time":3043,"elapsed_time":3069,"total_elevation_gain":37.5,"type":"Run","workout_type":0,"id":1430771871,"external_id":"213C670A-8F44-4748-A1EE-139EACCA86E7","upload_id":1543690350,"start_date":"2018-03-01T00:58:45Z","start_date_local":"2018-02-28T19:58:45Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.682807,-73.91481],"end_latlng":[40.733509,-73.985775],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.682807,"start_longitude":-73.91481,"achievement_count":1,"kudos_count":1,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1430771871","summary_polyline":"ozhwFpncbMoOr@w`C|cF{XdkAeBZiId\\g_@liBqW_K}j@o_@eE~L_EsA}CbKiGyBeErMpAjAm@bG","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.315,"max_speed":9.5,"has_heartrate":false,"elev_high":21.1,"elev_low":0.1,"pr_count":0,"total_photo_count":1,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Ouch
+        My Leg","distance":21641.8,"moving_time":6832,"elapsed_time":6914,"total_elevation_gain":119.5,"type":"Run","workout_type":0,"id":1436573529,"external_id":"69837A57-8642-4E49-80A8-943EB6C0225B","upload_id":1549665279,"start_date":"2018-03-04T17:12:15Z","start_date_local":"2018-03-04T12:12:15Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-18000.0,"start_latlng":[40.733008,-73.984643],"end_latlng":[40.733514,-73.985889],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.733008,"start_longitude":-73.984643,"achievement_count":16,"kudos_count":5,"comment_count":2,"athlete_count":2,"photo_count":0,"map":{"id":"a1436573529","summary_polyline":"gtrwF`cqbMqQyNpDgLuBkBlDi@`Jq[_GhAu@_CkGr@wO}CiGoGcPq@g\\uWbZ|Vje@nBOvGbGrBbWeD|KiLnFm@rbAjNzf@vQhDhH?bx@bBfGdFlx@lG|HdFfTnDnBlSl_@lC~P{BqOc\\wg@_G_VqCcD_Cej@aEoK{@uHPwy@oEqH_o@iScv@gJqH\\qJjKqXhE_HyBjAmGm@}@uJfAiRyC_@dAwAkCmJyB{QuO`Y`SwBzHnBjEkDjLh|@jj@dF~E{A~G","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.168,"max_speed":10.2,"has_heartrate":false,"elev_high":39.0,"elev_low":-5.9,"pr_count":1,"total_photo_count":4,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Prep
+        for #UnitedAirlinesHalf","distance":17464.1,"moving_time":5744,"elapsed_time":5884,"total_elevation_gain":115.2,"type":"Run","workout_type":0,"id":1449225766,"external_id":"D81E41B9-F906-4408-8D9F-D9DE6D3201E1","upload_id":1562767817,"start_date":"2018-03-12T11:38:35Z","start_date_local":"2018-03-12T07:38:35Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-14400.0,"start_latlng":[40.73375,-73.984996],"end_latlng":[40.733595,-73.986031],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.73375,"start_longitude":-73.984996,"achievement_count":1,"kudos_count":6,"comment_count":0,"athlete_count":2,"photo_count":0,"map":{"id":"a1449225766","summary_polyline":"}xrwFfeqbM{CsB`@mC{@oBcd@aW_EoEkIbVqEoAkIkIkFfFuFwB{BnHiB_@mGxFmE}DiCDeJaK}IwCeGiIgEa@}FcHyBdAcBgEaH_GqGnBhBsBcAsB{EAkHyDuHvBcH_AiQ}UsLUmGcJePsDeQoNwBiHIaJy]qUiJ]uHjCoAbDCxFsFbN|ElIlI`BzGhO|EdBvJgA~JjL~I`AlQxWtQzBhDbIzLdFdOvPfCUfG{LzGeF`HtB~AmChDg@|EgHpEvBdBgFfAv@pCqFjCd@OcAvBfCPuCvGsLbJ`EtHaJbNxHlElG~JtBlYrUrUtKpb@nYjF~FsAnH","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.04,"max_speed":10.9,"has_heartrate":false,"elev_high":37.0,"elev_low":5.0,"pr_count":0,"total_photo_count":0,"has_kudoed":false}]'
+    http_version:
+  recorded_at: Tue, 03 Apr 2018 13:04:44 GMT
+- request:
+    method: get
+    uri: https://www.strava.com/api/v3/athlete/activities?after=1517443200&page=2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 03 Apr 2018 13:04:47 GMT
+      Etag:
+      - W/"40809774d3e325884c34ded73f361308"
+      Status:
+      - 200 OK
+      Strava-Athlete-Upload-Version:
+      - fb57d7ed2855de15116459e32e4c9f62
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-Ratelimit-Limit:
+      - '600,30000'
+      X-Ratelimit-Usage:
+      - '28,3071'
+      X-Request-Id:
+      - 55c2efc7-e9de-4260-9d51-c4fdedb6de9c
+      X-Xss-Protection:
+      - 1; mode=block
+      Content-Length:
+      - '2005'
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"United
+        Airlines Half","distance":22015.8,"moving_time":6289,"elapsed_time":6294,"total_elevation_gain":137.0,"type":"Run","workout_type":1,"id":1459216534,"external_id":"7DF29D9A-78E6-4ED7-8F37-A852E6663F70","upload_id":1573033583,"start_date":"2018-03-18T11:46:29Z","start_date_local":"2018-03-18T07:46:29Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-14400.0,"start_latlng":[40.671203,-73.968103],"end_latlng":[40.777934,-73.973546],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.671203,"start_longitude":-73.968103,"achievement_count":17,"kudos_count":11,"comment_count":3,"athlete_count":244,"photo_count":0,"map":{"id":"a1459216534","summary_polyline":"_rfwFt{mbMcS~IkHrKsmArv@m^xMoBhDuXtGglB~z@dEiYdBaCuBag@^_Lc`@oPrDaXgQs@aYaNqOqAeQvLg\\fEoQ}IsVgDg^}XsGhTqFr_@wJzT{NdSmC~Ty@yHmPsEyJuKsJoBaA}B_[mNHiMwNqKdA{KqAqEgEyByCmG}EiBgG~@eGsIcNwC{RuOaCkHLkHwCaE{YwQyQ|@sNwMiLFQrCfD`JeCxIhEtLnJbFrErGxGhAhEvLvC`CvNg@`KpL~Hn@`SnX","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.498,"max_speed":12.0,"has_heartrate":false,"elev_high":47.6,"elev_low":-0.6,"pr_count":6,"total_photo_count":2,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Restarting
+        the Engine","distance":11127.8,"moving_time":3703,"elapsed_time":3729,"total_elevation_gain":33.7,"type":"Run","workout_type":0,"id":1473024961,"external_id":"CD27AD17-B595-4548-BB54-3F685E77A81F","upload_id":1587458260,"start_date":"2018-03-26T13:57:15Z","start_date_local":"2018-03-26T09:57:15Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-14400.0,"start_latlng":[40.731156,-74.006854],"end_latlng":[40.731874,-74.005265],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.731156,"start_longitude":-74.006854,"achievement_count":13,"kudos_count":3,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1473024961","summary_polyline":"uhrwFzmubMt@xAg@rP{OMsAnJQaF}]qAqH_Eym@_HqEfJcEeEyZkIck@u^iGgEsA}GsFwEz@n@kFwBiAtD|@iD~Bv@cRgMx[zS~C|GfIjHjn@l`@bQ~Ee@dCjBqBfH`EfAeFvHhAjC{K`HlFrWfEpI~Dng@^sA_WfB_@@qExBe@","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.005,"max_speed":7.6,"has_heartrate":false,"elev_high":10.2,"elev_low":-3.2,"pr_count":1,"total_photo_count":0,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"First
+        Time Breaking 14","distance":22539.6,"moving_time":7586,"elapsed_time":7686,"total_elevation_gain":144.9,"type":"Run","workout_type":0,"id":1477353766,"external_id":"A0254694-2A56-49FE-BACE-97CE937D748D","upload_id":1591925390,"start_date":"2018-03-28T23:51:34Z","start_date_local":"2018-03-28T19:51:34Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-14400.0,"start_latlng":[40.682943,-73.914698],"end_latlng":[40.734301,-73.984049],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.682943,"start_longitude":-73.914698,"achievement_count":0,"kudos_count":5,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1477353766","summary_polyline":"k{hwFzmcbMb[cGfg@pCbUrt@wIhkEsPzjA^tU_FnAiFsAccAxo@{F|GoZxKiNrIoFUsAdDcNpEtAr@[kEqAlA_@yAyAjCzAwDJiJoNZiAyJxAkD~LL|@yAvBs{AyJmhAwn@hq@uAdFkM_AiA~HiCv@{h@zgC~Rov@\\kCmBmAFkEe_@gKgv@mIwFtBaGrHDtBgFp@wDrIeHzVbPfL}EnOyEmClEfDOgBuDcA`C`DdAEQqAyDkA","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":2.971,"max_speed":9.3,"has_heartrate":false,"elev_high":50.8,"elev_low":-0.8,"pr_count":0,"total_photo_count":1,"has_kudoed":false},{"resource_state":2,"athlete":{"id":26462176,"resource_state":1},"name":"Reservoir
+        Dogs","distance":10782.1,"moving_time":3423,"elapsed_time":3435,"total_elevation_gain":11.3,"type":"Run","workout_type":0,"id":1484119264,"external_id":"2C04801D-298C-4EC1-9430-9BE074BC45C3","upload_id":1599003900,"start_date":"2018-04-01T16:58:34Z","start_date_local":"2018-04-01T12:58:34Z","timezone":"(GMT-05:00)
+        America/New_York","utc_offset":-14400.0,"start_latlng":[40.782474,-73.96003],"end_latlng":[40.782216,-73.962644],"location_city":null,"location_state":null,"location_country":"","start_latitude":40.782474,"start_longitude":-73.96003,"achievement_count":27,"kudos_count":3,"comment_count":0,"athlete_count":1,"photo_count":0,"map":{"id":"a1484119264","summary_polyline":"mi|wFdilbMi@`BaWqP}J_AoBpB|@vIiBbIjDrFf@jRnDnCpK|@hDiD`DkLrGmENaIsZwSsMDy@~Tx@hDdBl@^zR`CnChNhBrEgIe@jDeDjDgDs@nF}@bFkOdG{D\\mHqZqTmJ{@sBrBn@tKcB~EhDtFDjNjBdF~OdCtGaQrGiEp@mGaAkCcWoPsNmAq@zCz@nGaB~HbC~Hf@hO|BrBhOxBrHcSjGcD","resource_state":2},"trainer":false,"commute":false,"manual":false,"private":false,"flagged":false,"gear_id":null,"from_accepted_tag":false,"average_speed":3.15,"max_speed":4.4,"has_heartrate":false,"elev_high":37.1,"elev_low":33.1,"pr_count":9,"total_photo_count":2,"has_kudoed":false}]'
+    http_version:
+  recorded_at: Tue, 03 Apr 2018 13:04:47 GMT
+- request:
+    method: get
+    uri: https://www.strava.com/api/v3/athlete/activities?after=1517443200&page=3
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer token
+      Accept:
+      - application/json; charset=utf-8
+      User-Agent:
+      - Strava Ruby Client/0.3.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 03 Apr 2018 13:04:47 GMT
+      Etag:
+      - W/"40809774d3e325884c34ded73f361308"
+      Status:
+      - 200 OK
+      Strava-Athlete-Upload-Version:
+      - fb57d7ed2855de15116459e32e4c9f62
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-Ratelimit-Limit:
+      - '600,30000'
+      X-Ratelimit-Usage:
+      - '28,3071'
+      X-Request-Id:
+      - 55c2efc7-e9de-4260-9d51-c4fdedb6de9c
+      X-Xss-Protection:
+      - 1; mode=block
+      Content-Length:
+      - '2005'
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: '[]'
+    http_version:
+  recorded_at: Wed, 05 Dec 2018 18:44:38 GMT
+recorded_with: VCR 4.0.0

@@ -1,0 +1,17 @@
+{
+    "name": "strada",
+    "description": "Strada connects Strava with Discord.",
+    "options": [{
+        "name": "help",
+        "description": "Get help.",
+        "type": 1
+    }, {
+        "name": "info",
+        "description": "Show general information about the bot.",
+        "type": 1
+    }, {
+        "name": "connect",
+        "description": "Connect to Strava.",
+        "type": 1
+    }]
+}

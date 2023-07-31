@@ -1,0 +1,51 @@
+<html>
+ <head>
+  <title>Strada: Strava integration with Discord</title>
+  <%= partial 'public/partials/_head.html.erb' %>
+  <script src="/scripts/register.js"></script>
+  <script src="/scripts/status.js"></script>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <meta name="description" content="Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather."/>
+ </head>
+ <body>
+  <p class='icon'>
+    <a href="/"><img src='img/icon.png'></a>
+  </p>
+  <p>
+    <h1>Strada: Strava integration with Discord</h1>
+  </p>
+  <p>
+    Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather.
+  </p>
+  <p>&nbsp;</p>
+  <p id='messages' />
+  <p id='register'>
+    <a href="https://discord.com/api/oauth2/authorize?scope=bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code"><img alt="Add to Discord" height="40" width="139" src=""></a>
+  </p>
+  <p>&nbsp;</p>
+  <p class='image'>
+    <img src='img/notify.png'>
+  </p>
+  <p>
+    <small>
+      Free 2 week trial, no credit card required. Subscribe for $29.99/yr.
+      <br>
+      Money used for servers and to pay for <a href="https://www.strava.com/athletes/dblockdotorg" target="_blank">for my membership and running</a> with the non-profit <a href="https://www.nyrr.org/" target="_blank">nyrr.org</a>.
+    </small>
+  </p>
+  <p class='logo'>
+    <a href="https://www.nyrr.org"><img src='img/nyrr.png'></a>
+  </p>
+  <p class='logo'>
+    <img src='img/powered.png'>
+  </p>
+  <p>
+    <small>
+      (not officially affiliated with <a target="_blank" href="https://www.strava.com">Strava</a>)
+    </small>
+  </p>
+  <%= partial 'public/partials/_footer.html.erb' %>
+ </body>
+</html>
+
