@@ -7,11 +7,8 @@ class Map
   field :strava_id, type: String
   field :summary_polyline, type: String
   field :decoded_summary_polyline, type: Array
-  field :png, type: BSON::Binary
-  field :png_retrieved_at, type: DateTime
 
   before_save :update_decoded_summary_polyline
-  before_save :update_png
 
   def self.attrs_from_strava(response)
     {
@@ -22,7 +19,6 @@ class Map
 
   def update!
     update_decoded_summary_polyline!
-    update_png!
   end
 
   def start_latlng
@@ -48,16 +44,8 @@ class Map
     "#{DiscordStrava::Service.url}/api/maps/#{id}.png"
   end
 
-  def png_size
-    return png.data.size if png&.data
-  end
-
   def to_s
-    "proxy=#{proxy_image_url}, png=#{png_size} byte(s)"
-  end
-
-  def delete_png!
-    update_attributes!(png: nil)
+    "proxy=#{proxy_image_url}"
   end
 
   private
@@ -74,20 +62,5 @@ class Map
     return unless summary_polyline
 
     self.decoded_summary_polyline = Polylines::Decoder.decode_polyline(summary_polyline)
-  end
-
-  def update_png!
-    url = image_url
-    return unless url
-
-    body = HTTParty.get(url).body
-    self.png = BSON::Binary.new(body)
-  end
-
-  def update_png
-    return if png_changed?
-    return unless summary_polyline_changed? || png.nil?
-
-    update_png!
   end
 end

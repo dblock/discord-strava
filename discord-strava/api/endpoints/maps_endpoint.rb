@@ -4,7 +4,7 @@ module Api
       content_type :png, 'image/png'
 
       namespace :maps do
-        desc 'Proxy display a map.'
+        desc 'Redirect to the map URI.'
         params do
           requires :id, type: String
         end
@@ -23,16 +23,12 @@ module Api
             Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no map (404)."
             error!('Map Not Found', 404)
           end
-          # will also re-fetch the map if needed
-          activity.map.update_attributes!(png_retrieved_at: Time.now.utc)
-          unless activity.map.png
-            Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no data (404)."
-            error!('Map Data Not Found', 404)
+          image_url = activity.map.image_url
+          unless image_url
+            Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no map url (404)."
+            error!('Map Not Found', 404)
           end
-          content_type 'image/png'
-          png = activity.map.png.data
-          Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, #{png.size} byte(s)."
-          body png
+          redirect image_url
         end
       end
     end

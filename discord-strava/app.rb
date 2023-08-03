@@ -53,7 +53,6 @@ module DiscordStrava
           deactivate_asleep_teams!
           refresh_discord_tokens!
           check_trials!
-          prune_pngs!
           aggregate_stats!
         end
         once_and_every 60 * 60 do
@@ -128,21 +127,6 @@ module DiscordStrava
 
     def aggregate_stats!
       SystemStats.aggregate!
-    end
-
-    def prune_pngs!
-      activities = UserActivity.where(
-        'map.png_retrieved_at' => {
-          '$lt' => Time.now - 2.weeks
-        },
-        'map.png' => { '$ne' => nil }
-      )
-      log_info_without_repeat "Pruning #{activities.count} PNGs for #{Team.active.count} team(s)."
-      activities.each do |activity|
-        activity.map.delete_png!
-      end
-    rescue StandardError => e
-      logger.warn "Error pruning PNGs, #{e.message}."
     end
 
     def refresh_discord_tokens!
