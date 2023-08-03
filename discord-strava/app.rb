@@ -61,9 +61,6 @@ module DiscordStrava
         continuously 15 do |task, tt|
           users_brag_and_rebrag!(task, tt)
         end
-        # continuously 60 do |task, tt|
-        #   clubs_brag_and_rebrag!(task, tt)
-        # end
       end
     end
 
@@ -176,28 +173,6 @@ module DiscordStrava
       end
     rescue StandardError => e
       logger.warn "Error checking user activities, #{e.message}."
-    end
-
-    def clubs_brag_and_rebrag!(task, tt)
-      log_info_without_repeat "Checking club activities for #{Team.active.count} team(s)."
-      Team.no_timeout.active.each do |team|
-        next if team.subscription_expired?
-        next unless team.clubs.connected_to_strava.any?
-
-        log_info_without_repeat "Checking club activities for #{team}, #{team.clubs.connected_to_strava.count} club(s)."
-
-        begin
-          team.clubs.connected_to_strava.each do |club|
-            club.sync_and_brag!
-            task.sleep tt
-          end
-        rescue StandardError => e
-          backtrace = e.backtrace.join("\n")
-          logger.warn "Error in brag cron for team #{team}, #{e.message}, #{backtrace}."
-        end
-      end
-    rescue StandardError => e
-      logger.warn "Error checking club activities, #{e.message}."
     end
 
     def deactivate_asleep_teams!

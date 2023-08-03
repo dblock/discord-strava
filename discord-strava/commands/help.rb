@@ -13,7 +13,6 @@ module DiscordStrava
         ------------
         connect                          - connect your Strava account
         disconnect                       - disconnect your Strava account
-        clubs                            - connect/disconnect clubs
         stats                            - stats in current channel for the past 30 days
 
         Settings

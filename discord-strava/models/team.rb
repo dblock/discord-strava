@@ -40,7 +40,6 @@ class Team
   scope :trials, -> { where(subscribed: false) }
 
   has_many :users, dependent: :destroy
-  has_many :clubs, dependent: :destroy
   has_many :activities
 
   validates_uniqueness_of :token, message: 'has already been used'
@@ -228,26 +227,6 @@ class Team
       Your team has been subscribed. Proceeds go to NYRR. Thank you!
       Follow https://twitter.com/playplayio for news and updates.
     EOS
-  end
-
-  def clubs_to_discord
-    result = {
-      content: "To connect a club, invite #{bot_mention} to a channel and use `/strada clubs`.",
-      embeds: []
-    }
-
-    if clubs.any?
-      clubs.each do |club|
-        attachments = club.to_discord[:attachments]
-        attachments.each do |a|
-          a[:text] = [a[:text], club.channel_mention].compact.join("\n")
-        end
-        result[:attachments].concat(attachments)
-      end
-    else
-      result[:text] = 'No clubs connected. ' + result[:text]
-    end
-    result
   end
 
   def trial_ends_at

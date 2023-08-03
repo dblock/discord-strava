@@ -9,9 +9,6 @@ class User
   field :user_name, type: String
   field :activities_at, type: DateTime
   field :connected_to_strava_at, type: DateTime
-  field :is_bot, type: Boolean, default: false
-  field :is_owner, type: Boolean, default: false
-  field :is_admin, type: Boolean, default: false
   field :private_activities, type: Boolean, default: false
   field :followers_only_activities, type: Boolean, default: true
   field :sync_activities, type: Boolean, default: true
@@ -193,51 +190,8 @@ class User
     handle_strava_error e
   end
 
-  def athlete_clubs_to_discord
-    clubs = team.clubs.where(channel_id: channel_id).to_a
-    if connected_to_strava?
-      strava_client.athlete_clubs do |row|
-        strava_id = row.id.to_s
-        next if clubs.detect { |club| club.strava_id == strava_id }
-
-        clubs << Club.new(Club.attrs_from_strava(row).merge(team: team))
-      end
-    end
-    club_options = clubs.sort_by(&:strava_id).map do |club|
-      club.connect_to_discord
-    end
-    if club_options.empty?
-      { content: 'Not connected to any clubs.' }
-    else
-      result = {
-        content: 'Choose a club.',
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                type: 3,
-                custom_id: 'club',
-                placeholder: 'Choose a club.',
-                min_values: 1,
-                max_values: 1,
-                options: club_options
-              }
-            ]
-          }
-        ]
-      }
-      p result
-      result
-    end
-  end
-
-  def activated_user?
+  def guild_owner?
     team.guild_owner_id && team.guild_owner_id == user_id
-  end
-
-  def team_admin?
-    activated_user? || is_admin? || is_owner?
   end
 
   private

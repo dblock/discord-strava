@@ -11,8 +11,4 @@ module Grape
   end
 end
 
-if defined? Grape::API::Instance
-  Grape::API::Instance.extend Grape::API::Extensions::SortExtension
-else
-  Grape::API.extend Grape::API::Extensions::SortExtension
-end
+Grape::API::Instance.extend Grape::API::Extensions::SortExtension
