@@ -25,7 +25,7 @@ module DiscordStrava
           end
         else
           logger.info "UNSUBSCRIBE: #{command}, user=#{command.user} unsubscribe failed, not admin"
-          "Sorry, only an admin can do that."
+          'Sorry, only an admin can do that.'
         end
       end
     end

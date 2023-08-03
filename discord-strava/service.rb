@@ -1,7 +1,7 @@
 module DiscordStrava
   class Service
     include DiscordStrava::Loggable
-    
+
     LOCALHOST = 'http://localhost:5000'.freeze
 
     def self.localhost?
@@ -134,16 +134,14 @@ module DiscordStrava
     def _every(tt, options = {}, &_block)
       ::Async::Reactor.run do |task|
         loop do
-          begin
-            if options[:run_on_start]
-              options = {}
-              yield
-            end
-            task.sleep tt
+          if options[:run_on_start]
+            options = {}
             yield
-          rescue StandardError => e
-            logger.error e
           end
+          task.sleep tt
+          yield
+        rescue StandardError => e
+          logger.error e
         end
       end
     end

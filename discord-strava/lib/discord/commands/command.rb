@@ -2,7 +2,10 @@ module Discord
   module Commands
     class << self
       def invoke!(command)
-        result = child_command_classes.detect { |d| rc = d.invoke!(command); break rc if rc }
+        result = child_command_classes.detect do |d|
+          rc = d.invoke!(command)
+          break rc if rc
+        end
         result ||= Discord::Commands::Unknown.invoke!(command)
         result
       end
@@ -40,41 +43,41 @@ module Discord
             end
           end
         end
-  
+
         def invoke!(command)
           finalize_routes!
- 
+
           routes.each_pair do |route, options|
             next unless command.matches?(route, options[:subcommands])
-            
+
             result = call_command(command, options[:block])
             return result if result
           end
           nil
         end
-  
+
         def routes
           @routes ||= ActiveSupport::OrderedHash.new
         end
-  
+
         private
-  
+
         def call_command(command, block)
           if block
-            block.call(command) 
+            block.call(command)
           elsif respond_to?(:call)
             send(:call, command)
           else
             raise NotImplementedError, command.name
           end
         end
-  
+
         def finalize_routes!
           return if routes&.any?
-  
+
           command command_name_from_class
         end
-  
+
         def command_name_from_class
           name ? name.split(':').last.downcase : object_id.to_s
         end

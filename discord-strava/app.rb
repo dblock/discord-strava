@@ -62,9 +62,9 @@ module DiscordStrava
         continuously 15 do |task, tt|
           users_brag_and_rebrag!(task, tt)
         end
-        continuously 60 do |task, tt|
-          clubs_brag_and_rebrag!(task, tt)
-        end
+        # continuously 60 do |task, tt|
+        #   clubs_brag_and_rebrag!(task, tt)
+        # end
       end
     end
 
@@ -224,7 +224,7 @@ module DiscordStrava
         begin
           team.deactivate!
           purge_message = "Your subscription expired more than 2 weeks ago, deactivating. Reactivate at #{DiscordStrava::Service.url}. Your data will be purged in another 2 weeks."
-          team.inform_everyone!(text: purge_message)
+          team.inform_everyone!(purge_message)
         rescue StandardError => e
           logger.warn "Error informing team #{team}, #{e.message}."
         end
@@ -243,10 +243,10 @@ module DiscordStrava
           case subscription.status
           when 'past_due'
             logger.warn "Subscription for #{team} is #{subscription.status}, notifying."
-            team.inform_everyone!(text: "Your subscription to #{subscription_name} is past due. #{team.update_cc_text}")
+            team.inform_everyone!("Your subscription to #{subscription_name} is past due. #{team.update_cc_text}")
           when 'canceled', 'unpaid'
             logger.warn "Subscription for #{team} is #{subscription.status}, downgrading."
-            team.inform_everyone!(text: "Your subscription to #{subscription.plan.name} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)}) was canceled and your team has been downgraded. Thank you for being a customer!")
+            team.inform_everyone!("Your subscription to #{subscription.plan.name} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)}) was canceled and your team has been downgraded. Thank you for being a customer!")
             team.update_attributes!(subscribed: false)
           end
         end

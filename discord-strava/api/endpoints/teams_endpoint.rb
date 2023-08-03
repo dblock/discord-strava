@@ -37,7 +37,7 @@ module Api
         end
         post do
           oauth2_response = Discord::OAuth2.exchange_code(params[:code])
-          
+
           team = Team.where(token: oauth2_response[:access_token]).first
           team ||= Team.where(guild_id: oauth2_response[:guild_id]).first
 
@@ -45,8 +45,8 @@ module Api
             team.ping_if_active!
 
             team.update_attributes!(oauth2_response.merge(
-              permissions: params[:permissions]
-            ))
+                                      permissions: params[:permissions]
+                                    ))
 
             raise "Team \"#{team.guild_name}\" is already registered. You're all set." if team.active?
 
@@ -55,8 +55,8 @@ module Api
             )
           else
             team = Team.create!(oauth2_response.merge(
-              permissions: params[:permissions]
-            ))
+                                  permissions: params[:permissions]
+                                ))
           end
 
           DiscordStrava::Service.instance.create!(team)

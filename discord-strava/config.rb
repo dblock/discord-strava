@@ -2,8 +2,7 @@ module DiscordStrava
   module Config
     extend self
 
-    attr_accessor :logger
-    attr_accessor :view_paths
+    attr_accessor :logger, :view_paths
 
     def reset!
       self.logger = nil

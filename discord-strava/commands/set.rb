@@ -6,80 +6,82 @@ module DiscordStrava
 
       subscribe_command 'strada' => 'set' do |command|
         logger.info "SET: #{command}, #{command.user}"
-        "TODO"
-        
-        # team = command.team
-        # if match['expression']
-        #   k, v = match['expression'].split(/\W+/, 2)
-        #   case k
-        #   when 'sync'
-        #     changed = v && user.sync_activities != v
-        #     user.update_attributes!(sync_activities: v) unless v.nil?
-        #     client.say(channel: data.channel, text: "Your activities will#{changed ? (user.sync_activities? ? ' now' : ' no longer') : (user.sync_activities? ? '' : ' not')} sync.")
-        #     logger.info "SET: #{team}, user=#{command.user} - sync set to #{user.sync_activities}"
-        #   when 'private'
-        #     changed = v && user.private_activities != v
-        #     user.update_attributes!(private_activities: v) unless v.nil?
-        #     client.say(channel: data.channel, text: "Your private activities will#{changed ? (user.private_activities? ? ' now' : ' no longer') : (user.private_activities? ? '' : ' not')} be posted.")
-        #     logger.info "SET: #{team}, user=#{command.user} - private set to #{user.private_activities}"
-        #   when 'followers'
-        #     changed = v && user.followers_only_activities != v
-        #     user.update_attributes!(followers_only_activities: v) unless v.nil?
-        #     client.say(channel: data.channel, text: "Your followers only activities will#{changed ? (user.followers_only_activities? ? ' now' : ' no longer') : (user.followers_only_activities? ? '' : ' not')} be posted.")
-        #     logger.info "SET: #{team}, user=#{command.user} - followers_only set to #{user.followers_only_activities}"
-        #   when 'units'
-        #     case v
-        #     when 'metric'
-        #       v = 'km'
-        #     when 'imperial'
-        #       v = 'mi'
-        #     end
-        #     changed = v && team.units != v
-        #     if !user.team_admin? && changed
-        #       client.say(channel: data.channel, text: "Sorry, only a Discord admin can change units. Activities for team #{team.guild_name} display *#{team.units_s}*.")
-        #       logger.info "SET: #{team} - not admin, units remain set to #{team.units}"
-        #     else
-        #       team.update_attributes!(units: v) unless v.nil?
-        #       client.say(channel: data.channel, text: "Activities for team #{team.guild_name}#{changed ? ' now' : ''} display *#{team.units_s}*.")
-        #       logger.info "SET: #{team} - units set to #{team.units}"
-        #     end
-        #   when 'fields'
-        #     parsed_fields = ActivityFields.parse_s(v) if v
-        #     changed = parsed_fields && team.activity_fields != parsed_fields
-        #     if !user.team_admin? && changed
-        #       client.say(channel: data.channel, text: "Sorry, only a Discord admin can change fields. Activity fields for team #{team.guild_name} are *#{team.activity_fields_s}*.")
-        #       logger.info "SET: #{team} - not admin, activity fields remain set to #{team.activity_fields.and}"
-        #     else
-        #       team.update_attributes!(activity_fields: parsed_fields) if changed && parsed_fields&.any?
-        #       client.say(channel: data.channel, text: "Activity fields for team #{team.guild_name} are#{changed ? ' now' : ''} *#{team.activity_fields_s}*.")
-        #       logger.info "SET: #{team} - activity fields set to #{team.activity_fields.and}"
-        #     end
-        #   when 'maps'
-        #     parsed_value = MapTypes.parse_s(v) if v
-        #     changed = parsed_value && team.maps != parsed_value
-        #     if !user.team_admin? && changed
-        #       client.say(channel: data.channel, text: "Sorry, only a Discord admin can change maps. Maps for team #{team.guild_name} are *#{team.maps_s}*.")
-        #       logger.info "SET: #{team} - not admin, maps remain set to #{team.maps}"
-        #     else
-        #       team.update_attributes!(maps: parsed_value) if parsed_value
-        #       client.say(channel: data.channel, text: "Maps for team #{team.guild_name} are#{changed ? ' now' : ''} *#{team.maps_s}*.")
-        #       logger.info "SET: #{team} - maps set to #{team.maps}"
-        #     end
-        #   else
-        #     raise "Invalid setting #{k}, type `help` for instructions."
-        #   end
-        # else
-        #   messages = [
-        #     "Activities for team #{team.guild_name} display *#{team.units_s}*.",
-        #     "Activity fields are *#{team.activity_fields_s}*.",
-        #     "Maps for team #{team.guild_name} are *#{team.maps_s}*.",
-        #     "Your activities will #{user.sync_activities? ? '' : 'not '}sync.",
-        #     "Your private activities will #{user.private_activities? ? '' : 'not '}be posted.",
-        #     "Your followers only activities will #{user.followers_only_activities? ? '' : 'not '}be posted."
-        #   ]
-        #   client.say(channel: data.channel, text: messages.join("\n"))
-        #   logger.info "SET: #{team}, user=#{command.user} - set"
-        # end
+        options = command[:data][:options]
+        first_option = options.first if options
+        first_selection = first_option[:options] if first_option
+        if first_selection.empty? || options.first[:name] != 'set'
+          messages = [
+            "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
+            "Activity fields are *#{command.team.activity_fields_s}*.",
+            "Maps for team #{command.team.guild_name} are *#{command.team.maps_s}*.",
+            "Your activities will #{command.user.sync_activities? ? '' : 'not '}sync.",
+            "Your private activities will #{command.user.private_activities? ? '' : 'not '}be posted.",
+            "Your followers only activities will #{command.user.followers_only_activities? ? '' : 'not '}be posted."
+          ]
+          logger.info "SET: #{command.team}, user=#{command.user} - set"
+          messages.join("\n")
+        else
+          option = first_selection.first
+          k = option[:name]
+          v = option[:value]
+          case k
+          when 'sync'
+            changed = v && command.user.sync_activities != v
+            command.user.update_attributes!(sync_activities: v) unless v.nil?
+            logger.info "SET: #{command.team}, user=#{command.user} - sync set to #{command.user.sync_activities}"
+            "Your activities will#{changed ? (command.user.sync_activities? ? ' now' : ' no longer') : (command.user.sync_activities? ? '' : ' not')} sync."
+          when 'private'
+            changed = v && command.user.private_activities != v
+            command.user.update_attributes!(private_activities: v) unless v.nil?
+            logger.info "SET: #{command.team}, user=#{command.user} - private set to #{command.user.private_activities}"
+            "Your private activities will#{changed ? (command.user.private_activities? ? ' now' : ' no longer') : (command.user.private_activities? ? '' : ' not')} be posted."
+          when 'followers'
+            changed = v && command.user.followers_only_activities != v
+            command.user.update_attributes!(followers_only_activities: v) unless v.nil?
+            logger.info "SET: #{command.team}, user=#{command.user} - followers_only set to #{command.user.followers_only_activities}"
+            "Your followers only activities will#{changed ? (command.user.followers_only_activities? ? ' now' : ' no longer') : (command.user.followers_only_activities? ? '' : ' not')} be posted."
+          when 'units'
+            case v
+            when 'metric'
+              v = 'km'
+            when 'imperial'
+              v = 'mi'
+            end
+            changed = v && command.team.units != v
+            if !command.user.team_admin? && changed
+              logger.info "SET: #{command.team} - not admin, units remain set to #{command.team.units}"
+              "Sorry, only a Discord admin can change units. Activities for team #{command.team.guild_name} display *#{command.team.units_s}*."
+            else
+              command.team.update_attributes!(units: v) unless v.nil?
+              logger.info "SET: #{command.team} - units set to #{command.team.units}"
+              "Activities for team #{command.team.guild_name}#{changed ? ' now' : ''} display *#{command.team.units_s}*."
+            end
+          when 'fields'
+            parsed_fields = ActivityFields.parse_s(v) if v
+            changed = parsed_fields && command.team.activity_fields != parsed_fields
+            if !command.user.team_admin? && changed
+              logger.info "SET: #{command.team} - not admin, activity fields remain set to #{command.team.activity_fields.and}"
+              "Sorry, only a Discord admin can change fields. Activity fields for team #{command.team.guild_name} are *#{command.team.activity_fields_s}*."
+            else
+              command.team.update_attributes!(activity_fields: parsed_fields) if changed && parsed_fields&.any?
+              logger.info "SET: #{command.team} - activity fields set to #{command.team.activity_fields.and}"
+              "Activity fields for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.activity_fields_s}*."
+            end
+          when 'maps'
+            parsed_value = MapTypes.parse_s(v) if v
+            changed = parsed_value && command.team.maps != parsed_value
+            if !command.user.team_admin? && changed
+              logger.info "SET: #{command.team} - not admin, maps remain set to #{command.team.maps}"
+              "Sorry, only a Discord admin can change maps. Maps for team #{command.team.guild_name} are *#{command.team.maps_s}*."
+            else
+              command.team.update_attributes!(maps: parsed_value) if parsed_value
+              logger.info "SET: #{command.team} - maps set to #{command.team.maps}"
+              "Maps for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.maps_s}*."
+            end
+          else
+            "Invalid setting #{k}, type `help` for instructions."
+          end
+        end
       end
     end
   end

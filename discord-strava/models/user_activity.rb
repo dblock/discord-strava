@@ -37,7 +37,7 @@ class UserActivity < Activity
       rc
     end
   rescue StandardError => e
-    # TODO ignore channel access / account inactive errors (user removed from channel)
+    # TODO: ignore channel access / account inactive errors (user removed from channel)
     logger.warn "Bragging to #{user} failed, #{e.message}."
     raise e
   end

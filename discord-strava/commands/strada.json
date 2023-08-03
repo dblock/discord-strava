@@ -13,5 +13,70 @@
         "name": "connect",
         "description": "Connect to Strava.",
         "type": 1
+    }, {
+        "name": "disconnect",
+        "description": "Disconnect from Strava.",
+        "type": 1
+    }, {
+        "name": "set",
+        "description": "Change settings.",
+        "type": 1,
+        "options": [{
+            "name": "units",
+            "description": "Change display units.",
+            "type": 3,
+            "choices": [{
+                "name": "imperial",
+                "value": "imperial"
+            }, {
+                "name": "metric",
+                "value": "metric"
+            }, {
+                "name": "both",
+                "value": "both"
+            }]
+        }, {
+            "name": "fields",
+            "description": "Display all, none or any combination of specific activity fields.",
+            "type": 3
+        }, {
+            "name": "maps",
+            "description": "Change the way maps are displayed.",
+            "type": 3,
+            "choices": [{
+                "name": "off",
+                "value": "off"
+            }, {
+                "name": "full",
+                "value": "full"
+            }, {
+                "name": "thumb",
+                "value": "thumb"
+            }]
+        }, {
+            "name": "sync",
+            "description": "Sync activities (default is true).",
+            "type": 5
+        }, {
+            "name": "private",
+            "description": "Sync private (only you) activities (default is false).",
+            "type": 5
+        }, {
+            "name": "followers",
+            "description": "Sync followers only activities (default is true).",
+            "type": 5
+        }]
+    }, {
+        "name": "stats",
+        "description": "Display stats for the past 30 days.",
+        "type": 1
+    }, {
+        "name": "subscription",
+        "description": "Show subscription info and a link to update the payment method.",
+        "type": 1
+    }, {
+        "name": "unsubscribe",
+        "description": "Turn off subscription auto-renew.",
+        "type": 1
     }]
 }

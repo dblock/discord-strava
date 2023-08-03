@@ -34,7 +34,7 @@ class Club
   end
 
   def strava_url
-    "https://www.strava.com/clubs/#{url}"
+    "https://www.strava.com/clubs/#{strava_id}"
   end
 
   def brag!
@@ -86,29 +86,24 @@ class Club
         title: name,
         url: strava_url,
         description: [description, location, member_count_s].compact.join("\n"),
-        thumbnail: { url: logo },
-        color: 16534530
+        # thumbnail: { url: logo },
+        color: 16_534_530
       }]
     }
   end
 
   def connect_to_discord
-    {
-      embeds: [{
-        title: name,
-        url: strava_url,
-        description: [description, location, member_count_s].compact.join("\n"),
-        thumbnail: { url: logo },
-        color: 16534530,
-        callback_id: "club-#{persisted? ? 'disconnect' : 'connect'}-channel",
-        actions: [{
-          name: 'strava_id',
-          text: persisted? ? 'Disconnect' : 'Connect',
-          type: 'button',
-          value: strava_id
-        }]
-      }]
+    option = {
+      label: name,
+      description: [description, location, member_count_s].compact.join(', '),
+      value: strava_id
     }
+    if persisted?
+      option[:emoji] = {
+        name: 'check_mark_button'
+      }
+    end
+    option
   end
 
   def sync_last_strava_activity!
@@ -157,9 +152,7 @@ class Club
   end
 
   def dm!(message)
-    message_with_channel = to_discord.merge(text: message, channel: channel_id, as_user: true)
-    logger.info "Posting '#{message_with_channel.to_json}' to #{team} on ##{channel_name}."
-    team.discord_client.chat_postMessage(message_with_channel)
+    Discord::Messages.send_message(channel_id, to_discord.merge(content: message))
   end
 
   def handle_not_found_error(e)

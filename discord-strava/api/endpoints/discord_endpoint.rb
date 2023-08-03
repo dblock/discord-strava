@@ -8,23 +8,23 @@ module Api
           # https://gist.github.com/mattantonelli/d9c311abbf2400387480488e3853dd1f
           signature = request.headers['X-Signature-Ed25519']
           timestamp = request.headers['X-Signature-Timestamp']
-          key = Ed25519::VerifyKey.new([ENV['DISCORD_PUBLIC_KEY']].pack('H*')).freeze
+          key = Ed25519::VerifyKey.new([ENV.fetch('DISCORD_PUBLIC_KEY', nil)].pack('H*')).freeze
           key.verify([signature].pack('H*'), "#{timestamp}#{env[Grape::Env::API_REQUEST_INPUT]}")
         rescue Ed25519::VerifyError
           error! '401 Unauthorized', 401
         end
 
-        desc 'Ping'
+        desc 'Discord event handler.'
         params do
-          requires :id, type: Integer
+          requires :id, type: String
           requires :type, type: Integer, values: Discord::Interactions::Type.values
           requires :version, type: Integer
           requires :token, type: String
           given type: ->(type) { type == Discord::Interactions::Type::PING } do
-            requires :application_id, type: Integer
+            requires :application_id, type: String
             # requires :entitlements, type: Array
             requires :user, type: Hash do
-              requires :id, type: Integer
+              requires :id, type: String
               requires :username, type: String
               # requires :avatar, type: String
               # requires :avatar_decoration, type: String
@@ -39,9 +39,10 @@ module Api
             requires :application_id, type: Integer
             requires :channel_id, type: Integer
             requires :channel, type: Hash do
+              requires :id, type: String
               requires :type, type: Integer
-              requires :guild_id, type: Integer
-              requires :name, type: String
+              # requires :guild_id, type: Integer
+              # requires :name, type: String
               # requires :flags, type: Integer
               # requires :last_message_id, type: Integer
               # requires :nsfw, type: Boolean
@@ -63,14 +64,23 @@ module Api
             end
             # requires ventitlement_sku_ids, type: Array
             # requires :entitlements, type: Array
-            requires :guild_id, type: Integer
-            requires :guild_locale, type: String
-            requires :guild, type: Hash do
+            optional :guild_id, type: Integer
+            optional :guild_locale, type: String
+            optional :guild, type: Hash do
               # requires :id, type: Integer
               # requires :locale, type: String
               # requires vfeatures, type: Array
             end
-            requires :member, type: Hash do
+            optional :user, type: Hash do
+              optional :id, type: Integer
+              optional :username, type: String
+              # requires :avatar, type: String
+              # requires :avatar_decoration, type: String
+              # requires :discriminator, type: String
+              # requires :global_name, type: String
+              # requires :public_flags, type: Integer
+            end
+            optional :member, type: Hash do
               requires :user, type: Hash do
                 requires :id, type: Integer
                 requires :username, type: String
@@ -85,22 +95,31 @@ module Api
         end
         post do
           case params[:type]
-          when Discord::Interactions::Type::PING then
+          when Discord::Interactions::Type::PING
             Api::Middleware.logger.info "Discord ping: application_id=#{params[:application_id]}, user=#{params[:user][:username]} (#{params[:user][:id]})"
             {
               type: Discord::Interactions::Type::PING
             }
-          when Discord::Interactions::Type::APPLICATION_COMMAND then
-            command = DiscordStrava::Commands::Command.new(params, request)
-            result = Discord::Commands::invoke!(command) 
-            result =  {
-              type: Discord::Interactions::Type::APPLICATION_COMMAND_AUTOCOMPLETE,
-              data: {
-                  content: result,
-                  flags: Discord::Interactions::Messages::EPHEMERAL
+          when Discord::Interactions::Type::APPLICATION_COMMAND
+            case params[:channel][:type]
+            when Discord::Interactions::Channels::GUILD_TEXT
+              command = DiscordStrava::Commands::Command.new(params, request)
+              data = Discord::Commands.invoke!(command)
+              data = { content: data } if data.is_a?(String)
+              result = {
+                type: Discord::Interactions::Type::APPLICATION_COMMAND_AUTOCOMPLETE,
+                data: data.merge(flags: Discord::Interactions::Messages::EPHEMERAL)
               }
-            } if result.is_a?(String)
-            result || body(false)
+              result || body(false)
+            else
+              {
+                type: Discord::Interactions::Type::APPLICATION_COMMAND_AUTOCOMPLETE,
+                data: {
+                  content: 'Strada works best in a regular channnel.',
+                  flags: Discord::Interactions::Messages::EPHEMERAL
+                }
+              }
+            end
           else
             Api::Middleware.logger.info "Unhandled interaction #{params[:type]}: #{params}"
           end

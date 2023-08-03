@@ -14,7 +14,7 @@ class TeamStats
   def to_discord
     any? ? {
       embeds: values.map(&:to_discord_embed)
-    } : { text: 'There are no activities in this channel.' }
+    } : 'There are no activities in this channel.'
   end
 
   private

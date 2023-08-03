@@ -16,7 +16,7 @@ class Team
   field :permissions, type: Integer
 
   field :active, type: Mongoid::Boolean, default: true
-  
+
   field :api, type: Boolean, default: false
 
   field :units, type: String, default: 'mi'
@@ -55,7 +55,7 @@ class Team
 
   def refresh_token!
     update_attributes!(Discord::OAuth2.refresh_token(refresh_token))
-    logger.info "Refresed token for team #{self}, expires on #{self.token_expires_at}."
+    logger.info "Refresed token for team #{self}, expires on #{token_expires_at}."
   rescue Faraday::Error => e
     logger.warn "Error refreshing token for team #{self}, #{e.message} (#{e.response[:body]})."
   end
@@ -72,9 +72,9 @@ class Team
     {
       guild_id: guild_id,
       guild_name: guild_name
-    }.map do |k, v|
+    }.map { |k, v|
       "#{k}=#{v}" if v
-    end.compact.join(', ')
+    }.compact.join(', ')
   end
 
   def ping!
@@ -87,9 +87,9 @@ class Team
     ping!
   rescue StandardError => e
     logger.warn "Active team #{self} ping, #{e.message}."
-    # todo: deactivat
-  end  
-  
+    # TODO: deactivat
+  end
+
   def tags
     [
       subscribed? ? 'subscribed' : 'trial',
@@ -183,7 +183,7 @@ class Team
       {
         message_id: rc['id'],
         channel_id: rc['channel_id']
-      }        
+      }
     end
   end
 
@@ -208,7 +208,7 @@ class Team
     return unless subscription_expired?
     return if subscription_expired_at
 
-    inform_everyone!(text: subscribe_text)
+    inform_everyone!(subscribe_text)
     update_attributes!(subscription_expired_at: Time.now.utc)
   end
 
@@ -220,7 +220,7 @@ class Team
   end
 
   def update_cc_text
-    "Update your credit card info at #{DiscordStrava::Service.url}/update_cc?team_id=#{team_id}."
+    "Update your credit card info at #{DiscordStrava::Service.url}/update_cc?guild_id=#{guild_id}."
   end
 
   def subscribed_text
@@ -232,7 +232,7 @@ class Team
 
   def clubs_to_discord
     result = {
-      text: "To connect a club, invite #{bot_mention} to a channel and use `/strada clubs`.",
+      content: "To connect a club, invite #{bot_mention} to a channel and use `/strada clubs`.",
       embeds: []
     }
 
@@ -273,7 +273,7 @@ class Team
     return if subscribed? || subscription_expired?
     return if trial_informed_at && (Time.now.utc < trial_informed_at + 7.days)
 
-    inform_everyone!(text: trial_message)
+    inform_everyone!(trial_message)
     update_attributes!(trial_informed_at: Time.now.utc)
   end
 
@@ -294,7 +294,7 @@ class Team
   end
 
   def subscribe_text
-    "Subscribe your team for $29.99 a year at #{DiscordStrava::Service.url}/subscribe?team_id=#{team_id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
+    "Subscribe your team for $29.99 a year at #{DiscordStrava::Service.url}/subscribe?guild_id=#{guild_id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
   end
 
   def stripe_customer_subscriptions_info(with_unsubscribe = false)
@@ -349,12 +349,10 @@ class Team
   def self.purge!(dt = 2.weeks.ago)
     # destroy teams inactive for two weeks
     Team.where(active: false, :updated_at.lte => dt).each do |team|
-      begin
-        logger.info "Destroying #{team}, inactive since #{team.updated_at}."
-        team.destroy
-      rescue StandardError => e
-        logger.warn "Error destroying #{team}, #{e.message}."
-      end
+      logger.info "Destroying #{team}, inactive since #{team.updated_at}."
+      team.destroy
+    rescue StandardError => e
+      logger.warn "Error destroying #{team}, #{e.message}."
     end
   end
 
@@ -367,7 +365,7 @@ class Team
   def subscribed!
     return unless subscribed? && subscribed_changed?
 
-    inform_everyone!(text: subscribed_text)
+    inform_everyone!(subscribed_text)
   end
 
   def bot_mention
@@ -392,7 +390,7 @@ class Team
   def inform_activated!
     im = discord_client.conversations_open(users: guild_owner_id.to_s)
     discord_client.chat_postMessage(
-      text: activated_text,
+      activated_text,
       channel: im['channel']['id'],
       as_user: true
     )

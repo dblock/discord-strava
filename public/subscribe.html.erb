@@ -23,11 +23,12 @@
       <script>
         $(document).ready(function() {
 
-          <% team = Team.where(team_id: request['team_id']).first %>
+          <% team = Team.where(guild_id: request['guild_id']).first %>
 
           var team = {
             id: '<%= team && team.id %>',
-            name: '<%= team && team.guild_name %>',
+            guild_id: '<%= team && team.guild_id %>',
+            guild_name: '<%= team && team.guild_name.gsub(/[^0-9a-z ]/i, '') %>',
             subscribed: <%= !!(team && team.subscribed) %>,
           }
 
@@ -53,7 +54,7 @@
                   stripe_email: token.email,
                   stripe_token: token.id,
                   stripe_token_type: token.type,
-                  team_id: team.id
+                  guild_id: team.guild_id
                 },
                 success: function(data) {
                   DiscordStrava.message('Team <b>' + team.guild_name + '</b> successfully subscribed.<br><br>Thank you for your support!');

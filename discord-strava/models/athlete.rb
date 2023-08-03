@@ -46,8 +46,8 @@ class Athlete
     {
       author: {
         name: name,
-        url: strava_url,
-#        icon_url: profile_medium 
+        url: strava_url
+        #        icon_url: profile_medium
       }
     }
   end

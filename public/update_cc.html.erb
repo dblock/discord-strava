@@ -48,9 +48,9 @@
           if (data.stripe_token) {
 
             var team = {
-              id: <%= team ? "'#{team._id}'" : 'null' %>,
-              name: <%= team ? "'#{team.guild_name}'" : 'null' %>
-            };
+              id: '<%= team && team.id %>',
+              guild_name: '<%= team && team.guild_name.gsub(/[^0-9a-z ]/i, '') %>'
+            }
 
             $.ajax({
               type: 'POST',

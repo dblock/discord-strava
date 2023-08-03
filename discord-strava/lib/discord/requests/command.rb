@@ -25,7 +25,7 @@ module Discord
 
       def to_s
         [
-          name, 
+          name,
           option_names
         ].compact.flatten.join(' ')
       end

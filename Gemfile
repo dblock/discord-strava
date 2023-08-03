@@ -4,6 +4,7 @@ ruby '2.7.7'
 
 gem 'async'
 gem 'discordrb'
+gem 'ed25519'
 gem 'grape'
 gem 'grape-roar', '>= 0.4.0'
 gem 'grape-swagger'
@@ -25,7 +26,6 @@ gem 'ruby-enum'
 gem 'strava-ruby-client'
 gem 'stripe', '~> 1.58.0'
 gem 'wannabe_bool'
-gem 'ed25519'
 
 group :development, :test do
   gem 'foreman'

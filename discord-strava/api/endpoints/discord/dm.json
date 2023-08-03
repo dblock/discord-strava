@@ -1,0 +1,44 @@
+{
+    "application_id": "1135347799840522240",
+    "channel": {
+        "flags": 0,
+        "id": "1136112917264224338",
+        "last_message_id": "1136307002964975636",
+        "recipients": [{
+            "avatar": "24415fe0f25f0833e38aa53861c2f53a",
+            "avatar_decoration": null,
+            "discriminator": "0",
+            "global_name": "dblock",
+            "id": "747821172036599899",
+            "public_flags": 0,
+            "username": "dblockdotorg"
+        }],
+        "type": 1
+    },
+    "channel_id": "1136112917264224338",
+    "data": {
+        "id": "1135549211878903849",
+        "name": "strada",
+        "options": [{
+            "name": "connect",
+            "options": [],
+            "type": 1
+        }],
+        "type": 1
+    },
+    "entitlements": [],
+    "id": 1136457328196071504,
+    "locale": "en-US",
+    "token": "",
+    "type": 2,
+    "user": {
+        "avatar": "24415fe0f25f0833e38aa53861c2f53a",
+        "avatar_decoration": null,
+        "discriminator": "0",
+        "global_name": "dblock",
+        "id": "747821172036599899",
+        "public_flags": 0,
+        "username": "dblockdotorg"
+    },
+    "version": 1
+}

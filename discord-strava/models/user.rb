@@ -94,21 +94,32 @@ class User
     if access_token
       logger.info "Disconnected team=#{team}, user=#{self}"
       reset_access_tokens!(connected_to_strava_at: nil)
-      { text: 'Your Strava account has been successfully disconnected.' }
+      'Your Strava account has been successfully disconnected.'
     else
-      { text: 'Your Strava account is not connected.' }
+      'Your Strava account is not connected.'
     end
   end
 
   def disconnect!
-    dm! disconnect_from_strava
+    disconnect_from_strava
   end
 
-  def connect_to_strava(message = 'Please connect your Strava account')
-    "#{message}: #{connect_to_strava_url}."
+  def connect_to_strava(message = 'Please connect your Strava account.')
+    {
+      content: message,
+      components: [{
+        type: 1,
+        components: [{
+          type: 2,
+          label: 'Connect!',
+          style: 5,
+          url: connect_to_strava_url
+        }]
+      }]
+    }
   end
 
-  def dm_connect!(message = 'Please connect your Strava account')
+  def dm_connect!(message = 'Please connect your Strava account.')
     dm!(connect_to_strava(message))
   end
 
@@ -182,8 +193,7 @@ class User
     handle_strava_error e
   end
 
-  def athlete_clubs_to_discord(channel_id)
-    result = { description: '', channel: channel_id, embeds: [] }
+  def athlete_clubs_to_discord
     clubs = team.clubs.where(channel_id: channel_id).to_a
     if connected_to_strava?
       strava_client.athlete_clubs do |row|
@@ -193,11 +203,33 @@ class User
         clubs << Club.new(Club.attrs_from_strava(row).merge(team: team))
       end
     end
-    clubs.sort_by(&:strava_id).each do |club|
-      result[:embeds].concat(club.connect_to_discord[:embeds])
+    club_options = clubs.sort_by(&:strava_id).map do |club|
+      club.connect_to_discord
     end
-    result[:description] = 'Not connected to any clubs.' if result[:embeds].empty?
-    result
+    if club_options.empty?
+      { content: 'Not connected to any clubs.' }
+    else
+      result = {
+        content: 'Choose a club.',
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 3,
+                custom_id: 'club',
+                placeholder: 'Choose a club.',
+                min_values: 1,
+                max_values: 1,
+                options: club_options
+              }
+            ]
+          }
+        ]
+      }
+      p result
+      result
+    end
   end
 
   def activated_user?
@@ -238,11 +270,11 @@ class User
   def handle_strava_error(e)
     if e.message =~ /Authorization Error/
       logger.warn "Error for #{self}, #{e.message}, authorization error."
-      dm_connect! 'There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account'
+      dm_connect! 'There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account.'
       reset_access_tokens!(connected_to_strava_at: nil)
     elsif e.errors&.first && e.errors.first['field'] == 'refresh_token' && e.errors.first['code'] == 'invalid'
       logger.warn "Error for #{self}, #{e.message}, refresh token was invalid."
-      dm_connect! 'There was a re-authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account'
+      dm_connect! 'There was a re-authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account.'
       reset_access_tokens!(connected_to_strava_at: nil)
     else
       logger.error "#{e.class.name}: #{e.message}\n  #{backtrace}"

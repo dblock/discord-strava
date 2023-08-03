@@ -9,10 +9,10 @@ module Api
           requires :stripe_token, type: String
           requires :stripe_token_type, type: String
           requires :stripe_email, type: String
-          requires :team_id, type: String
+          requires :guild_id, type: String
         end
         post do
-          team = Team.where(team_id: params[:team_id]).first || error!('Team Not Found', 404)
+          team = Team.where(guild_id: params[:guild_id]).first || error!('Team Not Found', 404)
           Api::Middleware.logger.info "Creating a subscription for team #{team}."
           error!('Already Subscribed', 400) if team.subscribed?
           error!('Customer Already Registered', 400) if team.stripe_customer_id
@@ -22,9 +22,8 @@ module Api
             email: params[:stripe_email],
             metadata: {
               id: team._id,
-              team_id: team.team_id,
-              name: team.guild_name,
-              domain: team.domain
+              guild_id: team.guild_id,
+              name: team.guild_name
             }
           )
           Api::Middleware.logger.info "Subscription for team #{team} created, stripe_customer_id=#{customer['id']}."
