@@ -7,11 +7,11 @@ describe Api::Endpoints::UsersEndpoint do
     let(:user) { Fabricate(:user) }
     it 'connects a user to their Strava account', vcr: { cassette_name: 'strava/retrieve_access' } do
       expect_any_instance_of(User).to receive(:dm!).with(
-        text: "Your Strava account has been successfully connected.\nI won't post any private activities, DM me `set private on` to toggle that and `help` for other options."
+        "Your Strava account has been successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
       )
 
       expect_any_instance_of(User).to receive(:inform!).with(
-        text: "New Strava account connected for #{user.discord_mention}."
+        "New Strava account connected for #{user.discord_mention}."
       )
 
       client.user(id: user.id)._put(code: 'code')
@@ -34,11 +34,11 @@ describe Api::Endpoints::UsersEndpoint do
         expect {
           expect {
             expect_any_instance_of(User).to receive(:dm!).with(
-              text: "Your Strava account has been successfully connected.\nI won't post any private activities, DM me `set private on` to toggle that and `help` for other options."
+              "Your Strava account has been successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
             )
 
             expect_any_instance_of(User).to receive(:inform!).with(
-              text: "New Strava account connected for #{user.discord_mention}."
+              "New Strava account connected for #{user.discord_mention}."
             )
 
             client.user(id: user.id)._put(code: 'code')

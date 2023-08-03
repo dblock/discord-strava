@@ -30,182 +30,111 @@ describe Api::Endpoints::TeamsEndpoint do
     end
 
     context 'register' do
-      before do
-        oauth_access = {
+      let(:oauth_access) do
+        {
           'access_token' => 'access_token',
-          'user_id' => 'guild_owner_id',
-          'guild_id' => 'guild_id',
-          'team_name' => 'team_name'
-        }
-        ENV['DISCORD_APPLICATION_ID'] = 'client_id'
-        ENV['DISCORD_SECRET_TOKEN'] = 'client_secret'
-        allow_any_instance_of(Discord::Web::Client).to receive(:conversations_open).with(
-          users: 'guild_owner_id'
-        ).and_return(
-          'channel' => {
-            'id' => 'C1'
+          'expires_in' => 24 * 60 * 60,
+          'refresh_token' => 'refresh_token',
+          'guild' => {
+            'id' => 'guild_id',
+            'name' => 'guild_name',
+            'owner_id' => 'guild_owner_id'
           }
-        )
-        allow_any_instance_of(Discord::Web::Client).to receive(:oauth_access).with(
-          hash_including(
-            code: 'code',
-            client_id: 'client_id',
-            client_secret: 'client_secret'
-          )
-        ).and_return(oauth_access)
+        }
+      end
+      before do
+        ENV['DISCORD_CLIENT_ID'] = 'client_id'
+        ENV['DISCORD_CLIENT_SECRET'] = 'client_secret'
+        allow(Discord::OAuth2).to receive(:post).with('oauth2/token', hash_including(code: 'code'), :url_encoded).and_return(oauth_access)
       end
       after do
-        ENV.delete('DISCORD_APPLICATION_ID')
-        ENV.delete('DISCORD_SECRET_TOKEN')
+        ENV.delete('DISCORD_CLIENT_ID')
+        ENV.delete('DISCORD_CLIENT_SECRET')
       end
       it 'creates a team' do
-        expect(Discord::Messages).to receive(:send_message).with(
-          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-          channel: 'C1',
-          as_user: true
-        )
+        expect_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
         expect {
-          team = client.teams._post(code: 'code')
+          team = client.teams._post(code: 'code', guild_id: 'guild_id', permissions: '1234567')
           expect(team.guild_id).to eq 'guild_id'
-          expect(team.guild_name).to eq 'team_name'
+          expect(team.guild_name).to eq 'guild_name'
           team = Team.find(team.id)
-          expect(team.token).to eq 'token'
-          expect(team.bot_user_id).to eq 'bot_user_id'
+          expect(team.token).to eq 'access_token'
+          expect(team.refresh_token).to eq 'refresh_token'
           expect(team.guild_owner_id).to eq 'guild_owner_id'
         }.to change(Team, :count).by(1)
       end
       it 'reactivates a deactivated team' do
-        expect(Discord::Messages).to receive(:send_message).with(
-          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-          channel: 'C1',
-          as_user: true
-        )
+        allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
-        existing_team = Fabricate(:team, token: 'token', active: false)
+        Fabricate(:team, token: 'access_token', guild_id: 'guild_id', active: false)
         expect {
-          team = client.teams._post(code: 'code')
-          expect(team.guild_id).to eq existing_team.guild_id
-          expect(team.guild_name).to eq existing_team.guild_name
+          team = client.teams._post(code: 'code', guild_id: 'this is just a hint', permissions: '1234567')
+          expect(team.guild_id).to eq 'guild_id'
+          expect(team.guild_name).to eq 'guild_name'
           expect(team.active).to be true
           team = Team.find(team.id)
-          expect(team.token).to eq 'token'
+          expect(team.token).to eq 'access_token'
+          expect(team.refresh_token).to eq 'refresh_token'
           expect(team.active).to be true
-          expect(team.bot_user_id).to eq 'bot_user_id'
           expect(team.guild_owner_id).to eq 'guild_owner_id'
         }.to_not change(Team, :count)
       end
-      it 'reactivates a team deactivated on discord' do
-        expect(Discord::Messages).to receive(:send_message).with(
-          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-          channel: 'C1',
-          as_user: true
-        )
+      it 'reactivates a team deactivated on discord with the same access token' do
+        allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
-        existing_team = Fabricate(:team, token: 'token')
+        Fabricate(:team, token: 'access_token')
         expect {
-          expect_any_instance_of(Team).to receive(:ping!) { raise Discord::Web::Api::Errors::DiscordError, 'invalid_auth' }
-          team = client.teams._post(code: 'code')
-          expect(team.guild_id).to eq existing_team.guild_id
-          expect(team.guild_name).to eq existing_team.guild_name
+          expect_any_instance_of(Team).to receive(:ping!) { raise 'error' }
+          team = client.teams._post(code: 'code', guild_id: 'guild_id', permissions: '1234567')
+          expect(team.guild_id).to eq 'guild_id'
+          expect(team.guild_name).to eq 'guild_name'
           expect(team.active).to be true
           team = Team.find(team.id)
-          expect(team.token).to eq 'token'
+          expect(team.token).to eq 'access_token'
           expect(team.active).to be true
-          expect(team.bot_user_id).to eq 'bot_user_id'
+          expect(team.guild_owner_id).to eq 'guild_owner_id'
+        }.to_not change(Team, :count)
+      end
+      it 'reactivates a team deactivated on discord with the same guild id' do
+        allow_any_instance_of(Team).to receive(:activated!)
+        expect(DiscordStrava::Service.instance).to receive(:start!)
+        Fabricate(:team, guild_id: 'guild_id')
+        expect {
+          expect_any_instance_of(Team).to receive(:ping!) { raise 'error' }
+          team = client.teams._post(code: 'code', guild_id: 'guild_id', permissions: '1234567')
+          expect(team.guild_id).to eq 'guild_id'
+          expect(team.guild_name).to eq 'guild_name'
+          expect(team.active).to be true
+          team = Team.find(team.id)
+          expect(team.token).to eq 'access_token'
+          expect(team.active).to be true
           expect(team.guild_owner_id).to eq 'guild_owner_id'
         }.to_not change(Team, :count)
       end
       it 'returns a useful error when team already exists' do
-        expect(Discord::Messages).to receive(:send_message).with(
-          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-          channel: 'C1',
-          as_user: true
-        )
+        allow_any_instance_of(Team).to receive(:activated!)
         expect_any_instance_of(Team).to receive(:ping_if_active!)
-        existing_team = Fabricate(:team, token: 'token')
-        expect { client.teams._post(code: 'code') }.to raise_error Faraday::ClientError do |e|
+        Fabricate(:team, token: 'access_token')
+        expect { client.teams._post(code: 'code', guild_id: 'guild_id', permissions: '1234567') }.to raise_error Faraday::ClientError do |e|
           json = JSON.parse(e.response[:body])
-          expect(json['message']).to eq "Team #{existing_team.guild_name} is already registered."
+          expect(json['message']).to eq "Team \"guild_name\" is already registered. You're all set."
         end
       end
       it 'reactivates a deactivated team with a different code' do
-        expect(Discord::Messages).to receive(:send_message).with(
-          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-          channel: 'C1',
-          as_user: true
-        )
+        allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
         existing_team = Fabricate(:team, api: true, token: 'old', guild_id: 'guild_id', active: false)
         expect {
-          team = client.teams._post(code: 'code')
+          team = client.teams._post(code: 'code', guild_id: 'guild_id', permissions: '1234567')
           expect(team.guild_id).to eq existing_team.guild_id
-          expect(team.guild_name).to eq existing_team.guild_name
+          expect(team.guild_name).to eq 'guild_name'
           expect(team.active).to be true
           team = Team.find(team.id)
-          expect(team.token).to eq 'token'
+          expect(team.token).to eq 'access_token'
           expect(team.active).to be true
-          expect(team.bot_user_id).to eq 'bot_user_id'
           expect(team.guild_owner_id).to eq 'guild_owner_id'
         }.to_not change(Team, :count)
-      end
-      context 'with mailchimp settings' do
-        before do
-          DiscordStrava::Mailchimp.configure do |config|
-            config.mailchimp_api_key = 'api-key'
-            config.mailchimp_list_id = 'list-id'
-          end
-        end
-        after do
-          DiscordStrava::Mailchimp.config.reset!
-        end
-
-        let(:list) { double(Mailchimp::List, members: double(Mailchimp::List::Members)) }
-
-        it 'subscribes to the mailing list' do
-          expect(Discord::Messages).to receive(:send_message).with(
-            text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
-            channel: 'C1',
-            as_user: true
-          )
-
-          expect(DiscordStrava::Service.instance).to receive(:start!)
-
-          allow_any_instance_of(Discord::Web::Client).to receive(:users_info).with(
-            user: 'guild_owner_id'
-          ).and_return(
-            user: {
-              profile: {
-                email: 'user@example.com',
-                first_name: 'First',
-                last_name: 'Last'
-              }
-            }
-          )
-
-          allow_any_instance_of(Mailchimp::Client).to receive(:lists).with('list-id').and_return(list)
-
-          expect(list.members).to receive(:where).with(email_address: 'user@example.com').and_return([])
-
-          expect(list.members).to receive(:create_or_update).with(
-            email_address: 'user@example.com',
-            merge_fields: {
-              'FNAME' => 'First',
-              'LNAME' => 'Last',
-              'BOT' => 'Strada'
-            },
-            status: 'pending',
-            name: nil,
-            tags: %w[strada trial],
-            unique_email_id: 'guild_id-guild_owner_id'
-          )
-
-          client.teams._post(code: 'code')
-        end
-        after do
-          ENV.delete('MAILCHIMP_API_KEY')
-          ENV.delete('MAILCHIMP_LIST_ID')
-        end
       end
     end
   end

@@ -41,10 +41,10 @@ module DiscordStrava
       private
 
       def user_info
-        if self[:channel][:type] == 0 # message type 0, text
-          self[:member][:user]
+        if self[:channel][:type] == 0 && key?(:member) # message type 0, text
+          self[:member][:user] || {}
         elsif self[:channel][:type] == 1 # message type 1, DM
-          self[:user]
+          self[:user] || {}
         else
           raise NotImplementedError
         end

@@ -85,8 +85,8 @@ class Team
 
     ping!
   rescue StandardError => e
-    logger.warn "Active team #{self} ping, #{e.message}."
-    # TODO: deactivat
+    logger.warn "Active team #{self} ping, #{e.message}, deactivating."
+    deactivate!
   end
 
   def tags
@@ -278,15 +278,6 @@ class Team
     stripe_customer.subscriptions.detect do |subscription|
       subscription.status == 'active' && !subscription.cancel_at_period_end
     end
-  end
-
-  def ping_if_active!
-    return unless active?
-
-    ping!
-  rescue StandardError => e
-    logger.warn "Active team #{self} ping, #{e.message}."
-    # deactivate!
   end
 
   def stats(options = {})

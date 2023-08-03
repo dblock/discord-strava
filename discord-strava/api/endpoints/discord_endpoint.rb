@@ -6,10 +6,10 @@ module Api
       namespace :discord do
         before do
           # https://gist.github.com/mattantonelli/d9c311abbf2400387480488e3853dd1f
-          signature = request.headers['X-Signature-Ed25519']
-          timestamp = request.headers['X-Signature-Timestamp']
-          key = Ed25519::VerifyKey.new([ENV.fetch('DISCORD_PUBLIC_KEY', nil)].pack('H*')).freeze
-          key.verify([signature].pack('H*'), "#{timestamp}#{env[Grape::Env::API_REQUEST_INPUT]}")
+          signature = request.headers['X-Signature-Ed25519'] || error!('Missing X-Signature-Ed25519', 401)
+          timestamp = request.headers['X-Signature-Timestamp'] || error!('Missing X-Signature-Timestamp', 401)
+          discord_public_key = ENV.fetch('DISCORD_PUBLIC_KEY') { error!('Missing DISCORD_PUBLIC_KEY', 401) }
+          Discord::Interactions::Signature.verify!(discord_public_key, signature, timestamp, env[Grape::Env::API_REQUEST_INPUT])
         rescue Ed25519::VerifyError
           error! '401 Unauthorized', 401
         end
@@ -23,25 +23,25 @@ module Api
           given type: ->(type) { type == Discord::Interactions::Type::PING } do
             requires :application_id, type: String
             # requires :entitlements, type: Array
-            requires :user, type: Hash do
-              requires :id, type: String
-              requires :username, type: String
-              # requires :avatar, type: String
-              # requires :avatar_decoration, type: String
-              # requires :discriminator, type: String
-              # requires :global_name, type: String
-              # requires :public_flags, type: Integer
-            end
+            # requires :user, type: Hash do
+            # requires :id, type: String
+            # requires :username, type: String
+            # requires :avatar, type: String
+            # requires :avatar_decoration, type: String
+            # requires :discriminator, type: String
+            # requires :global_name, type: String
+            # requires :public_flags, type: Integer
+            # end
           end
           given type: ->(type) { type == Discord::Interactions::Type::APPLICATION_COMMAND } do
             requires :locale, type: String
             # requires :app_permissions, type: Integer
-            requires :application_id, type: Integer
-            requires :channel_id, type: Integer
+            requires :application_id, type: String
+            requires :channel_id, type: String
             requires :channel, type: Hash do
               requires :id, type: String
               requires :type, type: Integer
-              # requires :guild_id, type: Integer
+              # requires :guild_id, type: String
               # requires :name, type: String
               # requires :flags, type: Integer
               # requires :last_message_id, type: Integer
@@ -53,7 +53,7 @@ module Api
               # requires :topic, type: String
             end
             requires :data, type: Hash do
-              requires :id, type: Integer
+              requires :id, type: String
               requires :type, type: Integer
               requires :name, type: String
               requires :options, type: Array do
@@ -64,15 +64,15 @@ module Api
             end
             # requires ventitlement_sku_ids, type: Array
             # requires :entitlements, type: Array
-            optional :guild_id, type: Integer
+            optional :guild_id, type: String
             optional :guild_locale, type: String
             optional :guild, type: Hash do
-              # requires :id, type: Integer
+              # requires :id, type: String
               # requires :locale, type: String
               # requires vfeatures, type: Array
             end
             optional :user, type: Hash do
-              optional :id, type: Integer
+              optional :id, type: String
               optional :username, type: String
               # requires :avatar, type: String
               # requires :avatar_decoration, type: String
@@ -82,7 +82,7 @@ module Api
             end
             optional :member, type: Hash do
               requires :user, type: Hash do
-                requires :id, type: Integer
+                requires :id, type: String
                 requires :username, type: String
                 # requires :avatar, type: String
                 # requires :avatar_decoration, type: String
@@ -96,7 +96,7 @@ module Api
         post do
           case params[:type]
           when Discord::Interactions::Type::PING
-            Api::Middleware.logger.info "Discord ping: application_id=#{params[:application_id]}, user=#{params[:user][:username]} (#{params[:user][:id]})"
+            Api::Middleware.logger.info "Discord ping: application_id=#{params[:application_id]})"
             {
               type: Discord::Interactions::Type::PING
             }
@@ -122,6 +122,7 @@ module Api
             end
           else
             Api::Middleware.logger.info "Unhandled interaction #{params[:type]}: #{params}"
+            error!('Unhandled Interaction', 400)
           end
         end
       end

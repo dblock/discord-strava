@@ -32,13 +32,13 @@ module Api
         desc 'Create a team using an OAuth token.'
         params do
           requires :code, type: String
-          requires :guild_id, type: Integer
+          requires :guild_id, type: String
           requires :permissions, type: Integer
         end
         post do
           oauth2_response = Discord::OAuth2.exchange_code(params[:code])
 
-          team = Team.where(token: oauth2_response[:access_token]).first
+          team = Team.where(token: oauth2_response[:token]).first
           team ||= Team.where(guild_id: oauth2_response[:guild_id]).first
 
           if team

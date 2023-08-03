@@ -4,6 +4,9 @@ describe Api::Endpoints::CreditCardsEndpoint do
   include Api::Test::EndpointTest
 
   context 'credit cards' do
+    before do
+      allow_any_instance_of(Team).to receive(:activated!)
+    end
     it 'requires stripe parameters' do
       expect { client.credit_cards._post }.to raise_error Faraday::ClientError do |e|
         json = JSON.parse(e.response[:body])
@@ -35,8 +38,7 @@ describe Api::Endpoints::CreditCardsEndpoint do
           plan: 'strada-yearly',
           email: 'foo@bar.com'
         )
-        expect_any_instance_of(Team).to receive(:inform!).once
-        expect_any_instance_of(Team).to receive(:inform_guild_owner!).once
+        expect_any_instance_of(Team).to receive(:inform_everyone!).once
         team.update_attributes!(subscribed: true, stripe_customer_id: customer['id'])
       end
       it 'updates a credit card' do

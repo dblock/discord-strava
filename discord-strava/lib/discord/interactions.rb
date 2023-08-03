@@ -2,6 +2,16 @@ module Discord
   module Interactions
     extend self
 
+    class Signature
+      class << self
+        def verify!(public_key, signature, timestamp, input)
+          # https://gist.github.com/mattantonelli/d9c311abbf2400387480488e3853dd1f
+          key = Ed25519::VerifyKey.new([public_key].pack('H*')).freeze
+          key.verify([signature].pack('H*'), "#{timestamp}#{input}")
+        end
+      end
+    end
+
     class Type
       include Ruby::Enum
 

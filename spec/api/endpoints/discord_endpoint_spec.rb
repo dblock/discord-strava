@@ -3,192 +3,188 @@ require 'spec_helper'
 describe Api::Endpoints::DiscordEndpoint do
   include Api::Test::EndpointTest
 
-  context 'with a SLACK_VERIFICATION_TOKEN' do
-    let(:token) { 'discord-verification-token' }
-    let(:team) { Fabricate(:team) }
-    before do
-      ENV['SLACK_VERIFICATION_TOKEN'] = token
+  context 'Ed25519 signature' do
+    it 'X-Signature-Ed25519 is required' do
+      post '/api/discord'
+      expect(last_response.status).to eq 401
+      response = JSON.parse(last_response.body)
+      expect(response['error']).to eq 'Missing X-Signature-Ed25519'
     end
-    context 'interactive buttons' do
-      let(:user) { Fabricate(:user, team: team, access_token: 'token', token_expires_at: Time.now + 1.day) }
-      it 'returns an error with a non-matching verification token' do
-        post '/api/discord/action', payload: {
-          actions: [{ name: 'strava_id', value: '43749' }],
-          channel: { id: 'C1', name: 'runs' },
-          user: { id: user.user_id },
-          team: { id: team.guild_id },
-          callback_id: 'invalid-callback',
-          token: 'invalid-token'
-        }.to_json
-        expect(last_response.status).to eq 401
-        response = JSON.parse(last_response.body)
-        expect(response['error']).to eq 'Message token is not coming from Discord.'
-      end
-      it 'returns invalid callback id' do
-        post '/api/discord/action', payload: {
-          actions: [{ name: 'strava_id', value: 'id' }],
-          channel: { id: 'C1', name: 'runs' },
-          user: { id: user.user_id },
-          team: { id: team.guild_id },
-          callback_id: 'invalid-callback',
-          token: token
-        }.to_json
-        expect(last_response.status).to eq 404
-        response = JSON.parse(last_response.body)
-        expect(response['error']).to eq 'Callback invalid-callback is not supported.'
-      end
+    it 'X-Signature-Timestamp is required' do
+      header 'X-Signature-Ed25519', 'signature'
+      post '/api/discord'
+      expect(last_response.status).to eq 401
+      response = JSON.parse(last_response.body)
+      expect(response['error']).to eq 'Missing X-Signature-Timestamp'
     end
-    context 'slash commands' do
-      let(:user) { Fabricate(:user, team: team) }
-      context 'stats' do
-        it 'returns team stats' do
-          post '/api/discord/command',
-               command: '/strada',
-               text: 'stats',
-               channel_id: 'channel',
-               channel_name: 'channel_name',
-               user_id: user.user_id,
-               guild_id: team.guild_id,
-               token: token
-          expect(last_response.status).to eq 201
-          response = JSON.parse(last_response.body)
-          expect(response).to eq(
-            'text' => 'There are no activities in this channel.',
-            'user' => user.user_id,
-            'channel' => 'channel'
-          )
-        end
-        it 'calls stats with channel' do
-          expect_any_instance_of(Team).to receive(:stats).with(channel_id: 'channel_id')
-          post '/api/discord/command',
-               command: '/strada',
-               text: 'stats',
-               channel_id: 'channel_id',
-               channel_name: 'channel_name',
-               user_id: user.user_id,
-               guild_id: team.guild_id,
-               token: token
-        end
-        it 'calls stats without channel on a DM' do
-          expect_any_instance_of(Team).to receive(:stats).with({})
-          post '/api/discord/command',
-               command: '/strada',
-               text: 'stats',
-               channel_id: 'DM',
-               channel_name: 'channel_name',
-               user_id: user.user_id,
-               guild_id: team.guild_id,
-               token: token
-        end
+    it 'DISCORD_PUBLIC_KEY is required' do
+      header 'X-Signature-Ed25519', 'signature'
+      header 'X-Signature-Timestamp', 'ts'
+      post '/api/discord'
+      expect(last_response.status).to eq 401
+      response = JSON.parse(last_response.body)
+      expect(response['error']).to eq 'Missing DISCORD_PUBLIC_KEY'
+    end
+    context 'with signature' do
+      before do
+        ENV['DISCORD_PUBLIC_KEY'] = '3a2b26f5434477d6f9632324775d8821284b1b38d3ba760bc1dd0bd31a334ede'
       end
-      it 'returns an error with a non-matching verification token' do
-        post '/api/discord/command',
-             command: '/strada',
-             text: 'clubs',
-             channel_id: 'C1',
-             channel_name: 'channel_1',
-             user_id: 'user_id',
-             guild_id: 'guild_id',
-             token: 'invalid-token'
-        expect(last_response.status).to eq 401
-        response = JSON.parse(last_response.body)
-        expect(response['error']).to eq 'Message token is not coming from Discord.'
+      after do
+        ENV.delete('DISCORD_PUBLIC_KEY')
       end
-      it 'provides a connect link' do
-        post '/api/discord/command',
-             command: '/strada',
-             text: 'connect',
-             channel_id: 'channel',
-             channel_name: 'channel_1',
-             user_id: user.user_id,
-             guild_id: team.guild_id,
-             token: token
+      it 'verifies signature' do
+        header 'X-Signature-Ed25519', 'e20cd950d46f99886a72ab9ac464d514f7dcd9a2ae1815360c44bf494ed0600bcc8b58427dd08a299c1c670a61ae6bcc2e391758f4b6fbea6b65374c54ee4e06'
+        header 'X-Signature-Timestamp', 'timestamp'
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::PING,
+          version: 1,
+          token: 'token',
+          application_id: 'application_id'
+        }
         expect(last_response.status).to eq 201
-        url = "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}"
-        expect(last_response.body).to eq({
-          text: 'Please connect your Strava account.',
-          attachments: [{
-            fallback: "Please connect your Strava account at #{url}.",
-            actions: [{
-              type: 'button',
-              text: 'Click Here',
-              url: url
-            }]
-          }],
-          user: user.user_id,
-          channel: 'channel'
-        }.to_json)
+        expect(JSON.parse(last_response.body)).to eq({ 'type' => 1 })
       end
-      it 'attempts to disconnect' do
-        post '/api/discord/command',
-             command: '/strada',
-             text: 'disconnect',
-             channel_id: 'channel',
-             channel_name: 'channel_name',
-             user_id: user.user_id,
-             guild_id: team.guild_id,
-             token: token
-        expect(last_response.status).to eq 201
-        expect(last_response.body).to eq({
-          text: 'Your Strava account is not connected.',
-          user: user.user_id,
-          channel: 'channel'
-        }.to_json)
-      end
-    end
-    context 'discord events' do
-      let(:user) { Fabricate(:user, team: team) }
-      it 'returns an error with a non-matching verification token' do
-        post '/api/discord/event',
-             type: 'url_verification',
-             challenge: 'challenge',
-             token: 'invalid-token'
+      it 'rejects an invalid signature' do
+        header 'X-Signature-Ed25519', 'x' * 128
+        header 'X-Signature-Timestamp', 'timestamp'
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::PING,
+          version: 1,
+          token: 'token',
+          application_id: 'application_id'
+        }
         expect(last_response.status).to eq 401
-        response = JSON.parse(last_response.body)
-        expect(response['error']).to eq 'Message token is not coming from Discord.'
+        expect(JSON.parse(last_response.body)).to eq({ 'error' => '401 Unauthorized' })
       end
-      it 'performs event challenge' do
-        post '/api/discord/event',
-             type: 'url_verification',
-             challenge: 'challenge',
-             token: token
-        expect(last_response.status).to eq 201
-        response = JSON.parse(last_response.body)
-        expect(response).to eq('challenge' => 'challenge')
-      end
-    end
-    after do
-      ENV.delete('SLACK_VERIFICATION_TOKEN')
     end
   end
-  context 'with a dev discord verification token' do
-    let(:token) { 'discord-verification-token' }
-    let(:team) { Fabricate(:team) }
+
+  context 'api' do
     before do
-      ENV['SLACK_VERIFICATION_TOKEN_DEV'] = token
+      ENV['DISCORD_PUBLIC_KEY'] = 'key'
+      header 'X-Signature-Ed25519', 'signature'
+      header 'X-Signature-Timestamp', 'timestamp'
+      allow(Discord::Interactions::Signature).to receive(:verify!)
     end
     after do
-      ENV.delete('SLACK_VERIFICATION_TOKEN_DEV')
+      ENV.delete('DISCORD_PUBLIC_KEY')
     end
-    context 'discord events' do
-      let(:user) { Fabricate(:user, team: team) }
-      it 'returns an error with a non-matching verification token' do
-        post '/api/discord/event',
-             type: 'url_verification',
-             challenge: 'challenge',
-             token: 'invalid-token'
-        expect(last_response.status).to eq 401
-        response = JSON.parse(last_response.body)
-        expect(response['error']).to eq 'Message token is not coming from Discord.'
-      end
-      it 'performs event challenge' do
-        post '/api/discord/event',
-             type: 'url_verification',
-             challenge: 'challenge',
-             token: token
+    context 'ping' do
+      it 'receives pong' do
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::PING,
+          version: 1,
+          token: 'token',
+          application_id: 'application_id'
+        }
         expect(last_response.status).to eq 201
-        response = JSON.parse(last_response.body)
-        expect(response).to eq('challenge' => 'challenge')
+        expect(JSON.parse(last_response.body)).to eq({ 'type' => 1 })
+      end
+    end
+    context 'unhandled interaction' do
+      it 'receives unhandled error' do
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::MODAL_SUBMIT,
+          version: 1,
+          token: 'token',
+          application_id: 'application_id'
+        }
+        expect(last_response.status).to eq 400
+        expect(JSON.parse(last_response.body)).to eq({ 'error' => 'Unhandled Interaction' })
+      end
+    end
+    context 'dm' do
+      it 'receives DM message' do
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::APPLICATION_COMMAND,
+          version: 1,
+          token: 'token',
+          application_id: '1135347799840522240',
+          channel: {
+            id: '1136112917264224338',
+            type: 1
+          },
+          data: {
+            id: '1135549211878903849',
+            name: 'strada',
+            options: [{
+              name: 'connect',
+              options: [],
+              type: 1
+            }],
+            type: 1
+          },
+          channel_id: '1136112917264224338',
+          locale: 'en-US',
+          user: {
+            id: '747821172036599899'
+          }
+        }
+        expect(last_response.status).to eq 201
+        expect(JSON.parse(last_response.body)).to eq(
+          'data' => {
+            'content' => 'Strada works best in a regular channnel.', 'flags' => 64
+          },
+          'type' => 4
+        )
+      end
+    end
+    context 'channel command' do
+      let!(:team) { Fabricate(:team, guild_id: 'guild_id') }
+      let!(:user) { Fabricate(:user, team: team) }
+      it 'receives response' do
+        post '/api/discord', {
+          id: 'id',
+          type: Discord::Interactions::Type::APPLICATION_COMMAND,
+          version: 1,
+          token: 'token',
+          application_id: '1135347799840522240',
+          guild_id: 'guild_id',
+          channel: {
+            id: user.channel_id,
+            type: 0
+          },
+          member: {
+            user: {
+              id: user.user_id,
+              username: 'username'
+            }
+          },
+          data: {
+            id: '1135549211878903849',
+            name: 'strada',
+            options: [{
+              name: 'connect',
+              options: [],
+              type: 1
+            }],
+            type: 1
+          },
+          channel_id: '1136112917264224338',
+          locale: 'en-US'
+        }
+        expect(last_response.status).to eq 201
+        expect(JSON.parse(last_response.body)).to eq(
+          'type' => 4,
+          'data' => {
+            'components' => [{
+              'components' => [{
+                'label' => 'Connect!',
+                'style' => 5,
+                'type' => 2,
+                'url' => "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}"
+              }],
+              'type' => 1
+            }],
+            'content' => 'Please connect your Strava account.',
+            'flags' => 64
+          }
+        )
       end
     end
   end

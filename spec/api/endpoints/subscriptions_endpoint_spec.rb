@@ -53,12 +53,10 @@ describe Api::Endpoints::SubscriptionsEndpoint do
           metadata: {
             id: team._id,
             guild_id: team.guild_id,
-            name: team.guild_name,
-            domain: team.domain
+            name: team.guild_name
           }
         ).and_return('id' => 'customer_id')
-        expect_any_instance_of(Team).to receive(:inform!).once
-        expect_any_instance_of(Team).to receive(:inform_guild_owner!).once
+        expect_any_instance_of(Team).to receive(:subscribed!).once
         client.subscriptions._post(
           guild_id: team.guild_id,
           stripe_token: 'token',
