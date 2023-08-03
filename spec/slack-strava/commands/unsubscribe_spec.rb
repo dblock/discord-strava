@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DiscordStrava::Commands::Unsubscribe, vcr: { cassette_name: 'discord/user_info' } do
+describe DiscordStrava::Commands::Unsubscribe do
   let(:app) { DiscordStrava::Server.new(team: team) }
   let(:client) { app.send(:client) }
   shared_examples_for 'unsubscribe' do
@@ -60,7 +60,7 @@ describe DiscordStrava::Commands::Unsubscribe, vcr: { cassette_name: 'discord/us
           expect(team.stripe_customer_id).to_not be nil
         end
         context 'not an admin' do
-          let!(:user) { Fabricate(:user, is_admin: false, is_owner: false, team: team) }
+          let!(:user) { Fabricate(:user, team: team) }
           before do
             expect(User).to receive(:find_create_or_update_by_discord_id!).and_return(user)
           end

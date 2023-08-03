@@ -29,7 +29,7 @@ class UserActivity < Activity
     if hidden?
       logger.info "Skipping #{user}, #{self}, private."
       update_attributes!(bragged_at: Time.now.utc)
-      []
+      nil
     else
       logger.info "Bragging about #{user}, #{self}."
       rc = user.inform!(to_discord)

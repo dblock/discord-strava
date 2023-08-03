@@ -17,9 +17,7 @@ describe Api do
         '/api/subscriptions',
         '/api/credit_cards',
         '/api/maps/{id}',
-        '/api/discord/event',
-        '/api/discord/action',
-        '/api/discord/command',
+        '/api/discord',
         '/api/strava/event'
       ]
     end

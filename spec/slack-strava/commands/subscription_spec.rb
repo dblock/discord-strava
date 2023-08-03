@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DiscordStrava::Commands::Subscription, vcr: { cassette_name: 'discord/user_info' } do
+describe DiscordStrava::Commands::Subscription do
   let(:app) { DiscordStrava::Server.new(team: team) }
   let(:client) { app.send(:client) }
   shared_examples_for 'subscription' do

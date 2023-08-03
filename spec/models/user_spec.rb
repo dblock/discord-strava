@@ -1,96 +1,6 @@
 require 'spec_helper'
 
 describe User do
-  before do
-    allow_any_instance_of(Map).to receive(:update_png!)
-  end
-  context '#find_by_discord_mention!' do
-    let!(:user) { Fabricate(:user) }
-    it 'finds by discord id' do
-      expect(User.find_by_discord_mention!(user.team, "<@#{user.user_id}>")).to eq user
-    end
-    it 'finds by username' do
-      expect(User.find_by_discord_mention!(user.team, user.user_name)).to eq user
-    end
-    it 'finds by username is case-insensitive' do
-      expect(User.find_by_discord_mention!(user.team, user.user_name.capitalize)).to eq user
-    end
-    it 'requires a known user' do
-      expect {
-        User.find_by_discord_mention!(user.team, '<@nobody>')
-      }.to raise_error DiscordStrava::Error, "I don't know who <@nobody> is!"
-    end
-  end
-  context '#find_create_or_update_by_discord_id!', vcr: { cassette_name: 'discord/user_info' } do
-    let!(:team) { Fabricate(:team) }
-    let(:client) { DiscordRubyBot::Client.new }
-    before do
-      command.team = team
-    end
-    context 'with a mismatching user id in discord_mention' do
-      let!(:user) { Fabricate(:user, team: team) }
-      let(:web_client) { double(Discord::Web::Client, users_info: { user: { id: user.user_id, name: user.user_name } }) }
-      before do
-        allow(client).to receive(:web_client).and_return(web_client)
-      end
-      it 'finds by different discord id returned from discord info' do
-        expect(User.find_create_or_update_by_discord_id!(client, 'unknown')).to eq user
-      end
-    end
-    context 'without a user' do
-      it 'creates a user' do
-        expect {
-          user = User.find_create_or_update_by_discord_id!(client, 'whatever')
-          expect(user).to_not be_nil
-          expect(user.user_id).to eq 'U007'
-          expect(user.user_name).to eq 'username'
-          expect(user.is_admin).to be true
-          expect(user.is_bot).to be false
-          expect(user.is_owner).to be true
-        }.to change(User, :count).by(1)
-      end
-    end
-    context 'with a user with info matching an existing user id' do
-      let!(:user) { Fabricate(:user, team: team, is_admin: true, user_id: 'U007') }
-      it 'updates the fields of the existing user' do
-        expect {
-          User.find_create_or_update_by_discord_id!(client, 'whatever')
-        }.to_not change(User, :count)
-        user.reload
-        expect(user.user_id).to eq 'U007'
-        expect(user.is_admin).to be true
-        expect(user.is_bot).to be false
-        expect(user.is_owner).to be true
-      end
-    end
-    context 'with a user' do
-      let!(:user) { Fabricate(:user, team: team) }
-      it 'creates another user' do
-        expect {
-          User.find_create_or_update_by_discord_id!(client, 'whatever')
-        }.to change(User, :count).by(1)
-      end
-      it 'updates the username of the existing user' do
-        expect {
-          User.find_create_or_update_by_discord_id!(client, user.user_id)
-        }.to_not change(User, :count)
-        expect(user.reload.user_name).to eq 'username'
-      end
-    end
-    context 'with a user that matches most fields coming from discord' do
-      let!(:user) { Fabricate(:user, team: team, is_admin: true, user_name: 'username') }
-      it 'updates the fields of the existing user' do
-        expect {
-          User.find_create_or_update_by_discord_id!(client, user.user_id)
-        }.to_not change(User, :count)
-        user.reload
-        expect(user.user_name).to eq 'username'
-        expect(user.is_admin).to be true
-        expect(user.is_bot).to be false
-        expect(user.is_owner).to be true
-      end
-    end
-  end
   context 'sync_new_strava_activities!' do
     context 'recent created_at', vcr: { cassette_name: 'strava/user_sync_new_strava_activities', allow_playback_repeats: true } do
       let!(:user) { Fabricate(:user, created_at: DateTime.new(2018, 3, 26), access_token: 'token', token_expires_at: Time.now + 1.day, token_type: 'Bearer') }
@@ -167,7 +77,7 @@ describe User do
           let(:authorization_error) { Strava::Errors::Fault.new(400, body: { 'message' => 'Bad Request', 'errors' => [{ 'resource' => 'RefreshToken', 'field' => 'refresh_token', 'code' => 'invalid' }] }) }
           it 'raises an exception and resets token' do
             allow(user.strava_client).to receive(:paginate).and_raise authorization_error
-            expect(user).to receive(:dm_connect!).with('There was a re-authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account')
+            expect(user).to receive(:dm_connect!).with('There was a re-authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account.')
             user.sync_and_brag!
             expect(user.access_token).to be nil
             expect(user.token_type).to be nil
@@ -180,7 +90,7 @@ describe User do
           let(:authorization_error) { Strava::Errors::Fault.new(401, body: { 'message' => 'Authorization Error', 'errors' => [{ 'resource' => 'Athlete', 'field' => 'access_token', 'code' => 'invalid' }] }) }
           it 'raises an exception and resets token' do
             allow(user.strava_client).to receive(:paginate).and_raise authorization_error
-            expect(user).to receive(:dm_connect!).with('There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account')
+            expect(user).to receive(:dm_connect!).with('There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account.')
             user.sync_and_brag!
             expect(user.access_token).to be nil
             expect(user.token_type).to be nil
@@ -193,7 +103,7 @@ describe User do
           let(:authorization_error) { Strava::Errors::Fault.new(401, body: { 'message' => 'Authorization Error', 'errors' => [{ 'resource' => 'AccessToken', 'field' => 'activity:read_permission', 'code' => 'missing' }] }) }
           it 'raises an exception and resets token' do
             allow(user.strava_client).to receive(:paginate).and_raise authorization_error
-            expect(user).to receive(:dm_connect!).with('There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account')
+            expect(user).to receive(:dm_connect!).with('There was an authorization problem with Strava. Make sure that you leave the "View data about your private activities" box checked when reconnecting your Strava account.')
             user.sync_and_brag!
             expect(user.access_token).to be nil
             expect(user.token_type).to be nil
@@ -206,7 +116,7 @@ describe User do
       context 'with bragged activities' do
         before do
           user.sync_new_strava_activities!
-          allow_any_instance_of(User).to receive(:inform!).and_return([{ ts: 'ts', channel: 'C1' }])
+          allow_any_instance_of(User).to receive(:inform!).and_return({ message_id: 'id', channel_id: 'C1' })
           user.brag!
         end
         it 'does not reset activities_at back if the most recent bragged activity is in the past' do
@@ -230,10 +140,10 @@ describe User do
           end
           it 'retrieves last activity details and rebrags it with udpated description' do
             updated_last_activity = last_activity.to_discord
-            updated_last_activity[:attachments].first[:text] = "<@#{user.user_name}> on #{last_activity.start_date_local_s}\n\ndetailed description"
+            updated_last_activity[:embeds].first[:description] = "<@#{user.user_id}> on #{last_activity.start_date_local_s}\n\ndetailed description"
             expect_any_instance_of(User).to receive(:update!).with(
               updated_last_activity,
-              last_activity.channel_messages
+              last_activity.channel_message
             )
             user.rebrag!
           end
@@ -366,41 +276,22 @@ describe User do
     it 'brags the last unbragged activity' do
       activity = Fabricate(:user_activity, user: user)
       expect_any_instance_of(UserActivity).to receive(:brag!).and_return(
-        [
-          ts: '1503425956.000247',
-          channel: {
-            id: 'C1',
-            name: 'channel'
-          }
-        ]
+        {
+          message_id: '1503425956.000247',
+          channel_id: 'C1'
+        }
       )
-      results = user.brag!
-      expect(results.size).to eq(1)
-      expect(results.first[:ts]).to eq '1503425956.000247'
-      expect(results.first[:channel]).to eq(id: 'C1', name: 'channel')
-      expect(results.first[:activity]).to eq activity
+      result = user.brag!
+      expect(result[:message_id]).to eq '1503425956.000247'
+      expect(result[:channel_id]).to eq 'C1'
+      expect(result[:activity]).to eq activity
     end
   end
   context '#inform!' do
     let(:user) { Fabricate(:user, user_id: 'U0HLFUZLJ') }
-    before do
-      user.team.bot_user_id = 'bot_user_id'
-    end
-    it 'sends message to all channels a user is a member of', vcr: { cassette_name: 'discord/users_conversations_conversations_members' } do
-      expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-        message: 'message',
-        channel: 'C0HNSS6H5',
-        as_user: true
-      ).and_return(ts: '1503425956.000247')
-      expect(user.inform!(message: 'message').count).to eq(1)
-    end
-    it 'does not send messages for a deleted user', vcr: { cassette_name: 'discord/users_info_deleted' } do
-      expect_any_instance_of(Discord::Web::Client).to_not receive(:chat_postMessage)
-      expect(user.inform!(message: 'message')).to be nil
-    end
-    it 'handles user not found', vcr: { cassette_name: 'discord/users_info_not_found' } do
-      expect_any_instance_of(Discord::Web::Client).to_not receive(:chat_postMessage)
-      expect(user.inform!(message: 'message')).to be nil
+    it 'sends message to all channels a user is a member of' do
+      expect(Discord::Messages).to receive(:send_message).with(user.channel_id, 'message').and_return('id' => 'id', 'channel_id' => 'channel_id')
+      expect(user.inform!('message')).to eq(message_id: 'id', channel_id: 'channel_id')
     end
   end
   context '#dm_connect!' do
@@ -408,12 +299,13 @@ describe User do
     let(:url) { "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}" }
     it 'uses the default message' do
       expect(user).to receive(:dm!).with(
-        text: 'Please connect your Strava account.',
-        attachments: [{
-          fallback: "Please connect your Strava account at #{url}.",
-          actions: [{
-            type: 'button',
-            text: 'Click Here',
+        content: 'Please connect your Strava account.',
+        components: [{
+          type: 1,
+          components: [{
+            label: 'Connect!',
+            style: 5,
+            type: 2,
             url: url
           }]
         }]
@@ -422,17 +314,18 @@ describe User do
     end
     it 'uses a custom message' do
       expect(user).to receive(:dm!).with(
-        text: 'Please reconnect your account.',
-        attachments: [{
-          fallback: "Please reconnect your account at #{url}.",
-          actions: [{
-            type: 'button',
-            text: 'Click Here',
+        content: 'Please reconnect your account.',
+        components: [{
+          type: 1,
+          components: [{
+            label: 'Connect!',
+            style: 5,
+            type: 2,
             url: url
           }]
         }]
       )
-      user.dm_connect!('Please reconnect your account')
+      user.dm_connect!('Please reconnect your account.')
     end
   end
   context 'sync_strava_activity!', vcr: { cassette_name: 'strava/user_sync_new_strava_activities' } do
@@ -463,7 +356,7 @@ describe User do
       before do
         activity.update_attributes!(
           bragged_at: Time.now.utc,
-          channel_messages: [ChannelMessage.new(channel: 'channel1')]
+          channel_message: ChannelMessage.new(channel_id: 'channel1')
         )
       end
       it 'rebrags' do

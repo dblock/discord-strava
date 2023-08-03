@@ -34,8 +34,8 @@ class ActivitySummary
 
   def discord_fields
     [
-      { name: type_with_emoji, value: count.to_s },
-      { name: 'Athletes', value: athlete_count.to_s }
+      { inline: true, name: type_with_emoji, value: count.to_s },
+      { inline: true, name: 'Athletes', value: athlete_count.to_s }
     ].concat(super.reject { |row| row[:name] == 'Type' })
   end
 

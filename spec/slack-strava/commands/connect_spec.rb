@@ -13,7 +13,7 @@ describe DiscordStrava::Commands::Connect do
       let(:team) { Fabricate(:team, subscribed: true) }
       let(:user) { Fabricate(:user, team: team) }
       let(:url) { "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}" }
-      it 'connects a user', vcr: { cassette_name: 'discord/user_info' } do
+      it 'connects a user' do
         expect(User).to receive(:find_create_or_update_by_discord_id!).and_return(user)
         expect(user).to receive(:dm!).with(
           text: 'Please connect your Strava account.',

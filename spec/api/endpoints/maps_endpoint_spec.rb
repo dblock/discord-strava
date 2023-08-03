@@ -28,7 +28,6 @@ describe Api::Endpoints::MapsEndpoint do
         expect(last_response.status).to eq 304
       end
       it 'returns no map data' do
-        allow_any_instance_of(Map).to receive(:update_png!)
         get "/api/maps/#{activity.map.id}.png"
         expect(last_response.status).to eq 404
       end

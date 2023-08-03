@@ -7,7 +7,6 @@ require 'webmock/rspec'
 
 ENV['RACK_ENV'] = 'test'
 
-require 'discord-ruby-bot/rspec'
 require 'discord-strava'
 
 Dir[File.join(File.dirname(__FILE__), 'support', '**/*.rb')].sort.each do |file|

@@ -87,33 +87,6 @@ class Activity
       total_elevation_gain == other.total_elevation_gain
   end
 
-  # Have we recently bragged an identically looking user activity?
-  def bragged_in?(channel_id, dt = 48.hours)
-    Activity.where(
-      team_id: team.id,
-      distance: distance,
-      moving_time: moving_time,
-      elapsed_time: elapsed_time,
-      total_elevation_gain: total_elevation_gain,
-      :bragged_at.gt => Time.now.utc.to_i - dt.to_i,
-      'channel_message.channel': channel_id
-    ).exists?
-  end
-
-  # Have we recently skipped bragging of an identically looking private or followers only activity?
-  def privately_bragged?(dt = 48.hours)
-    Activity.where(
-      team_id: team.id,
-      distance: distance,
-      moving_time: moving_time,
-      elapsed_time: elapsed_time,
-      total_elevation_gain: total_elevation_gain,
-      :bragged_at.gt => Time.now.utc.to_i - dt.to_i
-    ).any? do |activity|
-      activity.private? || activity.visibility == 'only_me' || activity.visibility == 'followers_only'
-    end
-  end
-
   def reset_bragged_at(dt = 48.hours)
     return unless bragged_at
     return unless private_changed? || visibility_changed?

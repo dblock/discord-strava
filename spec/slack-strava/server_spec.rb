@@ -15,7 +15,7 @@ describe DiscordStrava::Server do
   context '#member_joined_channel' do
     let(:user) { Fabricate(:user, team: team) }
     let(:connect_url) { "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}" }
-    it 'offers to connect account', vcr: { cassette_name: 'discord/user_info' } do
+    it 'offers to connect account' do
       allow(client).to receive(:self).and_return(Hashie::Mash.new(id: 'U12345'))
       allow(User).to receive(:find_create_or_update_by_discord_id!).and_return(user)
       expect(user).to receive(:dm!).with(

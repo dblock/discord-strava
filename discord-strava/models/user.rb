@@ -18,6 +18,8 @@ class User
 
   belongs_to :team, index: true
   validates_presence_of :team
+  validates_presence_of :user_id
+  validates_presence_of :channel_id
 
   has_many :activities, class_name: 'UserActivity', dependent: :destroy
 

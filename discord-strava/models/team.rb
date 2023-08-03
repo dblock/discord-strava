@@ -142,52 +142,8 @@ class Team
     created_at <= time_limit
   end
 
-  def discord_channels
-    # channels = []
-    # discord_client.users_conversations(
-    #   user: bot_user_id,
-    #   exclude_archived: true,
-    #   types: 'public_channel,private_channel'
-    # ) do |response|
-    #   channels.concat(response.channels)
-    # end
-    # channels
-  end
-
-  def bot_in_channel?(channel_id)
-    # discord_client.conversations_members(channel: channel_id) do |response|
-    #   return true if response.members.include?(bot_user_id)
-    # end
-    # false
-  end
-
-  def activated_user
-    return unless guild_owner_id
-
-    users.where(user_id: guild_owner_id).first
-  end
-
-  def admins
-    User.and(
-      users.selector,
-      User.any_of({ is_admin: true }, { is_owner: true }, { user_id: guild_owner_id }).selector
-    )
-  end
-
-  # returns channels that were sent to
-  def inform!(message)
-    users.distinct(:channel_id).map do |channel_id|
-      rc = Discord::Messages.send_message(channel_id, message)
-
-      {
-        message_id: rc['id'],
-        channel_id: rc['channel_id']
-      }
-    end
-  end
-
   # returns DM channel
-  def inform_admin!(message)
+  def inform_guild_owner!(message)
     return unless guild_owner_id
 
     rc = Discord::Messages.send_dm(guild_owner_id, message)
@@ -198,9 +154,21 @@ class Team
     }
   end
 
+  def inform_system!(message)
+    system_channel_id = guild_info[:system_channel_id]
+    return unless system_channel_id
+
+    rc = Discord::Messages.send_message(system_channel_id, message)
+
+    {
+      message_id: rc['id'],
+      channel_id: rc['channel_id']
+    }
+  end
+
   def inform_everyone!(message)
-    inform!(message)
-    inform_admin!(message)
+    inform_system!(message)
+    inform_guild_owner!(message)
   end
 
   def subscription_expired!
@@ -347,32 +315,27 @@ class Team
     inform_everyone!(subscribed_text)
   end
 
-  def bot_mention
-    # "<@#{bot_user_id || 'strada'}>"
-  end
-
   def activated_text
     <<~EOS
       Welcome to Strada!
-      Invite #{bot_mention} to a channel to publish activities to it.
-      Type \"*connect*\" to connect your Strava account."
+      Type */strada connect* to connect your Strava account to a Discord channel."
     EOS
   end
 
   def activated!
-    return unless active? && guild_owner_id
-    return unless active_changed? || guild_owner_id_changed?
+    return unless active? && active_changed?
 
     inform_activated!
   end
 
+  def guild_info
+    @guild_info ||= Discord::Guilds.info(guild_id)
+  end
+
   def inform_activated!
-    im = discord_client.conversations_open(users: guild_owner_id.to_s)
-    discord_client.chat_postMessage(
-      activated_text,
-      channel: im['channel']['id'],
-      as_user: true
-    )
+    return unless ENV.key?('DISCORD_CLIENT_ID') # tests
+
+    inform_system!(activated_text)
   end
 
   def update_subscribed_at

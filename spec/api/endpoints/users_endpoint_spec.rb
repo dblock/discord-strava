@@ -25,8 +25,7 @@ describe Api::Endpoints::UsersEndpoint do
     end
     context 'with prior activities' do
       before do
-        allow_any_instance_of(Map).to receive(:update_png!)
-        allow_any_instance_of(User).to receive(:inform!).and_return([{ ts: 'ts', channel: 'C1' }])
+        allow_any_instance_of(User).to receive(:inform!).and_return({ message_id: 'id', channel_id: 'C1' })
         2.times { Fabricate(:user_activity, user: user) }
         user.brag!
         user.disconnect_from_strava

@@ -30,25 +30,6 @@ describe Team do
       end
     end
   end
-  context '#admins' do
-    let!(:team) { Fabricate(:team) }
-    let!(:activated_user) { Fabricate(:user, team: team) }
-    let!(:random_user) { Fabricate(:user, team: team) }
-    let!(:another_team_user) { Fabricate(:user, team: Fabricate(:team)) }
-    let!(:admin_user) { Fabricate(:user, team: team, is_admin: true) }
-    let!(:owner_user) { Fabricate(:user, team: team, is_owner: true) }
-    before do
-      team.update_attributes!(guild_owner_id: activated_user.user_id)
-    end
-    it 'returns discord admins, owners and user that has installed the bot' do
-      expect(team.admins.count).to eq 3
-      expect(team.admins.map(&:_id).sort).to eq [
-        admin_user,
-        owner_user,
-        team.activated_user
-      ].map(&:_id).sort
-    end
-  end
   context '#asleep?' do
     context 'default' do
       let(:team) { Fabricate(:team, created_at: Time.now.utc) }
@@ -91,8 +72,8 @@ describe Team do
   context '#subscription_expired!' do
     let(:team) { Fabricate(:team, created_at: 2.weeks.ago) }
     before do
-      expect(team).to receive(:inform!).with(text: team.subscribe_text)
-      expect(team).to receive(:inform_admin!).with(text: team.subscribe_text)
+      expect(team).to receive(:inform_system!).with(team.subscribe_text)
+      expect(team).to receive(:inform_guild_owner!).with(team.subscribe_text)
       team.subscription_expired!
     end
     it 'sets subscription_expired_at' do
@@ -100,23 +81,13 @@ describe Team do
     end
     context '(re)subscribed' do
       before do
-        expect(team).to receive(:inform!).with(text: team.subscribed_text)
-        expect(team).to receive(:inform_admin!).with(text: team.subscribed_text)
+        expect(team).to receive(:inform_system!).with(team.subscribed_text)
+        expect(team).to receive(:inform_guild_owner!).with(team.subscribed_text)
         team.update_attributes!(subscribed: true)
       end
       it 'resets subscription_expired_at' do
         expect(team.subscription_expired_at).to be nil
       end
-    end
-  end
-  context '#inform!' do
-    let(:team) { Fabricate(:team) }
-    before do
-      team.bot_user_id = 'bot_user_id'
-    end
-    it 'sends message to all channels', vcr: { cassette_name: 'discord/users_conversations' } do
-      expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).exactly(25).times.and_return('ts' => '1503435956.000247')
-      team.inform!(message: 'message')
     end
   end
   context 'subscribed states' do
@@ -148,26 +119,26 @@ describe Team do
     context '#inform_trial!' do
       it 'subscribed' do
         expect(subscribed_team).to_not receive(:inform!)
-        expect(subscribed_team).to_not receive(:inform_admin!)
+        expect(subscribed_team).to_not receive(:inform_guild_owner!)
         subscribed_team.inform_trial!
       end
       it '1 week ago' do
-        expect(team_created_1_week_ago).to receive(:inform!).with(
-          text: "Your trial subscription expires in 6 days. #{team_created_1_week_ago.subscribe_text}"
+        expect(team_created_1_week_ago).to receive(:inform_system!).with(
+          "Your trial subscription expires in 6 days. #{team_created_1_week_ago.subscribe_text}"
         )
-        expect(team_created_1_week_ago).to receive(:inform_admin!).with(
-          text: "Your trial subscription expires in 6 days. #{team_created_1_week_ago.subscribe_text}"
+        expect(team_created_1_week_ago).to receive(:inform_guild_owner!).with(
+          "Your trial subscription expires in 6 days. #{team_created_1_week_ago.subscribe_text}"
         )
         team_created_1_week_ago.inform_trial!
       end
       it 'expired' do
-        expect(team_created_3_weeks_ago).to_not receive(:inform!)
-        expect(team_created_3_weeks_ago).to_not receive(:inform_admin!)
+        expect(team_created_3_weeks_ago).to_not receive(:inform_system!)
+        expect(team_created_3_weeks_ago).to_not receive(:inform_guild_owner!)
         team_created_3_weeks_ago.inform_trial!
       end
       it 'informs once' do
-        expect(team_created_1_week_ago).to receive(:inform!).once
-        expect(team_created_1_week_ago).to receive(:inform_admin!).once
+        expect(team_created_1_week_ago).to receive(:inform_system!).once
+        expect(team_created_1_week_ago).to receive(:inform_guild_owner!).once
         2.times { team_created_1_week_ago.inform_trial! }
       end
     end

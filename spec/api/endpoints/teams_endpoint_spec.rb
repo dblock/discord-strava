@@ -32,10 +32,6 @@ describe Api::Endpoints::TeamsEndpoint do
     context 'register' do
       before do
         oauth_access = {
-          'bot' => {
-            'bot_access_token' => 'token',
-            'bot_user_id' => 'bot_user_id'
-          },
           'access_token' => 'access_token',
           'user_id' => 'guild_owner_id',
           'guild_id' => 'guild_id',
@@ -63,8 +59,8 @@ describe Api::Endpoints::TeamsEndpoint do
         ENV.delete('DISCORD_SECRET_TOKEN')
       end
       it 'creates a team' do
-        expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-          text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+        expect(Discord::Messages).to receive(:send_message).with(
+          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
           channel: 'C1',
           as_user: true
         )
@@ -80,8 +76,8 @@ describe Api::Endpoints::TeamsEndpoint do
         }.to change(Team, :count).by(1)
       end
       it 'reactivates a deactivated team' do
-        expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-          text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+        expect(Discord::Messages).to receive(:send_message).with(
+          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
           channel: 'C1',
           as_user: true
         )
@@ -100,8 +96,8 @@ describe Api::Endpoints::TeamsEndpoint do
         }.to_not change(Team, :count)
       end
       it 'reactivates a team deactivated on discord' do
-        expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-          text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+        expect(Discord::Messages).to receive(:send_message).with(
+          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
           channel: 'C1',
           as_user: true
         )
@@ -121,8 +117,8 @@ describe Api::Endpoints::TeamsEndpoint do
         }.to_not change(Team, :count)
       end
       it 'returns a useful error when team already exists' do
-        expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-          text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+        expect(Discord::Messages).to receive(:send_message).with(
+          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
           channel: 'C1',
           as_user: true
         )
@@ -134,8 +130,8 @@ describe Api::Endpoints::TeamsEndpoint do
         end
       end
       it 'reactivates a deactivated team with a different code' do
-        expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-          text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+        expect(Discord::Messages).to receive(:send_message).with(
+          text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
           channel: 'C1',
           as_user: true
         )
@@ -167,8 +163,8 @@ describe Api::Endpoints::TeamsEndpoint do
         let(:list) { double(Mailchimp::List, members: double(Mailchimp::List::Members)) }
 
         it 'subscribes to the mailing list' do
-          expect_any_instance_of(Discord::Web::Client).to receive(:chat_postMessage).with(
-            text: "Welcome to Strada!\nInvite <@bot_user_id> to a channel to publish activities to it.\nType \"*connect*\" to connect your Strava account.\"\n",
+          expect(Discord::Messages).to receive(:send_message).with(
+            text: "Welcome to Strada!\nType */strada connect* to connect your Strava account to a Discord channel.\"\n",
             channel: 'C1',
             as_user: true
           )

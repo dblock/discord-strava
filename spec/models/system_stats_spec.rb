@@ -2,9 +2,6 @@ require 'spec_helper'
 
 describe SystemStats do
   let(:stats) { SystemStats.aggregate! }
-  before do
-    allow_any_instance_of(Map).to receive(:update_png!)
-  end
   context 'aggregate!' do
     it 'creates a record' do
       expect { 2.times { SystemStats.aggregate! } }.to change(SystemStats, :count).by(2)
@@ -47,11 +44,9 @@ describe SystemStats do
     let!(:team) { Fabricate(:team) }
     let!(:user1) { Fabricate(:user, team: team) }
     let!(:user2) { Fabricate(:user, team: team) }
-    let!(:club) { Fabricate(:club, team: team) }
     let!(:swim_activity) { Fabricate(:swim_activity, user: user2) }
     let!(:ride_activity1) { Fabricate(:ride_activity, user: user1) }
     let!(:ride_activity2) { Fabricate(:ride_activity, user: user1) }
-    let!(:club_activity) { Fabricate(:club_activity, club: club) }
     let!(:activity1) { Fabricate(:user_activity, user: user1) }
     let!(:activity2) { Fabricate(:user_activity, user: user1) }
     let!(:activity3) { Fabricate(:user_activity, user: user2) }
