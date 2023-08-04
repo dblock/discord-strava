@@ -80,12 +80,28 @@ describe TeamStats do
   context 'with activities across multiple channels' do
     let!(:user1) { Fabricate(:user, team: team) }
     let!(:user2) { Fabricate(:user, team: team) }
-    let!(:user_activity1) { Fabricate(:user_activity, user: user1) }
-    let!(:user_activity2) { Fabricate(:user_activity, user: user2) }
+    let!(:user_activity1) { Fabricate(:user_activity, user: user1, channel_message: { channel_id: 'c1', message_id: '1' }) }
+    let!(:user_activity2) { Fabricate(:user_activity, user: user2, channel_message: { channel_id: 'c2', message_id: '1' }) }
     context '#stats' do
       context 'all channels' do
         let!(:stats) { team.stats }
         let!(:activities) { [user_activity1, user_activity2] }
+        it 'returns stats for all activities' do
+          expect(stats['Run'].to_h).to eq(
+            {
+              distance: activities.map(&:distance).compact.sum,
+              moving_time: activities.map(&:moving_time).compact.sum,
+              elapsed_time: activities.map(&:elapsed_time).compact.sum,
+              pr_count: activities.map(&:pr_count).compact.sum,
+              calories: activities.map(&:calories).compact.sum,
+              total_elevation_gain: activities.map(&:total_elevation_gain).compact.sum
+            }
+          )
+        end
+      end
+      context 'a single channels' do
+        let!(:stats) { team.stats(channel_id: 'c1') }
+        let!(:activities) { [user_activity1] }
         it 'returns stats for all activities' do
           expect(stats['Run'].to_h).to eq(
             {

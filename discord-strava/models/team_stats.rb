@@ -21,7 +21,7 @@ class TeamStats
 
   def aggreate_options
     aggreate_options = { team_id: team.id }
-    aggreate_options.merge!('channel_message.channel' => options[:channel_id]) if options.key?(:channel_id)
+    aggreate_options.merge!('channel_message.channel_id' => options[:channel_id]) if options.key?(:channel_id)
     aggreate_options
   end
 

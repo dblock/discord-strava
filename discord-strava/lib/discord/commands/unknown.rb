@@ -7,7 +7,7 @@ module Discord
         {
           type: Discord::Interactions::Type::APPLICATION_COMMAND_AUTOCOMPLETE,
           data: {
-            content: "Sorry, I don't understand this command: #{command.name}.",
+            content: "Sorry, I don't understand this command: #{command.text}.",
             flags: Discord::Interactions::Messages::EPHEMERAL
           }
         }

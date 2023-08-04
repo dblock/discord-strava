@@ -54,6 +54,8 @@ module Discord
             return result if result
           end
           nil
+        rescue DiscordStrava::Error => e
+          e.message
         end
 
         def routes

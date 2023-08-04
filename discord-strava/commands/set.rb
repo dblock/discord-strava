@@ -48,7 +48,7 @@ module DiscordStrava
               v = 'mi'
             end
             changed = v && command.team.units != v
-            if !command.user.team_admin? && changed
+            if !command.user.guild_owner? && changed
               logger.info "SET: #{command.team} - not admin, units remain set to #{command.team.units}"
               "Sorry, only a Discord admin can change units. Activities for team #{command.team.guild_name} display *#{command.team.units_s}*."
             else
@@ -59,7 +59,7 @@ module DiscordStrava
           when 'fields'
             parsed_fields = ActivityFields.parse_s(v) if v
             changed = parsed_fields && command.team.activity_fields != parsed_fields
-            if !command.user.team_admin? && changed
+            if !command.user.guild_owner? && changed
               logger.info "SET: #{command.team} - not admin, activity fields remain set to #{command.team.activity_fields.and}"
               "Sorry, only a Discord admin can change fields. Activity fields for team #{command.team.guild_name} are *#{command.team.activity_fields_s}*."
             else
@@ -70,7 +70,7 @@ module DiscordStrava
           when 'maps'
             parsed_value = MapTypes.parse_s(v) if v
             changed = parsed_value && command.team.maps != parsed_value
-            if !command.user.team_admin? && changed
+            if !command.user.guild_owner? && changed
               logger.info "SET: #{command.team} - not admin, maps remain set to #{command.team.maps}"
               "Sorry, only a Discord admin can change maps. Maps for team #{command.team.guild_name} are *#{command.team.maps_s}*."
             else

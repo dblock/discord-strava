@@ -1,30 +1,46 @@
 require 'spec_helper'
 
 describe DiscordStrava::Commands::Stats do
-  let(:app) { DiscordStrava::Server.new(team: team) }
-  let(:client) { app.send(:client) }
-  let(:message_hook) { DiscordRubyBot::Hooks::Message.new }
-  context 'subscribed team' do
-    let!(:team) { Fabricate(:team, subscribed: true) }
-    it 'stats' do
-      expect(client.web_client).to receive(:chat_postMessage).with(
-        team.stats(channel_id: 'channel').to_discord.merge(channel: 'channel', as_user: true)
-      )
-      message_hook.call(client, Hashie::Mash.new(user: 'user', channel: 'channel', text: "#{DiscordRubyBot.config.user} stats"))
+  include_context :discord_command do
+    let(:args) { ['stats'] }
+  end
+  context 'stats' do
+    it 'requires a subscription' do
+      expect(response).to eq team.trial_message
     end
-    it 'includes channel' do
-      expect(client.web_client).to receive(:chat_postMessage).with(
-        team.stats(channel_id: 'channel').to_discord.merge(channel: 'channel', as_user: true)
-      )
-      expect_any_instance_of(Team).to receive(:stats).with(channel_id: 'channel').and_call_original
-      message_hook.call(client, Hashie::Mash.new(user: 'user', channel: 'channel', text: "#{DiscordRubyBot.config.user} stats"))
-    end
-    it 'does not include channel on a DM' do
-      expect(client.web_client).to receive(:chat_postMessage).with(
-        team.stats.to_discord.merge(channel: 'DM', as_user: true)
-      )
-      expect_any_instance_of(Team).to receive(:stats).with({}).and_call_original
-      message_hook.call(client, Hashie::Mash.new(user: 'user', channel: 'DM', text: "#{DiscordRubyBot.config.user} stats"))
+    context 'subscribed team' do
+      let(:team) { Fabricate(:team, subscribed: true) }
+      context 'channel' do
+        it 'displays channel stats' do
+          expect(response).to eq(team.stats(channel_id: 'channel').to_discord)
+        end
+      end
+      # context 'dm' do
+      #   let(:params) {
+      #     {
+      #       id: 'id',
+      #       type: Discord::Interactions::Type::APPLICATION_COMMAND,
+      #       version: 1,
+      #       token: 'token',
+      #       application_id: '1135347799840522240',
+      #       guild_id: team.guild_id,
+      #       user: {
+      #         id: user.user_id,
+      #         username: 'username'
+      #       },
+      #       data: {
+      #         id: '1135549211878903849',
+      #         name: 'strada',
+      #         options: command_options
+      #       },
+      #       channel_id: '1136112917264224338',
+      #       locale: 'en-US'
+      #     }
+      #   }
+      #   it 'displays team stats' do
+      #     expect(response).to eq(team.stats.to_discord)
+      #   end
+      # end
     end
   end
 end

@@ -10,7 +10,7 @@ module DiscordStrava
         if command.team.active_stripe_subscription?
           subscription_info << command.team.stripe_customer_text
           subscription_info.concat(command.team.stripe_customer_subscriptions_info)
-          if command.user.team_admin?
+          if command.user.guild_owner?
             subscription_info.concat(command.team.stripe_customer_invoices_info)
             subscription_info.concat(command.team.stripe_customer_sources_info)
             subscription_info << command.team.update_cc_text

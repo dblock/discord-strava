@@ -15,6 +15,16 @@ module Discord
         end
       end
 
+      def options
+        self[:data][:options].map do |option|
+          [option[:name], option[:value]].compact
+        end
+      end
+
+      def text
+        [name, options].compact.flatten.join(' ')
+      end
+
       def initialize(params, request)
         super params, request
       end
