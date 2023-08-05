@@ -15,7 +15,7 @@
     <p id='messages' />
     <p id='subscribe'>
       <button id='subscribeButton' class='stripe-button-el'>
-          <span style='display: block; min-height: 30px;'>Pay $29.99 with Card</span>
+          <span style='display: block; min-height: 30px;'>Pay $19.99 with Card</span>
       </button>
       <p>
         <img src='/img/stripe.png' width='119' height='26'></img>
@@ -36,7 +36,7 @@
             DiscordStrava.message('Team <b>' + team.guild_name + '</b> is already subscribed, thank you for your support.');
             $('#subscribeButton').remove();
           } else if (team.id && team.guild_name) {
-            DiscordStrava.message('Subscribe team <b>' + team.guild_name + '</b> for $29.99/yr.');
+            DiscordStrava.message('Subscribe team <b>' + team.guild_name + '</b> for $19.99/yr.');
           } else {
             $('#subscribeButton').remove();
             DiscordStrava.message('Missing or invalid team ID.');
@@ -66,7 +66,7 @@
           });
 
           $('#subscribeButton').on('click', function(e) {
-            var amount = 999;
+            var amount = 1999;
             handler.open({
               name: 'Strada',
               description: 'Yearly Subscription',

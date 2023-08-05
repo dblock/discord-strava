@@ -24,7 +24,7 @@ describe DiscordStrava::Commands::Unsubscribe do
     context 'with a plan' do
       include_context :stripe_mock
       before do
-        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 2999, name: 'Plan')
+        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 1999, name: 'Plan')
       end
       context 'a customer' do
         let!(:customer) do
@@ -53,14 +53,14 @@ describe DiscordStrava::Commands::Unsubscribe do
             end
             it 'displays subscription info' do
               customer_info = [
-                "Subscribed to Plan ($29.99), will not auto-renew on #{current_period_end}."
+                "Subscribed to Plan ($19.99), will not auto-renew on #{current_period_end}."
               ].join("\n")
               expect(response).to eq customer_info
             end
           end
           context 'valid subscription id' do
             it 'unsubscribes' do
-              expect(response).to eq 'Successfully canceled auto-renew for Plan ($29.99).'
+              expect(response).to eq 'Successfully canceled auto-renew for Plan ($19.99).'
               team.reload
               expect(team.subscribed).to be true
               expect(team.stripe_customer_id).to_not be nil

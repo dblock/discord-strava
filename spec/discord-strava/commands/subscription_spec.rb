@@ -22,7 +22,7 @@ describe DiscordStrava::Commands::Subscription do
     context 'with a plan' do
       include_context :stripe_mock
       before do
-        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 2999, name: 'Plan')
+        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 1999, name: 'Plan')
       end
       context 'a customer' do
         let!(:customer) do
@@ -44,7 +44,7 @@ describe DiscordStrava::Commands::Subscription do
             current_period_end = Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
             customer_info = [
               "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
-              "Subscribed to Plan ($29.99), will auto-renew on #{current_period_end}.",
+              "Subscribed to Plan ($19.99), will auto-renew on #{current_period_end}.",
               "On file Visa card, #{card.name} ending with #{card.last4}, expires #{card.exp_month}/#{card.exp_year}.",
               team.update_cc_text
             ].join("\n")
@@ -60,7 +60,7 @@ describe DiscordStrava::Commands::Subscription do
             current_period_end = Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
             customer_info = [
               "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
-              "Subscribed to Plan ($29.99), will auto-renew on #{current_period_end}."
+              "Subscribed to Plan ($19.99), will auto-renew on #{current_period_end}."
             ].join("\n")
             expect(response).to eq customer_info
           end

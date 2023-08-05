@@ -10,10 +10,6 @@ Metrics:
 Style/Documentation:
   Enabled: false
 
-Style/MultilineBlockChain:
-  Exclude:
-    - 'spec/**/*'
-
 Style/BlockDelimiters:
   EnforcedStyle: braces_for_chaining
   FunctionalMethods:

@@ -33,7 +33,7 @@ describe DiscordStrava::Commands::Connect do
         team.update_attributes!(created_at: 3.weeks.ago)
       end
       it 'prevents new connections' do
-        expect(response).to eq "Your trial subscription has expired. Subscribe your team for $29.99 a year at https://strada.playplay.io/subscribe?guild_id=#{team.guild_id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
+        expect(response).to eq "Your trial subscription has expired. Subscribe your team for $19.99 a year at https://strada.playplay.io/subscribe?guild_id=#{team.guild_id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
       end
     end
   end

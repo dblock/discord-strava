@@ -2,23 +2,24 @@ require 'spec_helper'
 
 describe 'Teams', js: true, type: :feature do
   before do
-    ENV['DISCORD_APPLICATION_ID'] = 'client_id'
-    ENV['DISCORD_SECRET_TOKEN'] = 'client_secret'
-    ENV['SLACK_OAUTH_SCOPE'] = 'bot,commands,links:read,links:write'
+    ENV['DISCORD_CLIENT_ID'] = 'client_id'
+    ENV['DISCORD_CLIENT_SECRET'] = 'secret'
+    ENV['URL'] = 'https://localhost:5000'
   end
   after do
-    ENV.delete 'DISCORD_APPLICATION_ID'
-    ENV.delete 'DISCORD_SECRET_TOKEN'
-    ENV.delete 'SLACK_OAUTH_SCOPE'
+    ENV.delete 'DISCORD_CLIENT_ID'
+    ENV.delete 'DISCORD_CLIENT_SECRET'
+    ENV.delete 'URL'
   end
-  context 'oauth', vcr: { cassette_name: 'auth_test' } do
+  context 'oauth' do
     it 'registers a team' do
       allow_any_instance_of(Team).to receive(:ping!).and_return(ok: true)
       expect(DiscordStrava::Service.instance).to receive(:start!)
-      oauth_access = { 'bot' => { 'bot_access_token' => 'token' }, 'guild_id' => 'guild_id', 'team_name' => 'team_name' }
-      allow_any_instance_of(Discord::Web::Client).to receive(:oauth_access).with(hash_including(code: 'code')).and_return(oauth_access)
+      oauth_access = { 'token' => 'token', 'guild_id' => 'guild_id' }
+      allow(Discord::OAuth2).to receive(:exchange_code).with('code').and_return(oauth_access)
+      allow_any_instance_of(Team).to receive(:activated!)
       expect {
-        visit '/?code=code'
+        visit '/?code=code&guild_id=guild_id&permissions=2147502080'
         expect(page.find('#messages')).to have_content 'Team successfully registered!'
       }.to change(Team, :count).by(1)
     end
@@ -31,7 +32,8 @@ describe 'Teams', js: true, type: :feature do
       expect(title).to eq('Strada: Strava integration with Discord')
     end
     it 'includes a link to add to discord with the client id' do
-      expect(find("a[href='https://discord.com/oauth/authorize?scope=#{ENV.fetch('SLACK_OAUTH_SCOPE', nil)}&client_id=#{ENV.fetch('DISCORD_APPLICATION_ID', nil)}']"))
+      url = "https://discord.com/api/oauth2/authorize?scope=bot&client_id=#{ENV.fetch('DISCORD_CLIENT_ID', nil)}&permissions=2147502080&redirect_uri=#{ENV.fetch('URL', nil)}&response_type=code"
+      expect(find("a[href='#{url}']"))
     end
   end
 end
