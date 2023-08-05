@@ -15,7 +15,7 @@ $(document).ready(function() {
                 permissions: permissions
             },
             success: function(data) {
-                DiscordStrava.message('Team successfully registered!<br><br>Invite <b>@strada</b> to a channel.');
+                DiscordStrava.message('Team successfully registered!<br><br>Try <b>/strada connect</b> in a channel.');
             },
             error: DiscordStrava.error
         });

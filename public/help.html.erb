@@ -14,6 +14,30 @@
       This bot is powered by Strava and posts your Strava activities to Discord.
       It is not made by, nor is officially affiliated with <a target="_blank" href="https://www.strava.com">Strava</a>.
     </p>
+    <p>&nbsp;</p>
+    <p>
+      <img src="img/help.png">
+    </p>
+    <p>&nbsp;</p>
+    <p>
+      Use <b>/strada connect</b> to connect your Strava account and <b>/strada disconnect</b> to disconnect. Follow the prompts. Notifications will be sent to the channel where you connected.
+    </p>
+    <p>
+      Try <b>/strada stats</b> to see aggregate stats in the current channel for the past 30 days.
+    </p>
+    <p>
+      Stop syncing activities with <b>/strada set sync false</b> and resume with <b>/strada set sync true</b> (default).
+      Publish private (only you) activities with <b>/strada set private true</b> or hide them with <b>/strada set private false</b> (default).
+      Publish followers only activities with <b>/strada set followers true</b> (default) or hide them with <b>/strada set followers false</b>.
+    </p>
+    <p>
+      Discord server admins can change can change <b>units</b> with <b>/strada set units imperial</b> (miles, feet, yards, and degrees Fahrenheit, default),
+      <b>/strada set units metric</b> (kilometers, meters, and degrees Celcius),
+      or <b>/strada set units both</b> to display both values.
+      Change displayed fields with <b>/strada set fields</b>, eg. <b>/strada set fields default</b>, <b>/strada set fields all</b> or <b>/strada set fields none</b>.
+      Available fields are <%= ActivityFields.values.and { |v| '<b>' + v + '</b>' } %>.
+      Turn maps off with <b>/strada set maps off</b>, display thumbnails with <b>/strada set maps thumb</b> and full maps with <b>/strada set maps full</b> (default).
+    </p>
     <%= partial 'public/partials/_footer.html.erb' %>
   </body>
 </html>
