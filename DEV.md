@@ -28,6 +28,8 @@ Create a new Discord app [here](https://discord.com/developers/applications?new_
 
 Choose _Bot_ on the left menu.
 
+Use _Reset Secret_ to get a new Discord secret token (`DISCORD_SECRET_TOKEN`). Save those.
+
 Check the _Requires OAuth2 Code Grant_ option.
 
 Add the following _Permissions_.
@@ -38,7 +40,7 @@ Add the following _Permissions_.
 
 Choose _OAuth2_.
 
-Use _Reset Secret_ to get a new Discord client ID (`DISCORD_CLIENT_ID`), and a secret token (`DISCORD_SECRET_TOKEN`). Save those.
+Use _Reset Secret_ to get a new Discord client ID (`DISCORD_CLIENT_ID`), and a client secret (`DISCORD_CLIENT_SECRET`). Save those.
 
 ### Keys
 
