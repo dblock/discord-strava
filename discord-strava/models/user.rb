@@ -59,6 +59,12 @@ class User
     }
   end
 
+  def delete!(channel_message)
+    logger.info "Deleting #{self}, message_id=#{channel_message.message_id}, channel_id=#{channel_message.channel_id}."
+    Discord::Messages.delete_message(channel_message.channel_id, channel_message.message_id)
+    nil
+  end
+
   def to_s
     "user_id=#{user_id}, user_name=#{user_name}"
   end

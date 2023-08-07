@@ -51,6 +51,15 @@ class UserActivity < Activity
     rc
   end
 
+  def unbrag!
+    return unless channel_message
+
+    logger.info "Unbragging about #{user}, #{self}."
+    user.delete!(channel_message)
+    update_attributes!(channel_message: nil)
+    nil
+  end
+
   def attrs_from_strava(response)
     Activity.attrs_from_strava(response).merge(
       start_date: response.start_date,

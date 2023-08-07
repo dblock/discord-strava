@@ -131,22 +131,26 @@ describe Api::Endpoints::StravaEndpoint do
             response = JSON.parse(last_response.body)
             expect(response['ok']).to be true
           end
-          it 'ignores delete' do
-            expect_any_instance_of(Logger).to receive(:info).with(/Ignoring aspect type 'delete'/).and_call_original
-            expect_any_instance_of(User).to_not receive(:sync_and_brag!)
-            expect_any_instance_of(User).to_not receive(:rebrag!)
-            post '/api/strava/event',
-                 JSON.dump(
-                   event_data.merge(
-                     aspect_type: 'delete',
-                     object_id: activity.strava_id,
-                     owner_id: user.athlete.athlete_id.to_s
-                   )
-                 ),
-                 'CONTENT_TYPE' => 'application/json'
-            expect(last_response.status).to eq 200
-            response = JSON.parse(last_response.body)
-            expect(response['ok']).to be true
+          context 'a bragged activity' do
+            before do
+              activity.update_attributes!(channel_message: Fabricate(:channel_message))
+            end
+            it 'handles delete' do
+              expect_any_instance_of(UserActivity).to receive(:unbrag!)
+              post '/api/strava/event',
+                   JSON.dump(
+                     event_data.merge(
+                       aspect_type: 'delete',
+                       object_id: activity.strava_id,
+                       owner_id: user.athlete.athlete_id.to_s
+                     )
+                   ),
+                   'CONTENT_TYPE' => 'application/json'
+              expect(last_response.status).to eq 200
+              response = JSON.parse(last_response.body)
+              expect(response['ok']).to be true
+              expect(activity.reload.channel_message).to be_nil
+            end
           end
         end
       end

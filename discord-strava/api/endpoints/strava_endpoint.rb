@@ -54,6 +54,20 @@ module Api
                     end
                   end
                 end
+              when 'delete'
+                User.connected_to_strava.where('athlete.athlete_id' => params['owner_id']).each do |user|
+                  if user.team.subscription_expired?
+                    Api::Middleware.logger.info "Team #{user.team} subscription expired, user #{user}, #{user.athlete}, #{params['object_type']}=#{params['object_id']}."
+                  else
+                    activity = user.activities.where(strava_id: params['object_id']).first
+                    if activity
+                      Api::Middleware.logger.info "Deleting activity team #{user.team}, user #{user}, #{user.athlete}, #{params['object_type']}=#{params['object_id']}."
+                      activity.unbrag!
+                    else
+                      Api::Middleware.logger.info "Ignoring activity team #{user.team}, user #{user}, #{user.athlete}, #{params['object_type']}=#{params['object_id']}."
+                    end
+                  end
+                end
               else
                 Api::Middleware.logger.info "Ignoring aspect type '#{params['aspect_type']}', object_type=#{params['object_type']}, object_id=#{params['object_id']}, #{params['updates']}."
               end

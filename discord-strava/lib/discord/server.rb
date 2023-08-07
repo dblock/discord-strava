@@ -12,6 +12,10 @@ module Discord
       http_method(:patch, path, options, encoding)
     end
 
+    def delete(path, options = {}, encoding = :json)
+      http_method(:delete, path, options, encoding)
+    end
+
     def http_method(method, path, options = {}, encoding = :json)
       raise 'Missing DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET.' unless ENV.key?('DISCORD_CLIENT_ID') && ENV.key?('DISCORD_CLIENT_SECRET')
 

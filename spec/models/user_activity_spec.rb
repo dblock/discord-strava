@@ -91,6 +91,33 @@ describe UserActivity do
       expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
     end
   end
+  context 'unbrag!' do
+    let(:team) { Fabricate(:team) }
+    let(:user) { Fabricate(:user, team: team) }
+    context 'a bragged message' do
+      let!(:activity) { Fabricate(:user_activity, user: user, channel_message: Fabricate(:channel_message)) }
+      it 'deletes a previously sent message' do
+        expect(Discord::Messages).to receive(:delete_message).with(
+          activity.channel_message.channel_id,
+          activity.channel_message.message_id
+        ).and_return('id' => '1', 'channel_id' => '2')
+        expect(activity.unbrag!).to be nil
+        expect(activity.channel_message).to be nil
+      end
+      it 'ignores a previously delete message' do
+        allow(Discord::Messages).to receive(:delete_message)
+        2.times { expect(activity.unbrag!).to be nil }
+        expect(activity.channel_message).to be nil
+      end
+    end
+    context 'an unbragged message' do
+      let!(:activity) { Fabricate(:user_activity, user: user) }
+      it 'ignores a previously delete message' do
+        expect(Discord::Messages).to_not receive(:delete_message)
+        expect(activity.unbrag!).to be nil
+      end
+    end
+  end
   context 'in time' do
     let(:tt) { Time.now }
     before do
