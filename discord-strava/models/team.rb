@@ -54,7 +54,7 @@ class Team
 
   def refresh_token!
     update_attributes!(Discord::OAuth2.refresh_token(refresh_token))
-    logger.info "Refresed token for team #{self}, expires on #{token_expires_at}."
+    logger.info "Refreshed token for team #{self}, expires on #{token_expires_at}."
   rescue Faraday::Error => e
     logger.warn "Error refreshing token for team #{self}, #{e.message} (#{e.response[:body]})."
   end
