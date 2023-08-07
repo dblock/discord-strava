@@ -248,9 +248,13 @@ class Team
     stripe_customer.subscriptions.map do |subscription|
       amount = ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)
       current_period_end = Time.at(subscription.current_period_end).strftime('%B %d, %Y')
-      [
-        "Subscribed to #{subscription.plan.name} (#{amount}), will#{subscription.cancel_at_period_end ? ' not' : ''} auto-renew on #{current_period_end}."
-      ].compact.join("\n")
+      if subscription.status == 'active'
+        [
+          "Subscribed to #{subscription.plan.name} (#{amount}), will#{subscription.cancel_at_period_end ? ' not' : ''} auto-renew on #{current_period_end}."
+        ].compact.join("\n")
+      else
+        "#{subscription.status.titleize} subscription created #{Time.at(subscription.created).strftime('%B %d, %Y')} to #{subscription.plan.name} (#{amount})."
+      end
     end
   end
 
@@ -265,6 +269,12 @@ class Team
     stripe_customer.sources.map do |source|
       "On file #{source.brand} #{source.object}, #{source.name} ending with #{source.last4}, expires #{source.exp_month}/#{source.exp_year}."
     end
+  end
+
+  def stripe_subcriptions
+    return unless stripe_customer
+
+    stripe_customer.subscriptions
   end
 
   def active_stripe_subscription?

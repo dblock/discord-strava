@@ -7,7 +7,7 @@ module DiscordStrava
       subscribe_command 'strada' => 'subscription' do |command|
         logger.info "SUBSCRIPTION: #{command}"
         subscription_info = []
-        if command.team.active_stripe_subscription?
+        if command.team.stripe_subcriptions&.any?
           subscription_info << command.team.stripe_customer_text
           subscription_info.concat(command.team.stripe_customer_subscriptions_info)
           if command.user.guild_owner?

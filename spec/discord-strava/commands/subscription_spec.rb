@@ -50,6 +50,23 @@ describe DiscordStrava::Commands::Subscription do
             ].join("\n")
             expect(response).to eq customer_info
           end
+          context 'past due subscription' do
+            before do
+              customer.subscriptions.data.first['status'] = 'past_due'
+              allow(Stripe::Customer).to receive(:retrieve).and_return(customer)
+            end
+            it 'displays subscription info' do
+              card = customer.sources.first
+              current_period_end = Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
+              customer_info = [
+                "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
+                'Past Due subscription created November 03, 2016 to Plan ($19.99).',
+                "On file Visa card, #{card.name} ending with #{card.last4}, expires #{card.exp_month}/#{card.exp_year}.",
+                team.update_cc_text
+              ].join("\n")
+              expect(response).to eq customer_info
+            end
+          end
         end
         context 'as a regular user' do
           before do
