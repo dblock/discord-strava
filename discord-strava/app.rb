@@ -58,7 +58,7 @@ module DiscordStrava
         once_and_every 60 * 60 do
           expire_subscriptions!
         end
-        continuously 15 do |task, tt|
+        continuously 15 * 60 do |task, tt|
           users_brag_and_rebrag!(task, tt)
         end
       end
