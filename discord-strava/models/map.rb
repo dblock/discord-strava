@@ -41,10 +41,12 @@ class Map
   end
 
   def has_image?
-    decoded_summary_polyline && decoded_summary_polyline.any?
+    !!decoded_summary_polyline&.any?
   end
 
   def proxy_image_url
+    return unless has_image?
+
     "#{DiscordStrava::Service.url}/api/maps/#{id}.png"
   end
 

@@ -19,16 +19,11 @@ module Api
             Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, hidden (403)."
             error!('Access Denied', 403)
           end
-          unless activity.map
+          unless activity.map&.has_image?
             Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no map (404)."
             error!('Map Not Found', 404)
           end
-          image_url = activity.map.image_url
-          unless image_url
-            Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no map url (404)."
-            error!('Map Not Found', 404)
-          end
-          redirect image_url
+          redirect activity.map.image_url
         end
       end
     end

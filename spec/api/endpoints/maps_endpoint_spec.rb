@@ -28,5 +28,13 @@ describe Api::Endpoints::MapsEndpoint do
         expect(last_response.status).to eq 403
       end
     end
+    context 'with an activity witout a map' do
+      let(:user) { Fabricate(:user) }
+      let(:activity) { Fabricate(:user_activity, user: user, map: { summary_polyline: '' }) }
+      it 'does not return map' do
+        get "/api/maps/#{activity.map.id}.png"
+        expect(last_response.status).to eq 404
+      end
+    end
   end
 end
