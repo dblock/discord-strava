@@ -40,6 +40,10 @@ class Map
     "https://maps.googleapis.com/maps/api/staticmap?maptype=roadmap&path=enc:#{summary_polyline}&key=#{google_maps_api_key}&size=800x800&markers=color:yellow|label:S|#{start_latlng[0]},#{start_latlng[1]}&markers=color:green|label:F|#{end_latlng[0]},#{end_latlng[1]}"
   end
 
+  def has_image?
+    decoded_summary_polyline && decoded_summary_polyline.any?
+  end
+
   def proxy_image_url
     "#{DiscordStrava::Service.url}/api/maps/#{id}.png"
   end
@@ -59,7 +63,7 @@ class Map
   end
 
   def update_decoded_summary_polyline!
-    return unless summary_polyline
+    return unless summary_polyline && summary_polyline.length > 0
 
     self.decoded_summary_polyline = Polylines::Decoder.decode_polyline(summary_polyline)
   end

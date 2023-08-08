@@ -445,7 +445,26 @@ describe UserActivity do
       let(:embed) { activity.to_discord[:embeds].first }
       it 'to_discord' do
         expect(embed.keys).to_not include :image
-        expect(embed.keys).to_not include :thumb
+        expect(embed.keys).to_not include :thumbnail
+      end
+    end
+    context 'with an empty polyline' do
+      let(:team) { Fabricate(:team, maps: 'thumb') }
+      let(:user) { Fabricate(:user, team: team) }
+      let(:activity) do
+        Fabricate(:user_activity,
+                  user: user,
+                  map: {
+                    summary_polyline: ''
+                  })
+      end
+      let(:embed) { activity.to_discord[:embeds].first }
+      it 'to_discord' do
+        expect(embed.keys).to_not include :image
+        expect(embed.keys).to_not include :thumbnail
+      end
+      it 'does not insert an empty point to the decoded polyline' do
+        expect(activity.map.decoded_summary_polyline).to be nil
       end
     end
     context 'with thumbnail' do
@@ -456,6 +475,10 @@ describe UserActivity do
       it 'to_discord' do
         expect(embed.keys).to_not include :image
         expect(embed[:thumbnail][:url]).to eq "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+      end
+      it 'decodes polyline points' do
+        expect(activity.map.decoded_summary_polyline.size).to eq 123
+        expect(activity.map.decoded_summary_polyline.all? { |p| p[0] && p[1] }).to be true
       end
     end
   end

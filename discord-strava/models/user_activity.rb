@@ -91,7 +91,7 @@ class UserActivity < Activity
     result[:title] = name
     result[:url] = strava_url
     result[:description] = ["#{user.discord_mention} on #{start_date_local_s}", description].compact.join("\n\n")
-    if map
+    if map && map.has_image?
       if team.maps == 'full'
         result[:image] = { url: map.proxy_image_url }
       elsif team.maps == 'thumb'
