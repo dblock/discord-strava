@@ -225,6 +225,38 @@ describe UserActivity do
           )
         end
       end
+      context 'with a zero speed' do
+        before do
+          activity.update_attributes!(average_speed: 0.0)
+        end
+        it 'to_discord' do
+          expect(activity.reload.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                fields: [
+                  { inline: true, name: 'Type', value: 'Run 🏃' },
+                  { inline: true, name: 'Distance', value: '14.01mi' },
+                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                  { inline: true, name: 'Elevation', value: '475.4ft' },
+                  { inline: true, name: 'Weather', value: '70°F Rain' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          )
+        end
+      end
     end
     context 'km' do
       let(:team) { Fabricate(:team, units: 'km') }

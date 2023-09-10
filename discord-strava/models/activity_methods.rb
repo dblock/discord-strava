@@ -276,7 +276,7 @@ module ActivityMethods
       when 'Distance'
         fields << { inline: true, name: 'Distance', value: distance_s } if distance&.positive?
       when 'Time'
-        if elapsed_time && moving_time
+        if elapsed_time&.positive? && moving_time&.positive?
           fields << { inline: true, name: 'Time', value: moving_time_in_hours_s } if elapsed_time == moving_time
         elsif moving_time
           fields << { inline: true, name: 'Time', value: moving_time_in_hours_s }
@@ -284,15 +284,15 @@ module ActivityMethods
           fields << { inline: true, name: 'Time', value: elapsed_time_in_hours_s }
         end
       when 'Moving Time'
-        fields << { inline: true, name: 'Moving Time', value: moving_time_in_hours_s } if elapsed_time && moving_time && elapsed_time != moving_time
+        fields << { inline: true, name: 'Moving Time', value: moving_time_in_hours_s } if elapsed_time&.positive? && moving_time&.positive? && elapsed_time != moving_time
       when 'Elapsed Time'
-        fields << { inline: true, name: 'Elapsed Time', value: elapsed_time_in_hours_s } if elapsed_time && moving_time && elapsed_time != moving_time
+        fields << { inline: true, name: 'Elapsed Time', value: elapsed_time_in_hours_s } if elapsed_time&.positive? && moving_time&.positive? && elapsed_time != moving_time
       when 'Pace'
-        fields << { inline: true, name: 'Pace', value: pace_s } if average_speed
+        fields << { inline: true, name: 'Pace', value: pace_s } if average_speed&.positive?
       when 'Speed'
-        fields << { inline: true, name: 'Speed', value: speed_s } if average_speed
+        fields << { inline: true, name: 'Speed', value: speed_s } if average_speed&.positive?
       when 'Max Speed'
-        fields << { inline: true, name: 'Max Speed', value: max_speed_s } if max_speed
+        fields << { inline: true, name: 'Max Speed', value: max_speed_s } if max_speed&.positive?
       when 'Elevation'
         fields << { inline: true, name: 'Elevation', value: total_elevation_gain_s } if total_elevation_gain&.positive?
       when 'Heart Rate'
