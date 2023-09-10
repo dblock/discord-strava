@@ -146,6 +146,7 @@ class UserActivity < Activity
     build_weather(current_weather.to_h) if current_weather
   rescue StandardError => e
     logger.warn "Error getting weather at #{start_latlng.join(', ')} on #{finished_at.to_i} for #{user}, #{self}, #{e.message}."
+    NewRelic::Agent.notice_error(e, custom_params: { activity: to_s, user: user.to_s })
   end
 
   def weather_s

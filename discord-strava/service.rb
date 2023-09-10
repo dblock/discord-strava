@@ -59,6 +59,7 @@ module DiscordStrava
     rescue StandardError => e
       run_callbacks :error, team, e
       logger.error e
+      NewRelic::Agent.notice_error(e)
     end
 
     def restart!(team)
@@ -68,6 +69,7 @@ module DiscordStrava
     rescue StandardError => e
       run_callbacks :error, team, e
       logger.error e
+      NewRelic::Agent.notice_error(e)
     end
 
     def stop!(team)
@@ -77,6 +79,7 @@ module DiscordStrava
     rescue StandardError => e
       run_callbacks :error, team, e
       logger.error e
+      NewRelic::Agent.notice_error(e)
     end
 
     def start_from_database!
@@ -109,6 +112,7 @@ module DiscordStrava
     rescue StandardError => e
       run_callbacks :error, team, e
       logger.error "#{team.guild_name}: #{e.class}, #{e.message}, ignored."
+      NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
     end
 
     def self.reset!
@@ -142,6 +146,7 @@ module DiscordStrava
           yield
         rescue StandardError => e
           logger.error e
+          NewRelic::Agent.notice_error(e)
         end
       end
     end
@@ -156,6 +161,7 @@ module DiscordStrava
       true
     rescue StandardError => e
       logger.error e
+      NewRelic::Agent.notice_error(e)
       false
     end
   end

@@ -57,6 +57,7 @@ class Team
     logger.info "Refreshed token for team #{self}, expires on #{token_expires_at}."
   rescue Faraday::Error => e
     logger.warn "Error refreshing token for team #{self}, #{e.message} (#{e.response[:body]})."
+    NewRelic::Agent.notice_error(e, custom_params: { team: to_s })
   end
 
   def deactivate!

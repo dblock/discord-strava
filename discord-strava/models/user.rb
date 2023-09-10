@@ -241,6 +241,7 @@ class User
     else
       backtrace = e.backtrace.join("\n")
       logger.error "#{e.class.name}: #{e.message}\n  #{backtrace}"
+      NewRelic::Agent.notice_error(e, custom_params: { user: to_s })
     end
     raise e
   end

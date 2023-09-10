@@ -7,6 +7,8 @@ Bundler.require :default, ENV.fetch('RACK_ENV', nil)
 
 require 'discord-strava'
 
+NewRelic::Agent.manual_start
+
 DiscordStrava::App.instance.prepare!
 
 Thread.abort_on_exception = true

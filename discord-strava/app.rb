@@ -79,6 +79,7 @@ module DiscordStrava
           yield
         rescue StandardError => e
           logger.error e
+          NewRelic::Agent.notice_error(e)
         ensure
           task.sleep tt
         end
@@ -91,6 +92,7 @@ module DiscordStrava
           yield task, tt
         rescue StandardError => e
           logger.error e
+          NewRelic::Agent.notice_error(e)
         ensure
           task.sleep tt
         end
@@ -104,6 +106,7 @@ module DiscordStrava
       StravaWebhook.instance.ensure!
     rescue StandardError => e
       logger.warn "Error ensuring Strava webhook, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def check_trials!
@@ -117,9 +120,11 @@ module DiscordStrava
         team.inform_trial!
       rescue StandardError => e
         logger.warn "Error checking team #{team} trial, #{e.message}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
       end
     rescue StandardError => e
       logger.warn "Error checking trials, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def aggregate_stats!
@@ -132,9 +137,11 @@ module DiscordStrava
       rescue StandardError => e
         backtrace = e.backtrace.join("\n")
         logger.warn "Error refreshing Discord token for team #{team}, #{e.message}, #{backtrace}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
       end
     rescue StandardError => e
       logger.warn "Error refreshing Discord tokens, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def expire_subscriptions!
@@ -146,9 +153,11 @@ module DiscordStrava
       rescue StandardError => e
         backtrace = e.backtrace.join("\n")
         logger.warn "Error in expire subscriptions cron for team #{team}, #{e.message}, #{backtrace}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
       end
     rescue StandardError => e
       logger.warn "Error expiring subscriptions, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def users_brag_and_rebrag!(task, tt)
@@ -169,10 +178,12 @@ module DiscordStrava
         rescue StandardError => e
           backtrace = e.backtrace.join("\n")
           logger.warn "Error in brag cron for team #{team}, #{e.message}, #{backtrace}."
+          NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
         end
       end
     rescue StandardError => e
       logger.warn "Error checking user activities, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def deactivate_asleep_teams!
@@ -186,10 +197,12 @@ module DiscordStrava
           team.inform_everyone!(purge_message)
         rescue StandardError => e
           logger.warn "Error informing team #{team}, #{e.message}."
+          NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
         end
       end
     rescue StandardError => e
       logger.warn "Error checking team inactivity, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def check_subscribed_teams!
@@ -211,9 +224,11 @@ module DiscordStrava
         end
       rescue StandardError => e
         logger.warn "Error checking team #{team} subscription, #{e.message}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
       end
     rescue StandardError => e
       logger.warn "Error checking Stripe subscriptions, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
 
     def check_stripe_subscribers!
@@ -244,9 +259,11 @@ module DiscordStrava
         end
       rescue StandardError => e
         logger.warn "Error checking customer #{subscription.customer}, #{e.message}."
+        NewRelic::Agent.notice_error(e, custom_params: { customer: subscription.customer })
       end
     rescue StandardError => e
       logger.warn "Error checking Stripe subscribers, #{e.message}."
+      NewRelic::Agent.notice_error(e)
     end
   end
 end
