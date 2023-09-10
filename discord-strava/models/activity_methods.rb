@@ -278,9 +278,9 @@ module ActivityMethods
       when 'Time'
         if elapsed_time&.positive? && moving_time&.positive?
           fields << { inline: true, name: 'Time', value: moving_time_in_hours_s } if elapsed_time == moving_time
-        elsif moving_time
+        elsif moving_time&.positive?
           fields << { inline: true, name: 'Time', value: moving_time_in_hours_s }
-        elsif elapsed_time
+        elsif elapsed_time&.positive?
           fields << { inline: true, name: 'Time', value: elapsed_time_in_hours_s }
         end
       when 'Moving Time'
