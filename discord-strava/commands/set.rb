@@ -14,6 +14,7 @@ module DiscordStrava
             "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
             "Activity fields are *#{command.team.activity_fields_s}*.",
             "Maps for team #{command.team.guild_name} are *#{command.team.maps_s}*.",
+            "Posts will #{command.team.anonymize? ? '' : 'not '}be anonymized.",
             "Your activities will #{command.user.sync_activities? ? '' : 'not '}sync.",
             "Your private activities will #{command.user.private_activities? ? '' : 'not '}be posted.",
             "Your followers only activities will #{command.user.followers_only_activities? ? '' : 'not '}be posted."
@@ -78,6 +79,11 @@ module DiscordStrava
               logger.info "SET: #{command.team} - maps set to #{command.team.maps}"
               "Maps for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.maps_s}*."
             end
+          when 'anonymize'
+            changed = v && command.team.anonymize != v
+            command.team.update_attributes!(anonymize: v) unless v.nil?
+            logger.info "SET: #{command.team} - anonymize set to #{command.team.anonymize}"
+            "Names in posts for team #{command.team.guild_name} will #{changed ? (command.team.anonymize? ? ' now' : ' no longer') : } be obscured in activity posts."
           else
             "Invalid setting #{k}, type `help` for instructions."
           end

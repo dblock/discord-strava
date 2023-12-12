@@ -88,7 +88,7 @@ class UserActivity < Activity
 
   def to_discord_embed
     result = {}
-    result[:title] = name
+    result[:title] = user.team.anonymize ? 'New Activity!' : name
     result[:url] = strava_url
     result[:description] = ["#{user.discord_mention} on #{start_date_local_s}", description].compact.join("\n\n")
     if map && map.has_image?

@@ -22,6 +22,8 @@ class Team
   field :units, type: String, default: 'mi'
   validates_inclusion_of :units, in: %w[mi km both]
 
+  field :anonymize, type: Boolean, default: false
+
   field :activity_fields, type: Array, default: ['Default']
   validates :activity_fields, array: { presence: true, inclusion: { in: ActivityFields.values } }
 
