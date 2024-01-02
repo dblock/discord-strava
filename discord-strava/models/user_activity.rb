@@ -88,9 +88,20 @@ class UserActivity < Activity
 
   def to_discord_embed
     result = {}
-    result[:title] = name
-    result[:url] = strava_url
-    result[:description] = ["#{user.discord_mention} on #{start_date_local_s}", description].compact.join("\n\n")
+    result[:title] = name if display_field?(ActivityFields::TITLE)
+    result[:url] = strava_url if display_field?(ActivityFields::URL)
+
+    result_description = [
+      if display_field?(ActivityFields::USER) || display_field?(ActivityFields::DATE)
+        [
+          display_field?(ActivityFields::USER) ? user.discord_mention : nil,
+          display_field?(ActivityFields::DATE) ? start_date_local_s : nil
+        ].compact.join(' on ')
+      end,
+      display_field?(ActivityFields::DESCRIPTION) ? description : nil
+    ].compact.join("\n\n")
+    result[:description] = result_description unless result_description.blank?
+
     if map && map.has_image?
       if team.maps == 'full'
         result[:image] = { url: map.proxy_image_url }
@@ -98,9 +109,11 @@ class UserActivity < Activity
         result[:thumbnail] = { url: map.proxy_image_url }
       end
     end
-    result[:fields] = discord_fields
+
+    result_fields = discord_fields
+    result[:fields] = result_fields if result_fields && result_fields.any?
     result[:timestamp] = Time.now.utc.iso8601
-    result.merge!(user.athlete.to_discord) if user.athlete
+    result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE)
     result
   end
 

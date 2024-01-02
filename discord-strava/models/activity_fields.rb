@@ -19,7 +19,17 @@ class ActivityFields
   define :CALORIES, 'Calories'
   define :WEATHER, 'Weather'
 
-  DEFAULT_VALUES = ['Type', 'Distance', 'Time', 'Moving Time', 'Elapsed Time', 'Pace', 'Speed', 'Elevation', 'Weather'].freeze
+  define :TITLE, 'Title'
+  define :DESCRIPTION, 'Description'
+  define :URL, 'Url'
+  define :USER, 'User'
+  define :ATHLETE, 'Athlete'
+  define :DATE, 'Date'
+
+  DEFAULT_VALUES = [
+    'Title', 'Description', 'Url', 'User', 'Athlete', 'Date',
+    'Type', 'Distance', 'Time', 'Moving Time', 'Elapsed Time', 'Pace', 'Speed', 'Elevation', 'Weather'
+  ].freeze
 
   def self.parse_s(values)
     return unless values

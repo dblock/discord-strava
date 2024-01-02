@@ -133,7 +133,7 @@ describe UserActivity do
             {
               title: activity.name,
               url: "https://www.strava.com/activities/#{activity.strava_id}",
-              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
               image: {
                 url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
               },
@@ -166,7 +166,7 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -195,6 +195,170 @@ describe UserActivity do
           )
         end
       end
+      context 'with none fields' do
+        before do
+          team.activity_fields = ['None']
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          )
+        end
+      end
+      context 'with all header fields' do
+        before do
+          team.activity_fields = %w[Title Url User Description Date Athlete]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          )
+        end
+      end
+      context 'without athlete' do
+        before do
+          team.activity_fields = %w[Title Url User Description Date]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
+      context 'without user' do
+        before do
+          team.activity_fields = %w[Title Url Description Date]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
+      context 'without description' do
+        before do
+          team.activity_fields = %w[Title Url User Date]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
+      context 'without date' do
+        before do
+          team.activity_fields = %w[Title Url Description]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: 'Great run!',
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
+      context 'without url' do
+        before do
+          team.activity_fields = %w[Title]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
+      context 'without title' do
+        before do
+          team.activity_fields = %w[Url]
+        end
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601
+              }
+            ]
+          )
+        end
+      end
       context 'without an athlete' do
         before do
           user.athlete.destroy
@@ -205,7 +369,7 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -235,7 +399,7 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -268,7 +432,7 @@ describe UserActivity do
             {
               title: activity.name,
               url: "https://www.strava.com/activities/#{activity.strava_id}",
-              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
               image: {
                 url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
               },
@@ -302,7 +466,7 @@ describe UserActivity do
             {
               title: activity.name,
               url: "https://www.strava.com/activities/#{activity.strava_id}",
-              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
+              description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
               image: {
                 url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
               },

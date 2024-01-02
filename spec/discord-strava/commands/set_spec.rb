@@ -351,7 +351,7 @@ describe DiscordStrava::Commands::Set do
             let(:args) { ['set', { 'fields' => 'Time, Foo, Bar' }] }
             it 'sets to invalid fields' do
               expect(response).to eq(
-                'Invalid fields: Foo and Bar, possible values are Default, All, None, Type, Distance, Time, Moving Time, Elapsed Time, Pace, Speed, Elevation, Max Speed, Heart Rate, Max Heart Rate, PR Count, Calories and Weather.'
+                'Invalid fields: Foo and Bar, possible values are Default, All, None, Type, Distance, Time, Moving Time, Elapsed Time, Pace, Speed, Elevation, Max Speed, Heart Rate, Max Heart Rate, PR Count, Calories, Weather, Title, Description, Url, User, Athlete and Date.'
               )
               expect(team.reload.activity_fields).to eq ['Default']
             end
