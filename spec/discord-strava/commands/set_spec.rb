@@ -347,6 +347,32 @@ describe DiscordStrava::Commands::Set do
               expect(team.reload.activity_fields).to eq(['Default'])
             end
           end
+          context 'some' do
+            let(:args) { ['set', { 'fields' => 'Title, Url, PR Count, Elapsed Time' }] }
+            it 'sets fields to default' do
+              team.update_attributes!(activity_fields: ['All'])
+              expect(response).to eq(
+                "Activity fields for team #{team.guild_name} are now *Title, Url, PR Count and Elapsed Time*."
+              )
+              expect(command.team.activity_fields).to eq(['Title', 'Url', 'PR Count', 'Elapsed Time'])
+              expect(team.reload.activity_fields).to eq(['Title', 'Url', 'PR Count', 'Elapsed Time'])
+            end
+          end
+          context 'each field' do
+            (ActivityFields.values - [ActivityFields::ALL, ActivityFields::DEFAULT, ActivityFields::NONE]).each do |field|
+              context field do
+                let(:args) { ['set', { 'fields' => field }] }
+                it "sets fields to #{field}" do
+                  team.update_attributes!(activity_fields: ['All'])
+                  expect(response).to eq(
+                    "Activity fields for team #{team.guild_name} are now *#{field}*."
+                  )
+                  expect(command.team.activity_fields).to eq([field])
+                  expect(team.reload.activity_fields).to eq([field])
+                end
+              end
+            end
+          end
           context 'invalid' do
             let(:args) { ['set', { 'fields' => 'Time, Foo, Bar' }] }
             it 'sets to invalid fields' do
