@@ -39,7 +39,7 @@ class ActivityFields
     values.scan(/[\w\s']+/).map do |v|
       v = v.strip
       title = v.titleize
-      title = 'PR Count' if title == 'Pr Count' # HACK: titleize
+      title = ActivityFields::PR_COUNT if title == 'Pr Count' # HACK: titleize
       if value?(title)
         fields << title
       else
