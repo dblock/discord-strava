@@ -349,6 +349,7 @@ describe UserActivity do
           expect(activity.to_discord).to eq(
             embeds: [
               {
+                title: activity.strava_id.to_s,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"

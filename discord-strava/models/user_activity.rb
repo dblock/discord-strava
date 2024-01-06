@@ -88,8 +88,16 @@ class UserActivity < Activity
 
   def to_discord_embed
     result = {}
-    result[:title] = name if display_field?(ActivityFields::TITLE)
-    result[:url] = strava_url if display_field?(ActivityFields::URL)
+
+    if display_field?(ActivityFields::TITLE) && display_field?(ActivityFields::URL)
+      result[:title] = name || strava_id
+      result[:url] = strava_url
+    elsif display_field?(ActivityFields::TITLE)
+      result[:title] = name || strava_id
+    elsif display_field?(ActivityFields::URL)
+      result[:title] = strava_id
+      result[:url] = strava_url
+    end
 
     result_description = [
       if display_field?(ActivityFields::USER) || display_field?(ActivityFields::DATE)
@@ -100,6 +108,7 @@ class UserActivity < Activity
       end,
       display_field?(ActivityFields::DESCRIPTION) ? description : nil
     ].compact.join("\n\n")
+
     result[:description] = result_description unless result_description.blank?
 
     if map && map.has_image?
