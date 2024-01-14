@@ -174,6 +174,10 @@ module DiscordStrava
             task.sleep tt
             user.rebrag!
             task.sleep tt
+          rescue StandardError => e
+            backtrace = e.backtrace.join("\n")
+            logger.warn "Error in brag cron for user #{user}, #{e.message}, #{backtrace}."
+            NewRelic::Agent.notice_error(e, custom_params: { user: user.to_s })
           end
         rescue StandardError => e
           backtrace = e.backtrace.join("\n")
