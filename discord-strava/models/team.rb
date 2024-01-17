@@ -70,6 +70,7 @@ class Team
 
   def to_s
     {
+      _id: _id,
       guild_id: guild_id,
       guild_name: guild_name
     }.map { |k, v|
