@@ -35,7 +35,7 @@ describe DiscordStrava::App do
   context 'subscribed' do
     include_context :stripe_mock
     let(:plan) { stripe_helper.create_plan(id: 'strada-yearly', amount: 1999) }
-    let(:customer) { Stripe::Customer.create(source: stripe_helper.generate_card_token, plan: plan.id, email: 'foo@bar.com') }
+    let(:customer) { Stripe::Customer.create(source: stripe_helper.generate_card_token, plan: plan.id, email: 'foo@bar.com', metadata: { name: 'Team', guild_id: 'guild_id' }) }
     let!(:team) { Fabricate(:team, subscribed: true, stripe_customer_id: customer.id) }
     context '#check_subscribed_teams!' do
       it 'ignores active subscriptions' do
@@ -61,6 +61,21 @@ describe DiscordStrava::App do
         expect_any_instance_of(Team).to receive(:inform!).with('Your subscription was canceled and your team has been downgraded. Thank you for being a customer!')
         subject.send(:check_subscribed_teams!)
         expect(team.reload.subscribed?).to be false
+      end
+    end
+    context '#check_stripe_subscribers!' do
+      it 'works without errors' do
+        expect(subject.logger).to_not receive(:warn)
+        subject.send(:check_stripe_subscribers!)
+      end
+      context 'inactive team' do
+        before do
+          team.update_attributes!(active: false)
+        end
+        it 'cancels auto-renew for an inactive team' do
+          expect_any_instance_of(Stripe::Subscription).to receive(:delete)
+          subject.send(:check_stripe_subscribers!)
+        end
       end
     end
   end
