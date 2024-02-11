@@ -90,6 +90,15 @@ describe UserActivity do
       ).and_return('id' => '1', 'channel_id' => '2')
       expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
     end
+    it 'disables user sync on access error' do
+      expect(Discord::Messages).to receive(:send_message).with(
+        user.channel_id,
+        activity.to_discord
+      ).and_raise(Faraday::ForbiddenError.new('forbidden'))
+      expect { activity.brag! }.to raise_error(Faraday::ForbiddenError)
+      expect(activity.bragged_at).to_not be nil
+      expect(user.reload.sync_activities).to be false
+    end
   end
   context 'unbrag!' do
     let(:team) { Fabricate(:team) }

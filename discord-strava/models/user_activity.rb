@@ -36,8 +36,12 @@ class UserActivity < Activity
       update_attributes!(bragged_at: Time.now.utc, channel_message: rc)
       rc
     end
+  rescue Faraday::ForbiddenError => e
+    logger.warn "Bragging to #{user} failed, #{e.message}, disabling user sync."
+    update_attributes!(bragged_at: Time.now.utc)
+    user.update_attributes!(sync_activities: false)
+    raise e
   rescue StandardError => e
-    # TODO: ignore channel access / account inactive errors (user removed from channel)
     logger.warn "Bragging to #{user} failed, #{e.message}."
     raise e
   end
