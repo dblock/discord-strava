@@ -44,6 +44,8 @@ module Api
           if team
             team.ping_if_active!
 
+            Api::Middleware.logger.info "Updating OAuth tokens for #{team}, current=#{team.token_expires_at}, new=#{oauth2_response[:token_expires_at]}."
+
             team.update_attributes!(oauth2_response.merge(
                                       permissions: params[:permissions]
                                     ))
@@ -57,6 +59,7 @@ module Api
             team = Team.create!(oauth2_response.merge(
                                   permissions: params[:permissions]
                                 ))
+            Api::Middleware.logger.info "New team #{team}, exp=#{team.token_expires_at}."
           end
 
           DiscordStrava::Service.instance.create!(team)
