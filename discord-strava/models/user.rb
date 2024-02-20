@@ -97,8 +97,9 @@ class User
 
   def disconnect_from_strava
     if access_token
-      logger.info "Disconnected team=#{team}, user=#{self}"
+      try_to_revoke_access_token
       reset_access_tokens!(connected_to_strava_at: nil)
+      logger.info "Disconnected team=#{team}, user=#{self}"
       'Your Strava account has been successfully disconnected.'
     else
       'Your Strava account is not connected.'
@@ -202,7 +203,16 @@ class User
     team.guild_owner_id && team.guild_owner_id == user_id
   end
 
+  before_destroy :try_to_revoke_access_token
+
   private
+
+  def try_to_revoke_access_token
+    revoke_access_token!
+    logger.info "Revoked access token for team=#{team_id}, user=#{user_name}, user_id=#{id}"
+  rescue StandardError => e
+    logger.warn "Error revoking access token for #{self}: #{e.message}"
+  end
 
   # includes some of the most recent activities
   def before_connected_to_strava_at(tt = 8.hours)
