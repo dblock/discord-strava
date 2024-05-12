@@ -1,0 +1,159 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://discord.com/api/users/@me/channels
+    body:
+      encoding: UTF-8
+      string: '{"recipient_id":"747821172036599899"}'
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Authorization:
+      - Bearer token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 12 May 2024 21:08:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 882d62ce0f5d4375-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cfruid=071c1d15abfc09fa40da8cd8b7f2ab2831c6dd7d-1715548126; path=/; domain=.discord.com;
+        HttpOnly; Secure; SameSite=None
+      - __dcfduid=d23cb29e10a311ef8dedbe1ee302d74c; Expires=Fri, 11-May-2029 21:08:46
+        GMT; Max-Age=157680000; Secure; HttpOnly; Path=/; SameSite=Lax
+      - __sdcfduid=d23cb29e10a311ef8dedbe1ee302d74cf8a5ab86e656f378a7a83ceae4c24061c1af8f03d6282ce6f01345669ff81363;
+        Expires=Fri, 11-May-2029 21:08:46 GMT; Max-Age=157680000; Secure; HttpOnly;
+        Path=/; SameSite=Lax
+      - _cfuvid=TJQiAZLMyT4SSFbtFnUgP1SoPzYV9Ovg0kG.1ucW6BA-1715548126482-0.0.1.1-604800000;
+        path=/; domain=.discord.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Bucket:
+      - 3f1ecb90c49938368145d0f8794b2707
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1715548127'
+      X-Ratelimit-Reset-After:
+      - '1'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=pLdKoInVjNjBOcVd1q%2BqYELM07I51SB1ylaNC9GDPNlFKdw2lz5SHiz6A9r6kk3BbkhFlvv5OBsZVREIT2%2BTFk7hDSdsEV4G90y8Q7xkN%2BH0oo3EyC00bh0t%2B0Vv"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Content-Security-Policy:
+      - frame-ancestors 'none'; default-src 'none'
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"id":"1136112917264224338","type":1,"last_message_id":"1239316331216502804","flags":0,"recipients":[{"id":"747821172036599899","username":"dblockdotorg","avatar":"24415fe0f25f0833e38aa53861c2f53a","discriminator":"0","public_flags":4194304,"flags":4194304,"banner":null,"accent_color":null,"global_name":"dblock","avatar_decoration_data":null,"banner_color":null,"clan":null}]}
+
+        '
+  recorded_at: Sun, 12 May 2024 21:08:46 GMT
+- request:
+    method: post
+    uri: https://discord.com/api/channels/1136112917264224338/messages
+    body:
+      encoding: UTF-8
+      string: '{"content":"test"}'
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Authorization:
+      - Bearer token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 12 May 2024 21:08:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfruid=071c1d15abfc09fa40da8cd8b7f2ab2831c6dd7d-1715548126; path=/; domain=.discord.com;
+        HttpOnly; Secure; SameSite=None
+      - __dcfduid=d27c1c7c10a311efa05346fd58dd8c6f; Expires=Fri, 11-May-2029 21:08:46
+        GMT; Max-Age=157680000; Secure; HttpOnly; Path=/; SameSite=Lax
+      - __sdcfduid=d27c1c7c10a311efa05346fd58dd8c6faa1ea20a54c9110ef4ac0d6511bd227a9846e67e6cb2e71da8894b55c2207482;
+        Expires=Fri, 11-May-2029 21:08:46 GMT; Max-Age=157680000; Secure; HttpOnly;
+        Path=/; SameSite=Lax
+      - _cfuvid=xU2m9nL4mGFU3nqD.6kxJVLBic18Glsa_XRGS5KCfwY-1715548126896-0.0.1.1-604800000;
+        path=/; domain=.discord.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Ratelimit-Bucket:
+      - 3df15bae86f6647dd4dfcbd5c6949480
+      X-Ratelimit-Limit:
+      - '5'
+      X-Ratelimit-Remaining:
+      - '4'
+      X-Ratelimit-Reset:
+      - '1715548128'
+      X-Ratelimit-Reset-After:
+      - '1'
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      Cf-Cache-Status:
+      - DYNAMIC
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=1rhyQNyQX%2BNar7la7KyGzg50HiiA4vTW5DZe9%2BBfwkG02rlGC1jqK44zTbDQ%2FigJGA8e64GcjxK5DtX7CPG9wvd8CvSWraVgmGy2O61UaucuilOoMS4Xbim2qCzA"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      X-Content-Type-Options:
+      - nosniff
+      Content-Security-Policy:
+      - frame-ancestors 'none'; default-src 'none'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 882d62cecd428ca7-EWR
+    body:
+      encoding: UTF-8
+      string: '{"type":0,"channel_id":"1136112917264224338","content":"test","attachments":[],"embeds":[],"timestamp":"2024-05-12T21:08:46.840000+00:00","edited_timestamp":null,"flags":0,"components":[],"id":"1239323411596050564","author":{"id":"1135347799840522240","username":"Strada","avatar":null,"discriminator":"4881","public_flags":524288,"flags":524288,"bot":true,"banner":null,"accent_color":null,"global_name":null,"avatar_decoration_data":null,"banner_color":null,"clan":null},"mentions":[],"mention_roles":[],"pinned":false,"mention_everyone":false,"tts":false,"referenced_message":null}
+
+        '
+  recorded_at: Sun, 12 May 2024 21:08:47 GMT
+recorded_with: VCR 6.0.0

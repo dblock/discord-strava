@@ -40,7 +40,7 @@
               url: '/api/users/' + user.id,
               data: data,
               success: function(data) {
-                DiscordStrava.message('Successfully connected <b>' + data.user_name + '</b> to Strava. You can now return to Discord.');
+                DiscordStrava.message('Successfully connected <b>' + data.user_name + '</b> to Strava. I will not post any private activities, use "/strada set private on" to toggle that, and "/strada help" for other options. You can now return to Discord.');
               },
               error: DiscordStrava.error
             });

@@ -399,4 +399,29 @@ describe User do
       end
     end
   end
+  context '#dm!' do
+    before do
+      ENV['DISCORD_CLIENT_ID'] = 'client_id'
+      ENV['DISCORD_CLIENT_SECRET'] = 'client_secret'
+      allow_any_instance_of(Team).to receive(:activated!)
+    end
+    after do
+      ENV.delete('DISCORD_CLIENT_ID')
+      ENV.delete('DISCORD_CLIENT_SECRET')
+    end
+    let!(:team) { Fabricate(:team, token: 'token', guild_id: 'guild_id') }
+    let!(:user) { Fabricate(:user, user_id: '747821172036599899', team: team) }
+    it 'sends DM', vcr: { cassette_name: 'discord/dm' } do
+      expect(user.dm!('test')).to eq(
+        channel_id: '1136112917264224338',
+        message_id: '1239323411596050564'
+      )
+    end
+    it 'hadles 403', vcr: { cassette_name: 'discord/dm_403' } do
+      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'Cannot send messages to this user (50007, 403)'
+    end
+    it 'hadles 400', vcr: { cassette_name: 'discord/dm_400' } do
+      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 ({"recipient_id"=>["Value \"invalid\" is not snowflake."]})'
+    end
+  end
 end

@@ -91,8 +91,14 @@ class User
       connected_to_strava_at: DateTime.now.utc
     )
     logger.info "Connected team=#{team}, user=#{self}, athlete_id=#{athlete.athlete_id}"
-    dm! "Your Strava account has been successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
+    connected!
     inform! "New Strava account connected for #{discord_mention}."
+  end
+
+  def connected!
+    dm! "Your Strava account has been successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
+  rescue DiscordStrava::Error => e
+    logger.warn "Error DMing #{self}: #{e.message}"
   end
 
   def disconnect_from_strava

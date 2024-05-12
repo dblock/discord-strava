@@ -26,6 +26,20 @@ module Discord
       }.send(method, path, options) { |request|
         request.headers['Authorization'] = "Bot #{ENV.fetch('DISCORD_SECRET_TOKEN', nil)}"
       }.body)
+    rescue Faraday::Error => e
+      handle_error(e)
+    end
+
+    private
+
+    def handle_error(e)
+      message = e.response[:body]['message']
+      code = e.response[:body]['code']
+      if message && code
+        raise DiscordStrava::Error, "#{message} (#{code}, #{e.response[:status]})"
+      else
+        raise DiscordStrava::Error, "#{e} (#{e.response[:body]})"
+      end
     end
   end
 end

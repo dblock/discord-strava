@@ -1,0 +1,79 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://discord.com/api/users/@me/channels
+    body:
+      encoding: UTF-8
+      string: '{"recipient_id":"invalid"}'
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Authorization:
+      - Bearer token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Date:
+      - Sun, 12 May 2024 21:06:00 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '57'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 882d5ec23c8d0c92-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cfruid=def77e4426001e395f8c1f47d3364eda904131ea-1715547960; path=/; domain=.discord.com;
+        HttpOnly; Secure; SameSite=None
+      - __dcfduid=6f73b07210a311ef932e22d59b629fbd; Expires=Fri, 11-May-2029 21:06:00
+        GMT; Max-Age=157680000; Secure; HttpOnly; Path=/; SameSite=Lax
+      - __sdcfduid=6f73b07210a311ef932e22d59b629fbd4da60736a7452ac0dc4fbab107d63dfc454b11d55bd96666dbadc1fe4e708faa;
+        Expires=Fri, 11-May-2029 21:06:00 GMT; Max-Age=157680000; Secure; HttpOnly;
+        Path=/; SameSite=Lax
+      - _cfuvid=.wvqlSZqL7mdDKr7FzZt.bf7ZFHpnAP37Jhq95MuxEQ-1715547960748-0.0.1.1-604800000;
+        path=/; domain=.discord.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Bucket:
+      - 3f1ecb90c49938368145d0f8794b2707
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1715547961'
+      X-Ratelimit-Reset-After:
+      - '1'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=2kXiwR4BLVKJa8lPCys1Cp7v6YP8u5hwcu2AUmahWo8uVVWVVqJUVx33oLdJyk0Mohu12z0tY6M2WOTJr7nL2GH3kIuYorOvTnWpdpgXjLr7%2BW7vkLXHVUwwNvOr"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Vary:
+      - Accept-Encoding
+      Content-Security-Policy:
+      - frame-ancestors 'none'; default-src 'none'
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"recipient_id": ["Value \"invalid\" is not snowflake."]}'
+  recorded_at: Sun, 12 May 2024 21:06:00 GMT
+recorded_with: VCR 6.0.0

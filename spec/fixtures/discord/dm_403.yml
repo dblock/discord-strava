@@ -1,0 +1,155 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://discord.com/api/users/@me/channels
+    body:
+      encoding: UTF-8
+      string: '{"recipient_id":"747821172036599899"}'
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Authorization:
+      - Bearer token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 12 May 2024 21:05:02 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 882d5d580db7c3f8-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cfruid=4f3486037514e4eb75ca6e4758c466bed5c6ba74-1715547902; path=/; domain=.discord.com;
+        HttpOnly; Secure; SameSite=None
+      - __dcfduid=4ceff81c10a311ef994d2aaee0ceb0a9; Expires=Fri, 11-May-2029 21:05:02
+        GMT; Max-Age=157680000; Secure; HttpOnly; Path=/; SameSite=Lax
+      - __sdcfduid=4ceff81c10a311ef994d2aaee0ceb0a99e9b1aa32c43d42b2b30545d7290c50a50cd6c97245f821e749b63845a20b914;
+        Expires=Fri, 11-May-2029 21:05:02 GMT; Max-Age=157680000; Secure; HttpOnly;
+        Path=/; SameSite=Lax
+      - _cfuvid=xdDe5QMx9J.nAw6xVD0ZnPFmya4vPen.Qf.Fs8WPtX8-1715547902842-0.0.1.1-604800000;
+        path=/; domain=.discord.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Bucket:
+      - 3f1ecb90c49938368145d0f8794b2707
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1715547903'
+      X-Ratelimit-Reset-After:
+      - '1'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=1mDX61a2OQLJIa0mgsdDFa2rsth9TGCiQeUYQhI0mMJcA00aeOUBljj%2BBqp8%2FTZoNYfpWJdl3jrpBsjdEmf6UDT70w5UedOoBpr6XSA%2F2%2Fek51LTtYGn%2BcxjCO5R"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Content-Security-Policy:
+      - frame-ancestors 'none'; default-src 'none'
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"id":"1136112917264224338","type":1,"last_message_id":"1239316331216502804","flags":0,"recipients":[{"id":"747821172036599899","username":"dblockdotorg","avatar":"24415fe0f25f0833e38aa53861c2f53a","discriminator":"0","public_flags":4194304,"flags":4194304,"banner":null,"accent_color":null,"global_name":"dblock","avatar_decoration_data":null,"banner_color":null,"clan":null}]}
+
+        '
+  recorded_at: Sun, 12 May 2024 21:05:03 GMT
+- request:
+    method: post
+    uri: https://discord.com/api/channels/1136112917264224338/messages
+    body:
+      encoding: UTF-8
+      string: '{"content":"test"}'
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Authorization:
+      - Bearer token
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      Date:
+      - Sun, 12 May 2024 21:05:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfruid=fd715b4ffac48ecf7e278f719ed990e8d9766fc9-1715547903; path=/; domain=.discord.com;
+        HttpOnly; Secure; SameSite=None
+      - __dcfduid=4d22abea10a311efb2f286478b728a83; Expires=Fri, 11-May-2029 21:05:03
+        GMT; Max-Age=157680000; Secure; HttpOnly; Path=/; SameSite=Lax
+      - __sdcfduid=4d22abea10a311efb2f286478b728a83a62d60ccc05944f230e3d6956c720deed7ff223a1a4dc3323e1ebf084b827e50;
+        Expires=Fri, 11-May-2029 21:05:03 GMT; Max-Age=157680000; Secure; HttpOnly;
+        Path=/; SameSite=Lax
+      - _cfuvid=voXcFFqUs3UVbinSV_P7KAPgQLIjoy7Jrn7aVIGAU7U-1715547903178-0.0.1.1-604800000;
+        path=/; domain=.discord.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Ratelimit-Bucket:
+      - 3df15bae86f6647dd4dfcbd5c6949480
+      X-Ratelimit-Limit:
+      - '5'
+      X-Ratelimit-Remaining:
+      - '4'
+      X-Ratelimit-Reset:
+      - '1715547905'
+      X-Ratelimit-Reset-After:
+      - '1'
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      Cf-Cache-Status:
+      - DYNAMIC
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=ACHb0RZ5MNiwFp3O8CPp%2BYWz5SMnOwUZBXioGWHXRJD5j2OrLfIuuNbRviMWHtnGOb7RvBUEHa7vrUY3t8MP2Fe20SBSUnoY3wlbAOU6vzvx7%2B%2BrjYIhRs9OIOzv"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      X-Content-Type-Options:
+      - nosniff
+      Content-Security-Policy:
+      - frame-ancestors 'none'; default-src 'none'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 882d5d59d9b00f60-EWR
+    body:
+      encoding: UTF-8
+      string: '{"message": "Cannot send messages to this user", "code": 50007}'
+  recorded_at: Sun, 12 May 2024 21:05:03 GMT
+recorded_with: VCR 6.0.0
