@@ -120,6 +120,18 @@ describe User do
             expect(user.connected_to_strava_at).to be nil
           end
         end
+        it 'uses a lock' do
+          user_instance_2 = User.find(user._id)
+          bragged_activities = []
+          allow_any_instance_of(User).to receive(:inform!) do |_, args|
+            bragged_activities << args[:embeds].first[:title]
+            { message_id: 'message', channel_id: 'channel' }
+          end
+          user.sync_and_brag!
+          expect(user_instance_2).to receive(:sync_strava_activities!).with(after: 1_522_072_635)
+          user_instance_2.sync_and_brag!
+          expect(bragged_activities).to eq(['Restarting the Engine', 'First Time Breaking 14'])
+        end
       end
       context 'with bragged activities' do
         before do
