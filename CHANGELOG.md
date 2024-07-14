@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2024/07/14: Fixed error handling during updates for multiple identical users across teams - [@dblock](https://github.com/dblock).
 * 2024/07/13: Fixed duplicate activities from concurrent updates - [@dblock](https://github.com/dblock).
 * 2024/01/02: Add Title, Description, Url, User, Athlete and Date field options - [@dblock](https://github.com/dblock).
 * 2023/08/08: Fixed empty maps - [@dblock](https://github.com/dblock).
