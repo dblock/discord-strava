@@ -125,6 +125,29 @@ describe Api::Endpoints::StravaEndpoint do
             expect(response['ok']).to be true
             expect(users).to eq([user2])
           end
+          context 'with an inactive team' do
+            before do
+              team2.update_attributes!(active: false)
+            end
+            it 'skips over' do
+              users = []
+              allow_any_instance_of(User).to receive(:sync_and_brag!) do |a_user, _args|
+                users << a_user
+              end
+              post '/api/strava/event',
+                   JSON.dump(
+                     event_data.merge(
+                       aspect_type: 'create',
+                       owner_id: user.athlete.athlete_id.to_s
+                     )
+                   ),
+                   'CONTENT_TYPE' => 'application/json'
+              expect(last_response.status).to eq 200
+              response = JSON.parse(last_response.body)
+              expect(response['ok']).to be true
+              expect(users).to eq([user])
+            end
+          end
         end
         context 'with an existing activity' do
           let!(:activity) { Fabricate(:user_activity, user: user, map: nil) }
@@ -231,6 +254,30 @@ describe Api::Endpoints::StravaEndpoint do
               expect(response['ok']).to be true
               expect(users).to eq([user2])
             end
+            context 'with an inactive team' do
+              before do
+                team2.update_attributes!(active: false)
+              end
+              it 'skips over' do
+                users = []
+                allow_any_instance_of(User).to receive(:rebrag_activity!) do |a_user, _args|
+                  users << a_user
+                end
+                post '/api/strava/event',
+                     JSON.dump(
+                       event_data.merge(
+                         aspect_type: 'update',
+                         object_id: activity.strava_id,
+                         owner_id: user.athlete.athlete_id.to_s
+                       )
+                     ),
+                     'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 200
+                response = JSON.parse(last_response.body)
+                expect(response['ok']).to be true
+                expect(users).to eq([user])
+              end
+            end
           end
           context 'a bragged activity' do
             before do
@@ -302,6 +349,30 @@ describe Api::Endpoints::StravaEndpoint do
                 response = JSON.parse(last_response.body)
                 expect(response['ok']).to be true
                 expect(activities).to eq([activity2])
+              end
+              context 'with an inactive team' do
+                before do
+                  team2.update_attributes!(active: false)
+                end
+                it 'skips over' do
+                  activities = []
+                  allow_any_instance_of(UserActivity).to receive(:unbrag!) do |a_activity, _args|
+                    activities << a_activity
+                  end
+                  post '/api/strava/event',
+                       JSON.dump(
+                         event_data.merge(
+                           aspect_type: 'delete',
+                           object_id: activity.strava_id,
+                           owner_id: user.athlete.athlete_id.to_s
+                         )
+                       ),
+                       'CONTENT_TYPE' => 'application/json'
+                  expect(last_response.status).to eq 200
+                  response = JSON.parse(last_response.body)
+                  expect(response['ok']).to be true
+                  expect(activities).to eq([activity2])
+                end
               end
             end
           end
