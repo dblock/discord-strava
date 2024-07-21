@@ -173,6 +173,24 @@ class Team
     inform_guild_owner!(message)
   end
 
+  def subscription_info(guild_owner = true)
+    subscription_info = []
+    if stripe_subcriptions&.any?
+      subscription_info << stripe_customer_text
+      subscription_info.concat(stripe_customer_subscriptions_info)
+      if guild_owner
+        subscription_info.concat(stripe_customer_invoices_info)
+        subscription_info.concat(stripe_customer_sources_info)
+        subscription_info << update_cc_text
+      end
+    elsif subscribed && subscribed_at
+      subscription_info << subscriber_text
+    else
+      subscription_info << trial_message
+    end
+    subscription_info.compact.join("\n")
+  end
+
   def subscription_expired!
     return unless subscription_expired?
     return if subscription_expired_at
