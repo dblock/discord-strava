@@ -305,7 +305,7 @@ class Team
     return unless stripe_customer
 
     stripe_customer.subscriptions.detect do |subscription|
-      subscription.status == 'active' && !subscription.cancel_at_period_end
+      subscription.status == 'active'
     end
   end
 

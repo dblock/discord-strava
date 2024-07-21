@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe DiscordStrava::Commands::Unsubscribe do
+describe DiscordStrava::Commands::Resubscribe do
   include_context :discord_command do
-    let(:args) { ['unsubscribe'] }
+    let(:args) { ['resubscribe'] }
   end
-  shared_examples_for 'unsubscribe' do
+  shared_examples_for 'resubscribe' do
     context 'on trial' do
       before do
         team.update_attributes!(subscribed: false, subscribed_at: nil)
       end
       it 'displays all set message' do
-        expect(response).to eq "You don't have a paid subscription, all set."
+        expect(response).to eq "You don't have a paid subscription. #{team.subscribe_text}"
       end
     end
     context 'with subscribed_at' do
@@ -18,7 +18,7 @@ describe DiscordStrava::Commands::Unsubscribe do
         team.update_attributes!(subscribed: true, subscribed_at: 1.year.ago)
       end
       it 'displays subscription info' do
-        expect(response).to eq "You don't have a paid subscription, all set."
+        expect(response).to eq "You don't have a paid subscription. #{team.subscribe_text}"
       end
     end
     context 'with a plan' do
@@ -34,6 +34,8 @@ describe DiscordStrava::Commands::Unsubscribe do
             email: 'foo@bar.com'
           )
         end
+        let(:active_subscription) { team.active_stripe_subscription }
+        let(:current_period_end) { Time.at(active_subscription.current_period_end).strftime('%B %d, %Y') }
         before do
           team.update_attributes!(
             subscribed: true,
@@ -41,46 +43,48 @@ describe DiscordStrava::Commands::Unsubscribe do
             guild_owner_id: activated_user.user_id
           )
         end
-        let(:active_subscription) { team.active_stripe_subscription }
-        let(:current_period_end) { Time.at(active_subscription.current_period_end).strftime('%B %d, %Y') }
-        context 'subscription that ends at period end' do
-          before do
-            active_subscription.delete(at_period_end: true)
+        context 'active subscription' do
+          context 'guid owner' do
+            before do
+              allow_any_instance_of(User).to receive(:guild_owner?).and_return(true)
+            end
+            it 'displays that the subscription will continue to auto-renew' do
+              expect(response).to eq "Subscription to Plan ($19.99) will continue to auto-renew on #{current_period_end}."
+            end
           end
           context 'not a guild owner' do
             before do
               allow_any_instance_of(User).to receive(:guild_owner?).and_return(false)
             end
-            it 'cannot unsubscribe' do
+            it 'cannot resubscribe' do
               expect(response).to eq 'Sorry, only a Discord admin can do that.'
             end
+          end
+        end
+        context 'with auto renew turned off' do
+          before do
+            active_subscription.delete(at_period_end: true)
           end
           context 'guild owner' do
             before do
               allow_any_instance_of(User).to receive(:guild_owner?).and_return(true)
             end
-            it 'displays that the subscription is already set to expire' do
-              expect(response).to eq "Subscription to Plan ($19.99) is already set to expire on #{current_period_end}, and will not auto-renew."
+            context 'valid subscription id' do
+              it 'resubscribes' do
+                expect(response).to eq "Subscription to Plan ($19.99) will now auto-renew on #{current_period_end}."
+                team.reload
+                expect(team.subscribed).to be true
+                expect(team.stripe_customer_id).to_not be nil
+              end
             end
           end
-        end
-        context 'guild owner' do
-          before do
-            allow_any_instance_of(User).to receive(:guild_owner?).and_return(true)
-          end
-          it 'unsubscribes' do
-            expect(response).to eq "Successfully canceled auto-renew to Plan ($19.99), will expire on #{current_period_end}, and will not auto-renew."
-            team.reload
-            expect(team.subscribed).to be true
-            expect(team.stripe_customer_id).to_not be nil
-          end
-        end
-        context 'not a guild owner' do
-          before do
-            allow_any_instance_of(User).to receive(:guild_owner?).and_return(false)
-          end
-          it 'cannot unsubscribe' do
-            expect(response).to eq 'Sorry, only a Discord admin can do that.'
+          context 'not a guild owner' do
+            before do
+              allow_any_instance_of(User).to receive(:guild_owner?).and_return(false)
+            end
+            it 'cannot resubscribe' do
+              expect(response).to eq 'Sorry, only a Discord admin can do that.'
+            end
           end
         end
       end
@@ -92,10 +96,10 @@ describe DiscordStrava::Commands::Unsubscribe do
     before do
       team.update_attributes!(guild_owner_id: activated_user.user_id)
     end
-    it_behaves_like 'unsubscribe'
+    it_behaves_like 'resubscribe'
     context 'with another team' do
       let!(:team2) { Fabricate(:team) }
-      it_behaves_like 'unsubscribe'
+      it_behaves_like 'resubscribe'
     end
   end
 end

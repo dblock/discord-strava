@@ -78,5 +78,9 @@
         "name": "unsubscribe",
         "description": "Turn off subscription auto-renew.",
         "type": 1
+    }, {
+        "name": "resubscribe",
+        "description": "Turn on subscription auto-renew.",
+        "type": 1
     }]
 }
