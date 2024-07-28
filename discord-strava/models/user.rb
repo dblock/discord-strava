@@ -189,6 +189,15 @@ class User
     end
   end
 
+  def sync_activity_and_brag!(activity_id)
+    with_lock do
+      with_strava_error_handler do
+        sync_strava_activity!(activity_id)
+        brag!
+      end
+    end
+  end
+
   def sync_new_strava_activities!
     dt = activities_at || latest_activity_start_date || before_connected_to_strava_at || created_at
     options = {}
