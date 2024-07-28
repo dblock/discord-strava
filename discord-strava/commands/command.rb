@@ -4,7 +4,7 @@ module DiscordStrava
       include DiscordStrava::Loggable
 
       def initialize(params, request)
-        super params, request
+        super
       end
 
       def team

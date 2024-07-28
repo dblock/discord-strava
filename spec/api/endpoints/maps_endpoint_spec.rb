@@ -11,26 +11,32 @@ describe Api::Endpoints::MapsEndpoint do
         expect(JSON.parse(last_response.body)).to eq('error' => 'Not Found')
       end
     end
+
     context 'with an activity' do
       let(:user) { Fabricate(:user) }
       let(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'redirects to map URL' do
         get "/api/maps/#{activity.map.id}.png"
         expect(last_response.status).to eq 302
         expect(last_response.headers['Location']).to eq activity.map.image_url
       end
     end
+
     context 'with a private activity', vcr: { cassette_name: 'strava/map' } do
       let(:user) { Fabricate(:user, private_activities: false) }
       let(:activity) { Fabricate(:user_activity, private: true, user: user) }
+
       it 'does not return map' do
         get "/api/maps/#{activity.map.id}.png"
         expect(last_response.status).to eq 403
       end
     end
+
     context 'with an activity witout a map' do
       let(:user) { Fabricate(:user) }
       let(:activity) { Fabricate(:user_activity, user: user, map: { summary_polyline: '' }) }
+
       it 'does not return map' do
         get "/api/maps/#{activity.map.id}.png"
         expect(last_response.status).to eq 404

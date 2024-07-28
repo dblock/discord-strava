@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.shared_context :discord_command, shared_context: :metadata do
+RSpec.shared_context 'discord command', shared_context: :metadata do
   let(:team) { Fabricate(:team, created_at: 2.weeks.ago) }
   let(:user) { Fabricate(:user, team: team) }
   let(:args) { [] }

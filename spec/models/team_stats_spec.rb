@@ -2,19 +2,23 @@ require 'spec_helper'
 
 describe TeamStats do
   let(:team) { Fabricate(:team) }
+
   context 'with no activities' do
     let(:stats) { team.stats }
-    context '#stats' do
+
+    describe '#stats' do
       it 'aggregates stats' do
         expect(stats.count).to eq 0
       end
     end
-    context '#to_discord' do
+
+    describe '#to_discord' do
       it 'defaults to no activities' do
         expect(stats.to_discord).to eq('There are no activities in this channel.')
       end
     end
   end
+
   context 'with activities' do
     let!(:user1) { Fabricate(:user, team: team) }
     let!(:user2) { Fabricate(:user, team: team) }
@@ -24,12 +28,15 @@ describe TeamStats do
     let!(:activity1) { Fabricate(:user_activity, user: user1) }
     let!(:activity2) { Fabricate(:user_activity, user: user1) }
     let!(:activity3) { Fabricate(:user_activity, user: user2) }
-    context '#stats' do
+
+    describe '#stats' do
       let(:stats) { team.stats }
+
       it 'returns stats sorted by count' do
         expect(stats.keys).to eq %w[Run Ride Swim]
         expect(stats.values.map(&:count)).to eq [3, 2, 1]
       end
+
       it 'aggregates stats' do
         expect(stats['Ride'].to_h).to eq(
           {
@@ -62,30 +69,37 @@ describe TeamStats do
           }
         )
       end
+
       context 'with activities from another team' do
         let!(:another_activity) { Fabricate(:user_activity, user: user1) }
         let!(:another_team_activity) { Fabricate(:user_activity, user: Fabricate(:user, team: Fabricate(:team))) }
+
         it 'does not include that activity' do
           expect(stats.values.map(&:count)).to eq [4, 2, 1]
         end
       end
     end
-    context '#to_discord' do
+
+    describe '#to_discord' do
       let(:stats) { team.stats }
+
       it 'includes all activities' do
         expect(stats.to_discord[:embeds].count).to eq(3)
       end
     end
   end
+
   context 'with activities across multiple channels' do
     let!(:user1) { Fabricate(:user, team: team) }
     let!(:user2) { Fabricate(:user, team: team) }
     let!(:user_activity1) { Fabricate(:user_activity, user: user1, channel_message: { channel_id: 'c1', message_id: '1' }) }
     let!(:user_activity2) { Fabricate(:user_activity, user: user2, channel_message: { channel_id: 'c2', message_id: '1' }) }
-    context '#stats' do
+
+    describe '#stats' do
       context 'all channels' do
         let!(:stats) { team.stats }
         let!(:activities) { [user_activity1, user_activity2] }
+
         it 'returns stats for all activities' do
           expect(stats['Run'].to_h).to eq(
             {
@@ -99,9 +113,11 @@ describe TeamStats do
           )
         end
       end
+
       context 'a single channels' do
         let!(:stats) { team.stats(channel_id: 'c1') }
         let!(:activities) { [user_activity1] }
+
         it 'returns stats for all activities' do
           expect(stats['Run'].to_h).to eq(
             {

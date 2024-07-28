@@ -10,6 +10,7 @@ describe Api::Endpoints::DiscordEndpoint do
       response = JSON.parse(last_response.body)
       expect(response['error']).to eq 'Missing X-Signature-Ed25519'
     end
+
     it 'X-Signature-Timestamp is required' do
       header 'X-Signature-Ed25519', 'signature'
       post '/api/discord'
@@ -17,6 +18,7 @@ describe Api::Endpoints::DiscordEndpoint do
       response = JSON.parse(last_response.body)
       expect(response['error']).to eq 'Missing X-Signature-Timestamp'
     end
+
     it 'DISCORD_PUBLIC_KEY is required' do
       header 'X-Signature-Ed25519', 'signature'
       header 'X-Signature-Timestamp', 'ts'
@@ -25,13 +27,16 @@ describe Api::Endpoints::DiscordEndpoint do
       response = JSON.parse(last_response.body)
       expect(response['error']).to eq 'Missing DISCORD_PUBLIC_KEY'
     end
+
     context 'with signature' do
       before do
         ENV['DISCORD_PUBLIC_KEY'] = '3a2b26f5434477d6f9632324775d8821284b1b38d3ba760bc1dd0bd31a334ede'
       end
+
       after do
         ENV.delete('DISCORD_PUBLIC_KEY')
       end
+
       it 'verifies signature' do
         header 'X-Signature-Ed25519', 'e20cd950d46f99886a72ab9ac464d514f7dcd9a2ae1815360c44bf494ed0600bcc8b58427dd08a299c1c670a61ae6bcc2e391758f4b6fbea6b65374c54ee4e06'
         header 'X-Signature-Timestamp', 'timestamp'
@@ -45,6 +50,7 @@ describe Api::Endpoints::DiscordEndpoint do
         expect(last_response.status).to eq 201
         expect(JSON.parse(last_response.body)).to eq({ 'type' => 1 })
       end
+
       it 'rejects an invalid signature' do
         header 'X-Signature-Ed25519', 'x' * 128
         header 'X-Signature-Timestamp', 'timestamp'
@@ -68,9 +74,11 @@ describe Api::Endpoints::DiscordEndpoint do
       header 'X-Signature-Timestamp', 'timestamp'
       allow(Discord::Interactions::Signature).to receive(:verify!)
     end
+
     after do
       ENV.delete('DISCORD_PUBLIC_KEY')
     end
+
     context 'ping' do
       it 'receives pong' do
         post '/api/discord', {
@@ -84,6 +92,7 @@ describe Api::Endpoints::DiscordEndpoint do
         expect(JSON.parse(last_response.body)).to eq({ 'type' => 1 })
       end
     end
+
     context 'unhandled interaction' do
       it 'receives unhandled error' do
         post '/api/discord', {
@@ -97,6 +106,7 @@ describe Api::Endpoints::DiscordEndpoint do
         expect(JSON.parse(last_response.body)).to eq({ 'error' => 'Unhandled Interaction' })
       end
     end
+
     context 'dm' do
       it 'receives DM message' do
         post '/api/discord', {
@@ -134,9 +144,11 @@ describe Api::Endpoints::DiscordEndpoint do
         )
       end
     end
+
     context 'channel command' do
       let!(:team) { Fabricate(:team, guild_id: 'guild_id') }
       let!(:user) { Fabricate(:user, team: team) }
+
       it 'receives response' do
         post '/api/discord', {
           id: 'id',

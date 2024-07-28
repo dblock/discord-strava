@@ -7,12 +7,15 @@ describe Api::Endpoints::TeamsEndpoint do
     subject do
       client.teams
     end
+
     it 'lists no teams' do
       expect(subject.to_a.size).to eq 0
     end
+
     context 'with teams' do
       let!(:team1) { Fabricate(:team, api: false) }
       let!(:team2) { Fabricate(:team, api: true) }
+
       it 'lists teams with api enabled' do
         expect(subject.to_a.size).to eq 1
         expect(subject.first.id).to eq team2.id.to_s
@@ -42,15 +45,18 @@ describe Api::Endpoints::TeamsEndpoint do
           }
         }
       end
+
       before do
         ENV['DISCORD_CLIENT_ID'] = 'client_id'
         ENV['DISCORD_CLIENT_SECRET'] = 'client_secret'
         allow(Discord::OAuth2).to receive(:post).with('oauth2/token', hash_including(code: 'code'), :url_encoded).and_return(oauth_access)
       end
+
       after do
         ENV.delete('DISCORD_CLIENT_ID')
         ENV.delete('DISCORD_CLIENT_SECRET')
       end
+
       it 'creates a team' do
         expect_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
@@ -64,6 +70,7 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(team.guild_owner_id).to eq 'guild_owner_id'
         }.to change(Team, :count).by(1)
       end
+
       it 'reactivates a deactivated team' do
         allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
@@ -78,8 +85,9 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(team.refresh_token).to eq 'refresh_token'
           expect(team.active).to be true
           expect(team.guild_owner_id).to eq 'guild_owner_id'
-        }.to_not change(Team, :count)
+        }.not_to change(Team, :count)
       end
+
       it 'reactivates a team deactivated on discord with the same access token' do
         allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
@@ -94,8 +102,9 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(team.token).to eq 'access_token'
           expect(team.active).to be true
           expect(team.guild_owner_id).to eq 'guild_owner_id'
-        }.to_not change(Team, :count)
+        }.not_to change(Team, :count)
       end
+
       it 'reactivates a team deactivated on discord with the same guild id' do
         allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
@@ -110,8 +119,9 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(team.token).to eq 'access_token'
           expect(team.active).to be true
           expect(team.guild_owner_id).to eq 'guild_owner_id'
-        }.to_not change(Team, :count)
+        }.not_to change(Team, :count)
       end
+
       it 'returns a useful error when team already exists' do
         allow_any_instance_of(Team).to receive(:activated!)
         expect_any_instance_of(Team).to receive(:ping_if_active!)
@@ -121,6 +131,7 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(json['message']).to eq "Team \"guild_name\" is already registered. You're all set."
         end
       end
+
       it 'reactivates a deactivated team with a different code' do
         allow_any_instance_of(Team).to receive(:activated!)
         expect(DiscordStrava::Service.instance).to receive(:start!)
@@ -134,7 +145,7 @@ describe Api::Endpoints::TeamsEndpoint do
           expect(team.token).to eq 'access_token'
           expect(team.active).to be true
           expect(team.guild_owner_id).to eq 'guild_owner_id'
-        }.to_not change(Team, :count)
+        }.not_to change(Team, :count)
       end
     end
   end

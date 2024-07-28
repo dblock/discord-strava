@@ -4,74 +4,96 @@ describe UserActivity do
   before do
     allow(HTTParty).to receive_message_chain(:get, :body).and_return('PNG')
   end
+
   context 'hidden?' do
     context 'default' do
       let(:activity) { Fabricate(:user_activity) }
+
       it 'is not hidden' do
         expect(activity.hidden?).to be false
       end
     end
+
     context 'private' do
       context 'private and user is private' do
         let(:user) { Fabricate(:user, private_activities: false) }
         let(:activity) { Fabricate(:user_activity, user: user, private: true) }
+
         it 'is hidden' do
           expect(activity.hidden?).to be true
         end
       end
+
       context 'private but user is public' do
         let(:user) { Fabricate(:user, private_activities: true) }
         let(:activity) { Fabricate(:user_activity, user: user, private: true) }
+
         it 'is not hidden' do
           expect(activity.hidden?).to be false
         end
       end
+
       context 'public but user is private' do
         let(:user) { Fabricate(:user, private_activities: false) }
         let(:activity) { Fabricate(:user_activity, user: user, private: false) }
+
         it 'is hidden' do
           expect(activity.hidden?).to be false
         end
       end
     end
+
     context 'visibility' do
       context 'user has not set followers_only_activities' do
         let(:user) { Fabricate(:user, followers_only_activities: false) }
+
         context 'only_me' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'only_me') }
+
           it 'is hidden' do
             expect(activity.hidden?).to be true
           end
         end
+
         context 'followers_only' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'followers_only') }
+
           it 'is hidden' do
             expect(activity.hidden?).to be true
           end
         end
+
         context 'everyone' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'everyone') }
+
           it 'is not hidden' do
             expect(activity.hidden?).to be false
           end
         end
       end
+
       context 'user has set followers_only_activities' do
         let(:user) { Fabricate(:user, followers_only_activities: true) }
+
         context 'only_me' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'only_me') }
+
           it 'is hidden' do
             expect(activity.hidden?).to be true
           end
         end
+
         context 'followers_only' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'followers_only') }
+
           it 'is not hidden' do
             expect(activity.hidden?).to be false
           end
         end
+
         context 'everyone' do
           let(:activity) { Fabricate(:user_activity, user: user, visibility: 'everyone') }
+
           it 'is not hidden' do
             expect(activity.hidden?).to be false
           end
@@ -79,10 +101,12 @@ describe UserActivity do
       end
     end
   end
+
   context 'brag!' do
     let(:team) { Fabricate(:team) }
     let(:user) { Fabricate(:user, team: team) }
     let!(:activity) { Fabricate(:user_activity, user: user) }
+
     it 'sends a message to the subscribed channel' do
       expect(Discord::Messages).to receive(:send_message).with(
         user.channel_id,
@@ -90,52 +114,63 @@ describe UserActivity do
       ).and_return('id' => '1', 'channel_id' => '2')
       expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
     end
+
     it 'disables user sync on access error' do
       expect(Discord::Messages).to receive(:send_message).with(
         user.channel_id,
         activity.to_discord
       ).and_raise(Faraday::ForbiddenError.new('forbidden'))
       expect { activity.brag! }.to raise_error(Faraday::ForbiddenError)
-      expect(activity.bragged_at).to_not be nil
+      expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
   end
+
   context 'unbrag!' do
     let(:team) { Fabricate(:team) }
     let(:user) { Fabricate(:user, team: team) }
+
     context 'a bragged message' do
       let!(:activity) { Fabricate(:user_activity, user: user, channel_message: Fabricate(:channel_message)) }
+
       it 'deletes a previously sent message' do
         expect(Discord::Messages).to receive(:delete_message).with(
           activity.channel_message.channel_id,
           activity.channel_message.message_id
         ).and_return('id' => '1', 'channel_id' => '2')
-        expect(activity.unbrag!).to be nil
-        expect(activity.channel_message).to be nil
+        expect(activity.unbrag!).to be_nil
+        expect(activity.channel_message).to be_nil
       end
+
       it 'ignores a previously delete message' do
         allow(Discord::Messages).to receive(:delete_message)
-        2.times { expect(activity.unbrag!).to be nil }
-        expect(activity.channel_message).to be nil
+        2.times { expect(activity.unbrag!).to be_nil }
+        expect(activity.channel_message).to be_nil
       end
     end
+
     context 'an unbragged message' do
       let!(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'ignores a previously delete message' do
-        expect(Discord::Messages).to_not receive(:delete_message)
-        expect(activity.unbrag!).to be nil
+        expect(Discord::Messages).not_to receive(:delete_message)
+        expect(activity.unbrag!).to be_nil
       end
     end
   end
+
   context 'in time' do
     let(:tt) { Time.now }
+
     before do
       Timecop.freeze(tt)
     end
+
     context 'miles' do
       let(:team) { Fabricate(:team, units: 'mi') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -165,10 +200,12 @@ describe UserActivity do
           ]
         )
       end
+
       context 'with all fields' do
         before do
           team.activity_fields = ['All']
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -204,10 +241,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'with none fields' do
         before do
           team.activity_fields = ['None']
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -228,10 +267,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'with all header fields' do
         before do
           team.activity_fields = %w[Title Url User Description Date Athlete]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -252,10 +293,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without athlete' do
         before do
           team.activity_fields = %w[Title Url User Description Date]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -272,10 +315,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without user' do
         before do
           team.activity_fields = %w[Title Url Description Date]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -292,10 +337,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without description' do
         before do
           team.activity_fields = %w[Title Url User Date]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -312,10 +359,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without date' do
         before do
           team.activity_fields = %w[Title Url Description]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -332,10 +381,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without url' do
         before do
           team.activity_fields = %w[Title]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -350,10 +401,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without title' do
         before do
           team.activity_fields = %w[Url]
         end
+
         it 'to_discord' do
           expect(activity.to_discord).to eq(
             embeds: [
@@ -369,10 +422,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'without an athlete' do
         before do
           user.athlete.destroy
         end
+
         it 'to_discord' do
           expect(activity.reload.to_discord).to eq(
             embeds: [
@@ -399,10 +454,12 @@ describe UserActivity do
           )
         end
       end
+
       context 'with a zero speed' do
         before do
           activity.update_attributes!(average_speed: 0.0)
         end
+
         it 'to_discord' do
           expect(activity.reload.to_discord).to eq(
             embeds: [
@@ -432,10 +489,12 @@ describe UserActivity do
         end
       end
     end
+
     context 'km' do
       let(:team) { Fabricate(:team, units: 'km') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -466,10 +525,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'both' do
       let(:team) { Fabricate(:team, units: 'both') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -500,10 +561,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'swim activity in yards' do
       let(:team) { Fabricate(:team) }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:swim_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -528,10 +591,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'swim activity in meters' do
       let(:team) { Fabricate(:team, units: 'km') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:swim_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -556,10 +621,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'swim activity in both' do
       let(:team) { Fabricate(:team, units: 'both') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:swim_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -584,10 +651,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'ride activities in kilometers/hour' do
       let(:team) { Fabricate(:team, units: 'km') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:ride_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -613,10 +682,12 @@ describe UserActivity do
         )
       end
     end
+
     context 'ride activities in both' do
       let(:team) { Fabricate(:team, units: 'both') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:ride_activity, user: user) }
+
       it 'to_discord' do
         expect(activity.to_discord).to eq(
           embeds: [
@@ -643,63 +714,77 @@ describe UserActivity do
       end
     end
   end
+
   context 'map' do
     context 'with a summary polyline' do
       let(:activity) { Fabricate(:user_activity) }
+
       it 'start_latlng' do
         expect(activity.start_latlng).to eq([37.82822, -122.26348])
       end
     end
+
     context 'with a blank summary polyline' do
       let(:map) { Fabricate.build(:map, summary_polyline: '') }
       let(:activity) { Fabricate(:user_activity, map: map) }
+
       it 'start_latlng' do
-        expect(activity.start_latlng).to be nil
+        expect(activity.start_latlng).to be_nil
       end
     end
   end
+
   context 'maps' do
     context 'without maps' do
       let(:team) { Fabricate(:team, maps: 'off') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user) }
       let(:embed) { activity.to_discord[:embeds].first }
+
       it 'to_discord' do
-        expect(embed.keys).to_not include :image
-        expect(embed.keys).to_not include :thumbnail
+        expect(embed.keys).not_to include :image
+        expect(embed.keys).not_to include :thumbnail
       end
     end
+
     context 'with an empty polyline' do
       let(:team) { Fabricate(:team, maps: 'thumb') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user, map: { summary_polyline: '' }) }
       let(:embed) { activity.to_discord[:embeds].first }
+
       it 'to_discord' do
-        expect(embed.keys).to_not include :image
-        expect(embed.keys).to_not include :thumbnail
+        expect(embed.keys).not_to include :image
+        expect(embed.keys).not_to include :thumbnail
       end
+
       it 'does not insert an empty point to the decoded polyline' do
-        expect(activity.map.decoded_summary_polyline).to be nil
+        expect(activity.map.decoded_summary_polyline).to be_nil
       end
+
       it 'does not have an image' do
         expect(activity.map.has_image?).to be false
-        expect(activity.map.image_url).to be nil
-        expect(activity.map.proxy_image_url).to be nil
+        expect(activity.map.image_url).to be_nil
+        expect(activity.map.proxy_image_url).to be_nil
       end
     end
+
     context 'with thumbnail' do
       let(:team) { Fabricate(:team, maps: 'thumb') }
       let(:user) { Fabricate(:user, team: team) }
       let(:activity) { Fabricate(:user_activity, user: user) }
       let(:embed) { activity.to_discord[:embeds].first }
+
       it 'to_discord' do
-        expect(embed.keys).to_not include :image
+        expect(embed.keys).not_to include :image
         expect(embed[:thumbnail][:url]).to eq "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
       end
+
       it 'decodes polyline points' do
         expect(activity.map.decoded_summary_polyline.size).to eq 123
         expect(activity.map.decoded_summary_polyline.all? { |p| p[0] && p[1] }).to be true
       end
+
       it 'has an image' do
         expect(activity.map.has_image?).to be true
         expect(activity.map.image_url).to start_with 'https://maps.googleapis.com/maps/api/staticmap?maptype=roadmap&path='
@@ -707,6 +792,7 @@ describe UserActivity do
       end
     end
   end
+
   describe 'create_from_strava!' do
     let(:user) { Fabricate(:user) }
     let(:detailed_activity) do
@@ -718,13 +804,16 @@ describe UserActivity do
         )
       )
     end
+
     it 'creates an activity' do
       expect {
         UserActivity.create_from_strava!(user, detailed_activity)
       }.to change(UserActivity, :count).by(1)
     end
+
     context 'with another existing activity' do
       let!(:activity) { Fabricate(:user_activity, user: user) }
+
       it 'creates another activity' do
         expect {
           UserActivity.create_from_strava!(user, detailed_activity)
@@ -732,22 +821,27 @@ describe UserActivity do
         expect(user.reload.activities.count).to eq 2
       end
     end
+
     context 'with an existing activity' do
       let!(:activity) { UserActivity.create_from_strava!(user, detailed_activity) }
+
       it 'does not create another activity' do
         expect {
           UserActivity.create_from_strava!(user, detailed_activity)
-        }.to_not change(UserActivity, :count)
+        }.not_to change(UserActivity, :count)
       end
+
       it 'does not cause a save without changes' do
-        expect_any_instance_of(UserActivity).to_not receive(:save!)
+        expect_any_instance_of(UserActivity).not_to receive(:save!)
         UserActivity.create_from_strava!(user, detailed_activity)
       end
+
       it 'updates an existing activity' do
         activity.update_attributes!(name: 'Original')
         UserActivity.create_from_strava!(user, detailed_activity)
         expect(activity.reload.name).to eq 'First Time Breaking 14'
       end
+
       context 'concurrently' do
         before do
           expect(UserActivity).to receive(:where).with(
@@ -755,12 +849,13 @@ describe UserActivity do
           ).and_return([])
           allow(UserActivity).to receive(:where).and_call_original
         end
+
         it 'does not create a duplicate activity' do
           expect {
             expect {
               UserActivity.create_from_strava!(user, detailed_activity)
             }.to raise_error(Mongo::Error::OperationFailure)
-          }.to_not change(UserActivity, :count)
+          }.not_to change(UserActivity, :count)
         end
       end
     end

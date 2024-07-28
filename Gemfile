@@ -20,6 +20,7 @@ gem 'nokogiri'
 gem 'open-weather-ruby-client'
 gem 'polylines'
 gem 'puma'
+gem 'rack', '~> 3.0.0'
 gem 'rack-cors'
 gem 'rack-rewrite'
 gem 'rack-robotz'
@@ -31,8 +32,10 @@ gem 'wannabe_bool'
 
 group :development, :test do
   gem 'foreman'
+  gem 'rackup'
   gem 'rake', '~> 12.3'
   gem 'rubocop'
+  gem 'rubocop-capybara'
   gem 'rubocop-rake'
   gem 'rubocop-rspec'
 end

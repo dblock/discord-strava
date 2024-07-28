@@ -26,7 +26,7 @@ module Discord
       end
 
       def initialize(params, request)
-        super params, request
+        super
       end
 
       def matches?(route, options = [])

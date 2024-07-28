@@ -2,8 +2,10 @@ require 'spec_helper'
 
 describe ActivitySummary do
   let(:activity_summary) { Fabricate(:activity_summary) }
-  context '#to_discord_embed' do
+
+  describe '#to_discord_embed' do
     let(:discord_attachment) { activity_summary.to_discord_embed }
+
     it 'returns a discord attachment' do
       expect(discord_attachment).to eq(
         {
