@@ -23,6 +23,7 @@ describe 'Update cc', :js, type: :feature do
       it 'updates cc' do
         visit "/update_cc?team_id=#{team.id}"
         expect(find('h1')).to have_text('Strada: Update Credit Card Info')
+        expect(find_by_id('messages')).to have_text("Click button to update the credit card for team #{team.guild_name}.")
         customer = double
         expect(Stripe::Customer).to receive(:retrieve).and_return(customer)
         expect(customer).to receive(:source=)

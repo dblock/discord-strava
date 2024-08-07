@@ -42,21 +42,19 @@
             stripe_token: "<%= stripe_token %>",
             stripe_token_type: "<%= stripe_token_type %>",
             stripe_email: "<%= stripe_email %>",
-            team_id: "<%= team ? team.id : nil %>"
-          };
+            team_id: "<%= team ? team.id : nil %>",
+            guild_name: '<%= team && team.guild_name.gsub(/[^0-9a-z ]/i, '') %>'
+          }
+
+          DiscordStrava.message('Click button to update the credit card for team <b>' + data.guild_name + '.');
 
           if (data.stripe_token) {
-            var team = {
-              id: '<%= team && team.id %>',
-              guild_name: '<%= team && team.guild_name.gsub(/[^0-9a-z ]/i, '') %>'
-            }
-
             $.ajax({
               type: 'POST',
               url: '/api/credit_cards',
               data: data,
               success: function(data) {
-                DiscordStrava.message('Successfully updated team <b>' + team.guild_name + '</b> credit card.<br><br>Thank you for your support!');
+                DiscordStrava.message('Successfully updated team <b>' + data.guild_name + '</b> credit card.<br><br>Thank you for your support!');
                 $('form').remove();
               },
               error: DiscordStrava.error
