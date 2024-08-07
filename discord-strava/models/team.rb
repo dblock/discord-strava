@@ -207,7 +207,7 @@ class Team
   end
 
   def update_cc_text
-    "Update your credit card info at #{DiscordStrava::Service.url}/update_cc?guild_id=#{guild_id}."
+    "Update your credit card info at #{DiscordStrava::Service.url}/update_cc?team_id=#{id}."
   end
 
   def subscribed_text
@@ -261,7 +261,7 @@ class Team
   end
 
   def subscribe_text
-    "Subscribe your team for $19.99 a year at #{DiscordStrava::Service.url}/subscribe?guild_id=#{guild_id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
+    "Subscribe your team for $19.99 a year at #{DiscordStrava::Service.url}/subscribe?team_id=#{id} to continue receiving Strava activities in Discord. Proceeds go to NYRR."
   end
 
   def stripe_customer_subscriptions_info

@@ -23,7 +23,7 @@
       <script>
         $(document).ready(function() {
 
-          <% team = Team.where(guild_id: request['guild_id']).first %>
+          <% team = Team.where(_id: request.params['team_id']).first %>
 
           var team = {
             id: '<%= team && team.id %>',
@@ -39,7 +39,7 @@
             DiscordStrava.message('Subscribe team <b>' + team.guild_name + '</b> for $19.99/yr.');
           } else {
             $('#subscribeButton').remove();
-            DiscordStrava.message('Missing or invalid team ID.');
+            DiscordStrava.errorMessage('Missing or invalid team ID.');
           }
 
           var handler = StripeCheckout.configure({

@@ -8,6 +8,11 @@ $(document).ready(function() {
         });
     };
 
+    DiscordStrava.errorMessage = function(message) {
+        DiscordStrava.message(message)
+        $('#messages').addClass('has-error');
+    };
+
     DiscordStrava.error = function(xhr) {
         try {
             var message;
@@ -27,11 +32,10 @@ $(document).ready(function() {
                 }
             }
 
-            DiscordStrava.message(message || xhr.statusText || xhr.responseText || 'Unexpected Error');
+            DiscordStrava.errorMessage(message || xhr.statusText || xhr.responseText || 'Unexpected Error');
 
         } catch (err) {
-            DiscordStrava.message(err.message);
+            DiscordStrava.errorMessage(err.message);
         }
     };
-
 });

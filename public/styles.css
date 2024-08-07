@@ -30,3 +30,7 @@ body {
     border: 2px solid;
     padding: 9px;
 }
+
+p.has-error {
+    color: red;
+}

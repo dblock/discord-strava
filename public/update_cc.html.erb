@@ -3,10 +3,10 @@
     <title>Strada: Update Credit Card</title>
     <%= partial 'public/partials/_head.html' %>
     <%
-      team = Team.where(team_id: request['team_id']).first
-      stripe_token = request['stripeToken']
-      stripe_token_type = request['stripeTokenType']
-      stripe_email = request['stripeEmail']
+      team = Team.where(_id: request.params['team_id']).first
+      stripe_token = request.params['stripeToken']
+      stripe_token_type = request.params['stripeTokenType']
+      stripe_email = request.params['stripeEmail']
     %>
   </head>
   <body>
@@ -46,7 +46,6 @@
           };
 
           if (data.stripe_token) {
-
             var team = {
               id: '<%= team && team.id %>',
               guild_name: '<%= team && team.guild_name.gsub(/[^0-9a-z ]/i, '') %>'
@@ -62,6 +61,10 @@
               },
               error: DiscordStrava.error
             });
+          } else if (!data.team_id) {
+            DiscordStrava.errorMessage("Team not found.")
+            $('form').remove();
+            $('#update_cc').hide();
           }
         });
       </script>
