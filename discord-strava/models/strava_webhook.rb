@@ -31,8 +31,8 @@ class StravaWebhook
   def subscribe!
     Api::Middleware.logger.info "Creating a Strava webhook subscription at #{callback_url} ..."
     @subscription = client.create_push_subscription(
-      callback_url: callback_url,
-      verify_token: verify_token
+      callback_url:,
+      verify_token:
     )
   end
 

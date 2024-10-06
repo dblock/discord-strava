@@ -49,8 +49,8 @@ describe SystemStats do
 
   context 'with activities' do
     let!(:team) { Fabricate(:team) }
-    let!(:user1) { Fabricate(:user, team: team) }
-    let!(:user2) { Fabricate(:user, team: team) }
+    let!(:user1) { Fabricate(:user, team:) }
+    let!(:user2) { Fabricate(:user, team:) }
     let!(:swim_activity) { Fabricate(:swim_activity, user: user2) }
     let!(:ride_activity1) { Fabricate(:ride_activity, user: user1) }
     let!(:ride_activity2) { Fabricate(:ride_activity, user: user1) }

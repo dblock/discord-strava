@@ -179,8 +179,8 @@ describe Team do
 
   describe '#destroy' do
     let!(:team) { Fabricate(:team) }
-    let!(:user1) { Fabricate(:user, team: team) }
-    let!(:user2) { Fabricate(:user, team: team, access_token: 'token', token_expires_at: Time.now + 1.day, token_type: 'Bearer') }
+    let!(:user1) { Fabricate(:user, team:) }
+    let!(:user2) { Fabricate(:user, team:, access_token: 'token', token_expires_at: Time.now + 1.day, token_type: 'Bearer') }
 
     it 'revokes access tokens' do
       allow(team).to receive(:users).and_return([user1, user2])

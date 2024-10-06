@@ -8,7 +8,7 @@ module Discord
         'oauth2/token', {
           client_id: ENV.fetch('DISCORD_CLIENT_ID', nil),
           client_secret: ENV.fetch('DISCORD_CLIENT_SECRET', nil),
-          code: code,
+          code:,
           grant_type: 'authorization_code',
           redirect_uri: ENV.fetch('URL', nil),
           scope: 'bot'

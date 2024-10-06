@@ -16,7 +16,7 @@ module StravaTokens
   end
 
   def get_access_token!(code)
-    oauth_client.oauth_token(code: code, grant_type: 'authorization_code')
+    oauth_client.oauth_token(code:, grant_type: 'authorization_code')
   end
 
   def reset_access_tokens!(attrs = {})
@@ -55,7 +55,7 @@ module StravaTokens
     return unless access_token
 
     response = strava_client.deauthorize(
-      access_token: access_token
+      access_token:
     )
 
     raise 'Missing access_token in deauthorize response.' unless response.access_token
@@ -66,7 +66,7 @@ module StravaTokens
       refresh_access_token!
       raise 'Missing access_token.' unless access_token
 
-      Strava::Api::Client.new(access_token: access_token)
+      Strava::Api::Client.new(access_token:)
     end
   end
 end

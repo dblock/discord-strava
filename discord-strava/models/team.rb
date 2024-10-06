@@ -65,14 +65,14 @@ class Team
   end
 
   def activate!(token)
-    update!(active: true, token: token)
+    update!(active: true, token:)
   end
 
   def to_s
     {
-      _id: _id,
-      guild_id: guild_id,
-      guild_name: guild_name
+      _id:,
+      guild_id:,
+      guild_name:
     }.map { |k, v|
       "#{k}=#{v}" if v
     }.compact.join(', ')
@@ -330,7 +330,7 @@ class Team
   end
 
   def subscribed!
-    return unless subscribed? && subscribed_changed?
+    return unless subscribed? && (subscribed_changed? || saved_change_to_subscribed?)
 
     inform_everyone!(subscribed_text)
   end
@@ -343,7 +343,7 @@ class Team
   end
 
   def activated!
-    return unless active? && active_changed?
+    return unless active? && (active_changed? || saved_change_to_active?)
 
     inform_activated!
   end
@@ -359,7 +359,7 @@ class Team
   end
 
   def update_subscribed_at
-    return unless subscribed? && subscribed_changed?
+    return unless subscribed? && (subscribed_changed? || saved_change_to_subscribed?)
 
     self.subscribed_at = subscribed? ? DateTime.now.utc : nil
   end

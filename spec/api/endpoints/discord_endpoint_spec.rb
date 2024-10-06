@@ -147,7 +147,7 @@ describe Api::Endpoints::DiscordEndpoint do
 
     context 'channel command' do
       let!(:team) { Fabricate(:team, guild_id: 'guild_id') }
-      let!(:user) { Fabricate(:user, team: team) }
+      let!(:user) { Fabricate(:user, team:) }
 
       it 'receives response' do
         post '/api/discord', {

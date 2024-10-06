@@ -1,5 +1,5 @@
 module Brag
-  def with_strava_error_handler(&_block)
+  def with_strava_error_handler(&)
     yield
   rescue Strava::Errors::Fault => e
     case e.message

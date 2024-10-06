@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.shared_context 'discord command', shared_context: :metadata do
   let(:team) { Fabricate(:team, created_at: 2.weeks.ago) }
-  let(:user) { Fabricate(:user, team: team) }
+  let(:user) { Fabricate(:user, team:) }
   let(:args) { [] }
   let(:command_options) do
     result = []

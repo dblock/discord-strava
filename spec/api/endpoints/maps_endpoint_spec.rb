@@ -14,7 +14,7 @@ describe Api::Endpoints::MapsEndpoint do
 
     context 'with an activity' do
       let(:user) { Fabricate(:user) }
-      let(:activity) { Fabricate(:user_activity, user: user) }
+      let(:activity) { Fabricate(:user_activity, user:) }
 
       it 'redirects to map URL' do
         get "/api/maps/#{activity.map.id}.png"
@@ -25,7 +25,7 @@ describe Api::Endpoints::MapsEndpoint do
 
     context 'with a private activity', vcr: { cassette_name: 'strava/map' } do
       let(:user) { Fabricate(:user, private_activities: false) }
-      let(:activity) { Fabricate(:user_activity, private: true, user: user) }
+      let(:activity) { Fabricate(:user_activity, private: true, user:) }
 
       it 'does not return map' do
         get "/api/maps/#{activity.map.id}.png"
@@ -35,7 +35,7 @@ describe Api::Endpoints::MapsEndpoint do
 
     context 'with an activity witout a map' do
       let(:user) { Fabricate(:user) }
-      let(:activity) { Fabricate(:user_activity, user: user, map: { summary_polyline: '' }) }
+      let(:activity) { Fabricate(:user_activity, user:, map: { summary_polyline: '' }) }
 
       it 'does not return map' do
         get "/api/maps/#{activity.map.id}.png"

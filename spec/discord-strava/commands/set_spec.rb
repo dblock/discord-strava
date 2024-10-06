@@ -79,7 +79,7 @@ describe DiscordStrava::Commands::Set do
             context 'with prior activities' do
               before do
                 allow_any_instance_of(User).to receive(:inform!)
-                2.times { Fabricate(:user_activity, user: user) }
+                2.times { Fabricate(:user_activity, user:) }
                 user.brag!
               end
 

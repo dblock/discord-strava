@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe User do
+  before do
+    Timecop.freeze
+  end
+
+  after do
+    Timecop.return
+  end
+
   context 'sync_new_strava_activities!' do
     context 'recent created_at', vcr: { cassette_name: 'strava/user_sync_new_strava_activities', allow_playback_repeats: true } do
       let!(:user) { Fabricate(:user, created_at: DateTime.new(2018, 3, 26), access_token: 'token', token_expires_at: Time.now + 1.day, token_type: 'Bearer') }
@@ -26,10 +34,10 @@ describe User do
       end
 
       context 'with unbragged activities' do
-        let!(:activity) { Fabricate(:user_activity, user: user, start_date: DateTime.new(2018, 4, 1)) }
+        let!(:activity) { Fabricate(:user_activity, user:, start_date: DateTime.new(2018, 4, 1)) }
 
         it 'syncs activities since the first one' do
-          expect(user).to receive(:sync_strava_activities!).with(after: activity.start_date.to_i)
+          expect(user).to receive(:sync_strava_activities!).with({ after: activity.start_date.to_i })
           user.sync_new_strava_activities!
         end
       end
@@ -148,7 +156,7 @@ describe User do
             { message_id: 'message', channel_id: 'channel' }
           end
           user.sync_and_brag!
-          expect(user_instance_2).to receive(:sync_strava_activities!).with(after: 1_522_072_635)
+          expect(user_instance_2).to receive(:sync_strava_activities!).with({ after: 1_522_072_635 })
           user_instance_2.sync_and_brag!
           expect(bragged_activities).to eq(['Restarting the Engine', 'First Time Breaking 14'])
         end
@@ -164,7 +172,7 @@ describe User do
         it 'does not reset activities_at back if the most recent bragged activity is in the past' do
           expect(user.activities_at).not_to be_nil
           past = Time.parse('2012-01-01T12:34Z')
-          Fabricate(:user_activity, user: user, start_date: past)
+          Fabricate(:user_activity, user:, start_date: past)
           user.brag!
           expect(user.activities_at).not_to eq past
         end
@@ -174,7 +182,7 @@ describe User do
         end
 
         it 'updates activities since activities_at' do
-          expect(user).to receive(:sync_strava_activities!).with(after: user.activities_at.to_i)
+          expect(user).to receive(:sync_strava_activities!).with({ after: user.activities_at.to_i })
           user.sync_new_strava_activities!
         end
 
@@ -346,7 +354,7 @@ describe User do
     let!(:user) { Fabricate(:user) }
 
     it 'brags the last unbragged activity' do
-      activity = Fabricate(:user_activity, user: user)
+      activity = Fabricate(:user_activity, user:)
       expect_any_instance_of(UserActivity).to receive(:brag!).and_return(
         {
           message_id: '1503425956.000247',
@@ -374,34 +382,34 @@ describe User do
     let(:url) { "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}" }
 
     it 'uses the default message' do
-      expect(user).to receive(:dm!).with(
-        content: 'Please connect your Strava account.',
-        components: [{
-          type: 1,
-          components: [{
-            label: 'Connect!',
-            style: 5,
-            type: 2,
-            url: url
-          }]
-        }]
-      )
+      expect(user).to receive(:dm!).with({
+                                           content: 'Please connect your Strava account.',
+                                           components: [{
+                                             type: 1,
+                                             components: [{
+                                               label: 'Connect!',
+                                               style: 5,
+                                               type: 2,
+                                               url:
+                                             }]
+                                           }]
+                                         })
       user.dm_connect!
     end
 
     it 'uses a custom message' do
-      expect(user).to receive(:dm!).with(
-        content: 'Please reconnect your account.',
-        components: [{
-          type: 1,
-          components: [{
-            label: 'Connect!',
-            style: 5,
-            type: 2,
-            url: url
-          }]
-        }]
-      )
+      expect(user).to receive(:dm!).with({
+                                           content: 'Please reconnect your account.',
+                                           components: [{
+                                             type: 1,
+                                             components: [{
+                                               label: 'Connect!',
+                                               style: 5,
+                                               type: 2,
+                                               url:
+                                             }]
+                                           }]
+                                         })
       user.dm_connect!('Please reconnect your account.')
     end
   end
@@ -446,7 +454,7 @@ describe User do
 
   describe '#rebrag_activity!', vcr: { cassette_name: 'strava/user_sync_new_strava_activities' } do
     let!(:user) { Fabricate(:user, access_token: 'token', token_expires_at: Time.now + 1.day, token_type: 'Bearer') }
-    let!(:activity) { Fabricate(:user_activity, user: user, team: user.team, strava_id: '1473024961') }
+    let!(:activity) { Fabricate(:user_activity, user:, team: user.team, strava_id: '1473024961') }
 
     context 'a previously bragged activity' do
       before do
@@ -507,7 +515,7 @@ describe User do
     end
 
     let!(:team) { Fabricate(:team, token: 'token', guild_id: 'guild_id') }
-    let!(:user) { Fabricate(:user, user_id: '747821172036599899', team: team) }
+    let!(:user) { Fabricate(:user, user_id: '747821172036599899', team:) }
 
     it 'sends DM', vcr: { cassette_name: 'discord/dm' } do
       expect(user.dm!('test')).to eq(

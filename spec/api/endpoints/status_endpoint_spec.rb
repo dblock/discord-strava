@@ -29,8 +29,8 @@ describe Api::Endpoints::StatusEndpoint do
 
     context 'with connected users' do
       let!(:team) { Fabricate(:team) }
-      let!(:user) { Fabricate(:user, team: team) }
-      let!(:connected_user) { Fabricate(:user, team: team, access_token: 'xyz') }
+      let!(:user) { Fabricate(:user, team:) }
+      let!(:connected_user) { Fabricate(:user, team:, access_token: 'xyz') }
 
       before do
         allow(HTTParty).to receive_message_chain(:get, :body).and_return('PNG')

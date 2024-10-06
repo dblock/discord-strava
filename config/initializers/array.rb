@@ -1,19 +1,19 @@
 class Array
-  def and(&block)
-    join_with 'and', &block
+  def and(&)
+    join_with('and', &)
   end
 
-  def or(&block)
-    join_with 'or', &block
+  def or(&)
+    join_with('or', &)
   end
 
   private
 
-  def join_with(separator, &block)
+  def join_with(separator, &)
     if count > 1
-      "#{self[0..-2].map { |i| apply(i, &block) }.join(', ')} #{separator} #{apply(self[-1], &block)}"
+      "#{self[0..-2].map { |i| apply(i, &) }.join(', ')} #{separator} #{apply(self[-1], &)}"
     else
-      apply(first, &block)
+      apply(first, &)
     end
   end
 

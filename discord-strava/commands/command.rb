@@ -13,12 +13,12 @@ module DiscordStrava
 
       def user
         @user ||= team.users.where(
-          user_id: user_id,
-          channel_id: channel_id
+          user_id:,
+          channel_id:
         ).first || User.create!(
-          team: team,
-          user_id: user_id,
-          channel_id: channel_id,
+          team:,
+          user_id:,
+          channel_id:,
           user_name: username
         )
       end

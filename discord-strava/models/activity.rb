@@ -69,7 +69,7 @@ class Activity
       average_heartrate: response.average_heartrate,
       max_heartrate: response.max_heartrate,
       pr_count: response.pr_count,
-      type: response.type,
+      type: response.sport_type,
       total_elevation_gain: response.total_elevation_gain,
       private: response.private,
       visibility: response.visibility,
@@ -89,7 +89,7 @@ class Activity
 
   def reset_bragged_at(dt = 48.hours)
     return unless bragged_at
-    return unless private_changed? || visibility_changed?
+    return unless private_changed? || visibility_changed? || saved_change_to_private? || saved_change_to_visibility?
     return if channel_message
     return if bragged_at < Time.now.utc - dt
 

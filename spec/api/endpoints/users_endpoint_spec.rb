@@ -28,7 +28,7 @@ describe Api::Endpoints::UsersEndpoint do
     context 'with prior activities' do
       before do
         allow_any_instance_of(User).to receive(:inform!).and_return({ message_id: 'id', channel_id: 'C1' })
-        2.times { Fabricate(:user_activity, user: user) }
+        2.times { Fabricate(:user_activity, user:) }
         user.brag!
         user.disconnect_from_strava
       end

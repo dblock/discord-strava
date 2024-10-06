@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-ruby '2.7.7'
+ruby '3.3.5'
 
 gem 'async'
 gem 'discordrb'
@@ -16,7 +16,6 @@ gem 'mongoid'
 gem 'mongoid-locker'
 gem 'mongoid-scroll'
 gem 'newrelic_rpm'
-gem 'nokogiri'
 gem 'open-weather-ruby-client'
 gem 'polylines'
 gem 'puma'
@@ -26,7 +25,7 @@ gem 'rack-rewrite'
 gem 'rack-robotz'
 gem 'rack-server-pages'
 gem 'ruby-enum'
-gem 'strava-ruby-client'
+gem 'strava-ruby-client', '~> 2.2.0'
 gem 'stripe', '~> 1.58.0'
 gem 'wannabe_bool'
 
@@ -46,9 +45,10 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'database_cleaner'
+  gem 'database_cleaner-mongoid'
   gem 'fabrication'
   gem 'faker'
+  gem 'faraday-rack'
   gem 'hyperclient'
   gem 'rack-test'
   gem 'rspec'

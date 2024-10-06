@@ -20,8 +20,8 @@ describe TeamStats do
   end
 
   context 'with activities' do
-    let!(:user1) { Fabricate(:user, team: team) }
-    let!(:user2) { Fabricate(:user, team: team) }
+    let!(:user1) { Fabricate(:user, team:) }
+    let!(:user2) { Fabricate(:user, team:) }
     let!(:swim_activity) { Fabricate(:swim_activity, user: user2) }
     let!(:ride_activity1) { Fabricate(:ride_activity, user: user1) }
     let!(:ride_activity2) { Fabricate(:ride_activity, user: user1) }
@@ -90,8 +90,8 @@ describe TeamStats do
   end
 
   context 'with activities across multiple channels' do
-    let!(:user1) { Fabricate(:user, team: team) }
-    let!(:user2) { Fabricate(:user, team: team) }
+    let!(:user1) { Fabricate(:user, team:) }
+    let!(:user2) { Fabricate(:user, team:) }
     let!(:user_activity1) { Fabricate(:user_activity, user: user1, channel_message: { channel_id: 'c1', message_id: '1' }) }
     let!(:user_activity2) { Fabricate(:user_activity, user: user2, channel_message: { channel_id: 'c2', message_id: '1' }) }
 

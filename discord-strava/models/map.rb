@@ -57,7 +57,7 @@ class Map
   private
 
   def update_decoded_summary_polyline
-    unless summary_polyline && (summary_polyline_changed? || decoded_summary_polyline.nil?)
+    unless summary_polyline && (summary_polyline_changed? || saved_change_to_summary_polyline? || decoded_summary_polyline.nil?)
       return
     end
 

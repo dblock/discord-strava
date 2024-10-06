@@ -91,7 +91,7 @@ module DiscordStrava
       start_intervals!
     end
 
-    def start_intervals!(&_block)
+    def start_intervals!(&)
       ::Async::Reactor.run do |task|
         @intervals.each_pair do |period, calls_with_options|
           calls_with_options.each do |call_with_options|
@@ -135,7 +135,7 @@ module DiscordStrava
       interval
     end
 
-    def _every(tt, options = {}, &_block)
+    def _every(tt, options = {}, &)
       ::Async::Reactor.run do |task|
         loop do
           if options[:run_on_start]

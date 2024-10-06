@@ -21,7 +21,7 @@ describe DiscordStrava::Commands::Connect do
                 label: 'Connect!',
                 style: 5,
                 type: 2,
-                url: url
+                url:
               }],
               type: 1
             }],

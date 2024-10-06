@@ -108,7 +108,7 @@ describe DiscordStrava::Commands::Resubscribe do
 
   context 'subscribed team' do
     let!(:team) { Fabricate(:team, subscribed: true) }
-    let!(:activated_user) { Fabricate(:user, team: team) }
+    let!(:activated_user) { Fabricate(:user, team:) }
 
     before do
       team.update_attributes!(guild_owner_id: activated_user.user_id)

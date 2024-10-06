@@ -45,7 +45,7 @@ class Athlete
   def to_discord
     {
       author: {
-        name: name,
+        name:,
         url: strava_url
         #        icon_url: profile_medium
       }

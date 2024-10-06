@@ -13,9 +13,11 @@ describe DiscordStrava::Commands::Disconnect do
       let(:team) { Fabricate(:team, subscribed: true) }
 
       context 'connected user' do
-        let(:user) { Fabricate(:user, team: team, access_token: 'token', token_type: 'Bearer') }
+        let(:user) { Fabricate(:user, team:, access_token: 'token', token_type: 'Bearer') }
 
         it 'disconnects a user' do
+          expect_any_instance_of(User).to receive(:refresh_access_token!)
+          expect_any_instance_of(Strava::Api::Client).to receive(:deauthorize).and_return(Hashie::Mash.new(access_token: 'token'))
           expect(response).to eq 'Your Strava account has been successfully disconnected.'
           user.reload
           expect(user.access_token).to be_nil
@@ -25,7 +27,7 @@ describe DiscordStrava::Commands::Disconnect do
       end
 
       context 'disconnected user' do
-        let(:user) { Fabricate(:user, team: team) }
+        let(:user) { Fabricate(:user, team:) }
 
         it 'fails to disconnect a user' do
           expect(response).to eq 'Your Strava account is not connected.'

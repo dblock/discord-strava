@@ -46,10 +46,10 @@ class TeamStats
     ).map { |row|
       type = row['_id']['type']
       [type, ActivitySummary.new(
-        team: team,
-        type: type,
+        team:,
+        type:,
         count: row['count'],
-        athlete_count: team.activities.where(type: type).distinct(:user_id).count,
+        athlete_count: team.activities.where(type:).distinct(:user_id).count,
         stats: Hashie::Mash.new(row.except('_id').except('count'))
       )]
     }.to_h

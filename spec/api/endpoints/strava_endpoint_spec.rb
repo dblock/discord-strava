@@ -72,7 +72,7 @@ describe Api::Endpoints::StravaEndpoint do
 
         context 'with an expired subscription' do
           let(:team) { Fabricate(:team, created_at: 3.weeks.ago) }
-          let!(:user) { Fabricate(:user, access_token: 'token', team: team) }
+          let!(:user) { Fabricate(:user, access_token: 'token', team:) }
 
           it 'does not sync user' do
             expect_any_instance_of(Logger).to receive(:info).with(/expired/).and_call_original
@@ -169,7 +169,7 @@ describe Api::Endpoints::StravaEndpoint do
         end
 
         context 'with an existing activity' do
-          let!(:activity) { Fabricate(:user_activity, user: user, map: nil) }
+          let!(:activity) { Fabricate(:user_activity, user:, map: nil) }
 
           it 'rebrags the existing activity' do
             expect_any_instance_of(Logger).to receive(:info).with(/Updating activity/).and_call_original

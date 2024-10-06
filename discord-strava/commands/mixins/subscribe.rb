@@ -5,7 +5,7 @@ module DiscordStrava
         extend ActiveSupport::Concern
 
         module ClassMethods
-          def subscribe_command(*values, &_block)
+          def subscribe_command(*values, &)
             command(*values) do |command|
               if Stripe.api_key && command.team.reload.subscription_expired?
                 logger.info "#{command}, subscribed feature required"

@@ -36,10 +36,10 @@ module Discord
           values.each do |value|
             if value.is_a?(Hash)
               value.each_pair do |k, v|
-                routes[k] = { subcommands: v, block: block }
+                routes[k] = { subcommands: v, block: }
               end
             else
-              routes[value] = { block: block }
+              routes[value] = { block: }
             end
           end
         end

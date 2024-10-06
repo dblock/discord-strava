@@ -163,7 +163,7 @@ class User
     result = activity.brag!
     return unless result
 
-    result.merge(activity: activity)
+    result.merge(activity:)
   end
 
   # updates activity details, brings in description, etc.
@@ -185,7 +185,7 @@ class User
       result = activity.rebrag!
       return unless result
 
-      result.merge(activity: activity)
+      result.merge(activity:)
     end
   end
 
@@ -275,14 +275,14 @@ class User
   end
 
   def connected_to_strava_changed
-    return unless connected_to_strava_at? && connected_to_strava_at_changed?
+    return unless connected_to_strava_at? && (connected_to_strava_at_changed? || saved_change_to_connected_to_strava_at?)
 
     activities.destroy_all
     set activities_at: nil
   end
 
   def sync_activities_changed
-    return unless sync_activities? && sync_activities_changed?
+    return unless sync_activities? && (sync_activities_changed? || saved_change_to_sync_activities?)
 
     activities.destroy_all
     set activities_at: Time.now.utc

@@ -6,7 +6,7 @@ module Discord
     def create_dm(recipient_id)
       post(
         'users/@me/channels', {
-          recipient_id: recipient_id
+          recipient_id:
         }
       )
     end
