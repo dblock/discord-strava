@@ -171,6 +171,11 @@ class UserActivity < Activity
     end
 
     current_weather = OpenWeather::Client.new.one_call(weather_options).current
+    unless current_weather
+      logger.warn "Error getting weather at #{start_latlng.join(', ')} on #{finished_at.to_i} for #{user}, #{self}, none returned."
+      return
+    end
+
     current_weather.weather.each do |w|
       w.icon_uri = w.icon_uri.to_s
     end
