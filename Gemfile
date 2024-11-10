@@ -57,4 +57,5 @@ group :test do
   gem 'timecop'
   gem 'vcr'
   gem 'webmock'
+  gem 'webrick'
 end

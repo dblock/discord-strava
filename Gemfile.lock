@@ -1,10 +1,11 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (7.2.1)
-      activesupport (= 7.2.1)
-    activesupport (7.2.1)
+    activemodel (7.2.2)
+      activesupport (= 7.2.2)
+    activesupport (7.2.2)
       base64
+      benchmark (>= 0.3)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.3.1)
       connection_pool (>= 2.2.5)
@@ -17,11 +18,12 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
-    async (2.17.0)
-      console (~> 1.26)
+    async (2.20.0)
+      console (~> 1.29)
       fiber-annotation
       io-event (~> 1.6, >= 1.6.5)
     base64 (0.2.0)
+    benchmark (0.4.0)
     bigdecimal (3.1.8)
     bson (5.0.1)
     capybara (3.40.0)
@@ -35,7 +37,7 @@ GEM
       xpath (~> 3.2)
     concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
-    console (1.27.0)
+    console (1.29.0)
       fiber-annotation
       fiber-local (~> 1.1)
       json
@@ -60,8 +62,9 @@ GEM
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
     drb (2.2.1)
-    dry-core (1.0.1)
+    dry-core (1.0.2)
       concurrent-ruby (~> 1.0)
+      logger
       zeitwerk (~> 2.6)
     dry-inflector (1.1.0)
     dry-logic (1.5.0)
@@ -78,7 +81,7 @@ GEM
     ed25519 (1.3.0)
     event_emitter (0.2.6)
     fabrication (2.31.0)
-    faker (3.4.2)
+    faker (3.5.1)
       i18n (>= 1.8.11, < 2)
     faraday (2.12.0)
       faraday-net_http (>= 2.0, < 3.4)
@@ -130,11 +133,11 @@ GEM
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
-    io-event (1.7.1)
+    io-event (1.7.3)
     irb (1.14.1)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.7.2)
+    json (2.8.1)
     kaminari-core (1.2.2)
     kaminari-grape (1.0.1)
       grape
@@ -145,7 +148,7 @@ GEM
     mime-types (3.6.0)
       logger
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2024.1001)
+    mime-types-data (3.2024.1105)
     mini_mime (1.1.5)
     mini_portile2 (2.8.7)
     minitest (5.25.1)
@@ -175,15 +178,15 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mustermann-grape (1.1.0)
       mustermann (>= 1.0.0)
-    net-http (0.4.1)
+    net-http (0.5.0)
       uri
     netrc (0.11.0)
-    newrelic_rpm (9.14.0)
-    nio4r (2.7.3)
+    newrelic_rpm (9.15.0)
+    nio4r (2.7.4)
     nokogiri (1.16.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    open-weather-ruby-client (0.5.0)
+    open-weather-ruby-client (0.6.0)
       activesupport
       faraday (>= 2.0.1)
       faraday-multipart
@@ -191,11 +194,11 @@ GEM
     opus-ruby (1.0.1)
       ffi
     parallel (1.26.3)
-    parser (3.3.5.0)
+    parser (3.3.6.0)
       ast (~> 2.4.1)
       racc
     polylines (0.4.0)
-    psych (5.1.2)
+    psych (5.2.0)
       stringio
     public_suffix (6.0.1)
     puma (6.4.3)
@@ -207,19 +210,18 @@ GEM
     rack-rewrite (1.5.1)
     rack-robotz (0.0.4)
       rack
-    rack-server-pages (0.1.0)
+    rack-server-pages (0.2.0)
       rack
     rack-test (2.1.0)
       rack (>= 1.3)
-    rackup (2.1.0)
+    rackup (2.2.0)
       rack (>= 3)
-      webrick (~> 1.8)
     rainbow (3.1.1)
     rake (12.3.3)
     rdoc (6.7.0)
       psych (>= 4.0.0)
     regexp_parser (2.9.2)
-    reline (0.5.10)
+    reline (0.5.11)
       io-console (~> 0.5)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -237,7 +239,7 @@ GEM
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.1)
+    rspec-core (3.13.2)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -246,7 +248,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
-    rubocop (1.66.1)
+    rubocop (1.68.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -256,20 +258,20 @@ GEM
       rubocop-ast (>= 1.32.2, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.32.3)
+    rubocop-ast (1.34.1)
       parser (>= 3.3.1.0)
     rubocop-capybara (2.21.0)
       rubocop (~> 1.41)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (3.1.0)
+    rubocop-rspec (3.2.0)
       rubocop (~> 1.61)
     ruby-enum (1.0.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     securerandom (0.3.1)
-    selenium-webdriver (4.25.0)
+    selenium-webdriver (4.26.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -280,7 +282,7 @@ GEM
       faraday (>= 2.0)
       faraday-multipart (>= 1.0)
       hashie
-    stringio (3.1.1)
+    stringio (3.1.2)
     stripe (1.58.0)
       rest-client (>= 1.4, < 4.0)
     stripe-ruby-mock (2.4.1)
@@ -293,7 +295,7 @@ GEM
       concurrent-ruby (~> 1.0)
     uber (0.1.0)
     unicode-display_width (2.6.0)
-    uri (0.13.1)
+    uri (1.0.1)
     vcr (6.3.1)
       base64
     wannabe_bool (0.7.1)
@@ -301,14 +303,14 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webrick (1.8.2)
+    webrick (1.9.0)
     websocket (1.2.11)
     websocket-client-simple (0.8.0)
       event_emitter
       websocket
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.18)
+    zeitwerk (2.7.1)
 
 PLATFORMS
   ruby
@@ -361,6 +363,7 @@ DEPENDENCIES
   vcr
   wannabe_bool
   webmock
+  webrick
 
 RUBY VERSION
    ruby 3.3.5p100
