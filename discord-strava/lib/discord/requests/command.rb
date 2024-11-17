@@ -16,13 +16,17 @@ module Discord
       end
 
       def options
-        self[:data][:options].map do |option|
-          [option[:name], option[:value]].compact
-        end
+        self[:data][:options].map { |option|
+          name = option[:name]
+          args = option[:options].map { |arg|
+            [arg[:name], arg]
+          }.to_h
+          [name, option.merge(args: args)].compact
+        }.to_h
       end
 
       def text
-        [name, options].compact.flatten.join(' ')
+        [name, options.map { |key, value| [key, value[:value]] }].flatten.compact.join(' ')
       end
 
       def initialize(params, request)

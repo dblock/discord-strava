@@ -112,7 +112,9 @@ class UserActivity < Activity
     result_description = [
       if display_field?(ActivityFields::USER) || display_field?(ActivityFields::DATE)
         [
-          display_field?(ActivityFields::USER) ? user.discord_mention : nil,
+          if display_field?(ActivityFields::USER)
+            [user.discord_mention, display_field?(ActivityFields::MEDAL) ? user.medal_s(type) : nil].compact.join(' ')
+          end,
           display_field?(ActivityFields::DATE) ? start_date_local_s : nil
         ].compact.join(' on ')
       end,

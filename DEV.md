@@ -7,7 +7,7 @@ Ensure that you can build the project and run tests. You will need these.
 - [MongoDB](https://docs.mongodb.com/manual/installation/)
 - [Firefox](https://www.mozilla.org/firefox/new/)
 - [Geckodriver](https://github.com/mozilla/geckodriver), download, `tar vfxz` and move to `/usr/local/bin`
-- Ruby 3.2.1
+- Ruby 3.3.5
 
 ```
 bundle install
@@ -67,6 +67,17 @@ $ ngrok http 5000
 
 Note the URL.
 
-### Interactions URL
 
-Set the Interactions Endpoint Url in your app configuration to `https://....ngrok-free.app/api/discord`. It should verify successfully when saved.
+### Set URL in .env
+
+Add the ngrok URL to `.env`.
+
+```
+URL=https://6979-173-68-96-34.ngrok-free.app
+```
+
+Ctrl+C and restart the bot with `foreman start`.
+
+### Discord Interactions URL
+
+Set the `Interactions Endpoint Url` in your Discord app configuration to `https://....ngrok-free.app/api/discord` and the OAuth2 redirect URL to `https://....ngrok-free.app`. It should verify successfully when saved.

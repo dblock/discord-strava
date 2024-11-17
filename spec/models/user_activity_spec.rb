@@ -172,33 +172,35 @@ describe UserActivity do
       let(:activity) { Fabricate(:user_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
-                                                image: {
-                                                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                },
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Run 🏃' },
-                                                  { inline: true, name: 'Distance', value: '14.01mi' },
-                                                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
-                                                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
-                                                  { inline: true, name: 'Pace', value: '9m02s/mi' },
-                                                  { inline: true, name: 'Speed', value: '6.6mph' },
-                                                  { inline: true, name: 'Elevation', value: '475.4ft' },
-                                                  { inline: true, name: 'Weather', value: '70°F Rain' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                fields: [
+                  { inline: true, name: 'Type', value: 'Run 🏃' },
+                  { inline: true, name: 'Distance', value: '14.01mi' },
+                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                  { inline: true, name: 'Pace', value: '9m02s/mi' },
+                  { inline: true, name: 'Speed', value: '6.6mph' },
+                  { inline: true, name: 'Elevation', value: '475.4ft' },
+                  { inline: true, name: 'Weather', value: '70°F Rain' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
 
       context 'with all fields' do
@@ -212,7 +214,7 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -253,7 +255,7 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -270,7 +272,7 @@ describe UserActivity do
 
       context 'with all header fields' do
         before do
-          team.activity_fields = %w[Title Url User Description Date Athlete]
+          team.activity_fields = %w[Title Url User Medal Description Date Athlete]
         end
 
         it 'to_discord' do
@@ -279,7 +281,60 @@ describe UserActivity do
               {
                 title: activity.name,
                 url: "https://www.strava.com/activities/#{activity.strava_id}",
-                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          )
+        end
+      end
+
+      context 'with all header fields and medal' do
+        before do
+          team.activity_fields = %w[Title Url User Medal Description Date Athlete]
+        end
+
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          )
+        end
+      end
+
+      context 'ranked second' do
+        before do
+          team.activity_fields = %w[Title Url User Medal Description Date Athlete]
+          Fabricate(:user_activity, user: Fabricate(:user, team: team), distance: activity.distance + 1)
+        end
+
+        it 'to_discord' do
+          expect(activity.to_discord).to eq(
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥈 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
@@ -388,17 +443,19 @@ describe UserActivity do
         end
 
         it 'to_discord' do
-          expect(activity.to_discord).to eq({
-                                              embeds: [
-                                                {
-                                                  title: activity.name,
-                                                  image: {
-                                                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                  },
-                                                  timestamp: tt.utc.iso8601
-                                                }
-                                              ]
-                                            })
+          expect(activity.to_discord).to eq(
+            {
+              embeds: [
+                {
+                  title: activity.name,
+                  image: {
+                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                  },
+                  timestamp: tt.utc.iso8601
+                }
+              ]
+            }
+          )
         end
       end
 
@@ -408,18 +465,20 @@ describe UserActivity do
         end
 
         it 'to_discord' do
-          expect(activity.to_discord).to eq({
-                                              embeds: [
-                                                {
-                                                  title: activity.strava_id.to_s,
-                                                  url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                  image: {
-                                                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                  },
-                                                  timestamp: tt.utc.iso8601
-                                                }
-                                              ]
-                                            })
+          expect(activity.to_discord).to eq(
+            {
+              embeds: [
+                {
+                  title: activity.strava_id.to_s,
+                  url: "https://www.strava.com/activities/#{activity.strava_id}",
+                  image: {
+                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                  },
+                  timestamp: tt.utc.iso8601
+                }
+              ]
+            }
+          )
         end
       end
 
@@ -429,29 +488,31 @@ describe UserActivity do
         end
 
         it 'to_discord' do
-          expect(activity.reload.to_discord).to eq({
-                                                     embeds: [
-                                                       {
-                                                         title: activity.name,
-                                                         url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                         description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
-                                                         image: {
-                                                           url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                         },
-                                                         fields: [
-                                                           { inline: true, name: 'Type', value: 'Run 🏃' },
-                                                           { inline: true, name: 'Distance', value: '14.01mi' },
-                                                           { inline: true, name: 'Moving Time', value: '2h6m26s' },
-                                                           { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
-                                                           { inline: true, name: 'Pace', value: '9m02s/mi' },
-                                                           { inline: true, name: 'Speed', value: '6.6mph' },
-                                                           { inline: true, name: 'Elevation', value: '475.4ft' },
-                                                           { inline: true, name: 'Weather', value: '70°F Rain' }
-                                                         ],
-                                                         timestamp: tt.utc.iso8601
-                                                       }
-                                                     ]
-                                                   })
+          expect(activity.reload.to_discord).to eq(
+            {
+              embeds: [
+                {
+                  title: activity.name,
+                  url: "https://www.strava.com/activities/#{activity.strava_id}",
+                  description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                  image: {
+                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                  },
+                  fields: [
+                    { inline: true, name: 'Type', value: 'Run 🏃' },
+                    { inline: true, name: 'Distance', value: '14.01mi' },
+                    { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                    { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                    { inline: true, name: 'Pace', value: '9m02s/mi' },
+                    { inline: true, name: 'Speed', value: '6.6mph' },
+                    { inline: true, name: 'Elevation', value: '475.4ft' },
+                    { inline: true, name: 'Weather', value: '70°F Rain' }
+                  ],
+                  timestamp: tt.utc.iso8601
+                }
+              ]
+            }
+          )
         end
       end
 
@@ -461,31 +522,33 @@ describe UserActivity do
         end
 
         it 'to_discord' do
-          expect(activity.reload.to_discord).to eq({
-                                                     embeds: [
-                                                       {
-                                                         title: activity.name,
-                                                         url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                         description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
-                                                         image: {
-                                                           url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                         },
-                                                         fields: [
-                                                           { inline: true, name: 'Type', value: 'Run 🏃' },
-                                                           { inline: true, name: 'Distance', value: '14.01mi' },
-                                                           { inline: true, name: 'Moving Time', value: '2h6m26s' },
-                                                           { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
-                                                           { inline: true, name: 'Elevation', value: '475.4ft' },
-                                                           { inline: true, name: 'Weather', value: '70°F Rain' }
-                                                         ],
-                                                         timestamp: tt.utc.iso8601,
-                                                         author: {
-                                                           name: user.athlete.name,
-                                                           url: user.athlete.strava_url
-                                                         }
-                                                       }
-                                                     ]
-                                                   })
+          expect(activity.reload.to_discord).to eq(
+            {
+              embeds: [
+                {
+                  title: activity.name,
+                  url: "https://www.strava.com/activities/#{activity.strava_id}",
+                  description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                  image: {
+                    url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                  },
+                  fields: [
+                    { inline: true, name: 'Type', value: 'Run 🏃' },
+                    { inline: true, name: 'Distance', value: '14.01mi' },
+                    { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                    { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                    { inline: true, name: 'Elevation', value: '475.4ft' },
+                    { inline: true, name: 'Weather', value: '70°F Rain' }
+                  ],
+                  timestamp: tt.utc.iso8601,
+                  author: {
+                    name: user.athlete.name,
+                    url: user.athlete.strava_url
+                  }
+                }
+              ]
+            }
+          )
         end
       end
     end
@@ -496,33 +559,35 @@ describe UserActivity do
       let(:activity) { Fabricate(:user_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
-                                                image: {
-                                                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                },
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Run 🏃' },
-                                                  { inline: true, name: 'Distance', value: '22.54km' },
-                                                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
-                                                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
-                                                  { inline: true, name: 'Pace', value: '5m37s/km' },
-                                                  { inline: true, name: 'Speed', value: '10.7km/h' },
-                                                  { inline: true, name: 'Elevation', value: '144.9m' },
-                                                  { inline: true, name: 'Weather', value: '21°C Rain' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                fields: [
+                  { inline: true, name: 'Type', value: 'Run 🏃' },
+                  { inline: true, name: 'Distance', value: '22.54km' },
+                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                  { inline: true, name: 'Pace', value: '5m37s/km' },
+                  { inline: true, name: 'Speed', value: '10.7km/h' },
+                  { inline: true, name: 'Elevation', value: '144.9m' },
+                  { inline: true, name: 'Weather', value: '21°C Rain' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -532,33 +597,35 @@ describe UserActivity do
       let(:activity) { Fabricate(:user_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
-                                                image: {
-                                                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
-                                                },
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Run 🏃' },
-                                                  { inline: true, name: 'Distance', value: '14.01mi 22.54km' },
-                                                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
-                                                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
-                                                  { inline: true, name: 'Pace', value: '9m02s/mi 5m37s/km' },
-                                                  { inline: true, name: 'Speed', value: '6.6mph 10.7km/h' },
-                                                  { inline: true, name: 'Elevation', value: '475.4ft 144.9m' },
-                                                  { inline: true, name: 'Weather', value: '70°F 21°C Rain' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM\n\nGreat run!",
+                image: {
+                  url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+                },
+                fields: [
+                  { inline: true, name: 'Type', value: 'Run 🏃' },
+                  { inline: true, name: 'Distance', value: '14.01mi 22.54km' },
+                  { inline: true, name: 'Moving Time', value: '2h6m26s' },
+                  { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
+                  { inline: true, name: 'Pace', value: '9m02s/mi 5m37s/km' },
+                  { inline: true, name: 'Speed', value: '6.6mph 10.7km/h' },
+                  { inline: true, name: 'Elevation', value: '475.4ft 144.9m' },
+                  { inline: true, name: 'Weather', value: '70°F 21°C Rain' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -568,27 +635,29 @@ describe UserActivity do
       let(:activity) { Fabricate(:swim_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Swim 🏊' },
-                                                  { inline: true, name: 'Distance', value: '2050yd' },
-                                                  { inline: true, name: 'Time', value: '37m' },
-                                                  { inline: true, name: 'Pace', value: '1m48s/100yd' },
-                                                  { inline: true, name: 'Speed', value: '1.9mph' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Swim 🏊' },
+                  { inline: true, name: 'Distance', value: '2050yd' },
+                  { inline: true, name: 'Time', value: '37m' },
+                  { inline: true, name: 'Pace', value: '1m48s/100yd' },
+                  { inline: true, name: 'Speed', value: '1.9mph' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -598,27 +667,29 @@ describe UserActivity do
       let(:activity) { Fabricate(:swim_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Swim 🏊' },
-                                                  { inline: true, name: 'Distance', value: '1874m' },
-                                                  { inline: true, name: 'Time', value: '37m' },
-                                                  { inline: true, name: 'Pace', value: '1m58s/100m' },
-                                                  { inline: true, name: 'Speed', value: '3.0km/h' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Swim 🏊' },
+                  { inline: true, name: 'Distance', value: '1874m' },
+                  { inline: true, name: 'Time', value: '37m' },
+                  { inline: true, name: 'Pace', value: '1m58s/100m' },
+                  { inline: true, name: 'Speed', value: '3.0km/h' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -628,27 +699,29 @@ describe UserActivity do
       let(:activity) { Fabricate(:swim_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Swim 🏊' },
-                                                  { inline: true, name: 'Distance', value: '2050yd 1874m' },
-                                                  { inline: true, name: 'Time', value: '37m' },
-                                                  { inline: true, name: 'Pace', value: '1m48s/100yd 1m58s/100m' },
-                                                  { inline: true, name: 'Speed', value: '1.9mph 3.0km/h' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Swim 🏊' },
+                  { inline: true, name: 'Distance', value: '2050yd 1874m' },
+                  { inline: true, name: 'Time', value: '37m' },
+                  { inline: true, name: 'Pace', value: '1m48s/100yd 1m58s/100m' },
+                  { inline: true, name: 'Speed', value: '1.9mph 3.0km/h' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -658,28 +731,30 @@ describe UserActivity do
       let(:activity) { Fabricate(:ride_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Ride 🚴' },
-                                                  { inline: true, name: 'Distance', value: '28.1km' },
-                                                  { inline: true, name: 'Moving Time', value: '1h10m7s' },
-                                                  { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-                                                  { inline: true, name: 'Pace', value: '2m30s/km' },
-                                                  { inline: true, name: 'Speed', value: '24.0km/h' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Ride 🚴' },
+                  { inline: true, name: 'Distance', value: '28.1km' },
+                  { inline: true, name: 'Moving Time', value: '1h10m7s' },
+                  { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
+                  { inline: true, name: 'Pace', value: '2m30s/km' },
+                  { inline: true, name: 'Speed', value: '24.0km/h' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
 
@@ -689,28 +764,30 @@ describe UserActivity do
       let(:activity) { Fabricate(:ride_activity, user:) }
 
       it 'to_discord' do
-        expect(activity.to_discord).to eq({
-                                            embeds: [
-                                              {
-                                                title: activity.name,
-                                                url: "https://www.strava.com/activities/#{activity.strava_id}",
-                                                description: "<@#{activity.user.user_id}> on Tuesday, February 20, 2018 at 10:02 AM",
-                                                fields: [
-                                                  { inline: true, name: 'Type', value: 'Ride 🚴' },
-                                                  { inline: true, name: 'Distance', value: '17.46mi 28.1km' },
-                                                  { inline: true, name: 'Moving Time', value: '1h10m7s' },
-                                                  { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-                                                  { inline: true, name: 'Pace', value: '4m01s/mi 2m30s/km' },
-                                                  { inline: true, name: 'Speed', value: '14.9mph 24.0km/h' }
-                                                ],
-                                                timestamp: tt.utc.iso8601,
-                                                author: {
-                                                  name: user.athlete.name,
-                                                  url: user.athlete.strava_url
-                                                }
-                                              }
-                                            ]
-                                          })
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Tuesday, February 20, 2018 at 10:02 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Ride 🚴' },
+                  { inline: true, name: 'Distance', value: '17.46mi 28.1km' },
+                  { inline: true, name: 'Moving Time', value: '1h10m7s' },
+                  { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
+                  { inline: true, name: 'Pace', value: '4m01s/mi 2m30s/km' },
+                  { inline: true, name: 'Speed', value: '14.9mph 24.0km/h' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
       end
     end
   end

@@ -23,11 +23,12 @@ class ActivityFields
   define :DESCRIPTION, 'Description'
   define :URL, 'Url'
   define :USER, 'User'
+  define :MEDAL, 'Medal'
   define :ATHLETE, 'Athlete'
   define :DATE, 'Date'
 
   DEFAULT_VALUES = [
-    'Title', 'Description', 'Url', 'User', 'Athlete', 'Date',
+    'Title', 'Description', 'Url', 'Medal', 'User', 'Athlete', 'Date',
     'Type', 'Distance', 'Time', 'Moving Time', 'Elapsed Time', 'Pace', 'Speed', 'Elevation', 'Weather'
   ].freeze
 

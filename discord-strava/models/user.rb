@@ -80,9 +80,7 @@ class User
     response = get_access_token!(code)
     logger.debug "Connecting team=#{team}, user=#{self}, #{response}"
     raise 'Missing access_token in OAuth response.' unless response.access_token
-    unless response.refresh_token
-      raise 'Missing refresh_token in OAuth response.'
-    end
+    raise 'Missing refresh_token in OAuth response.' unless response.refresh_token
     raise 'Missing expires_at in OAuth response.' unless response.expires_at
 
     create_athlete(Athlete.attrs_from_strava(response.athlete))
@@ -208,9 +206,7 @@ class User
   def sync_strava_activity!(strava_id)
     detailed_activity = strava_client.activity(strava_id)
     return if detailed_activity['private'] && !private_activities?
-    if detailed_activity.athlete.id.to_s != athlete.athlete_id
-      raise "Activity athlete ID #{detailed_activity.athlete.id} does not match #{athlete.athlete_id}."
-    end
+    raise "Activity athlete ID #{detailed_activity.athlete.id} does not match #{athlete.athlete_id}." if detailed_activity.athlete.id.to_s != athlete.athlete_id
 
     UserActivity.create_from_strava!(self, detailed_activity) || activities.where(strava_id: detailed_activity.id).first
   rescue Strava::Errors::Fault => e
@@ -219,6 +215,17 @@ class User
 
   def guild_owner?
     team.guild_owner_id && team.guild_owner_id == user_id
+  end
+
+  def medal_s(activity_type)
+    case team.leaderboard(metric: 'distance').find(_id, activity_type)
+    when 1
+      '🥇'
+    when 2
+      '🥈'
+    when 3
+      '🥉'
+    end
   end
 
   before_destroy :try_to_revoke_access_token

@@ -231,7 +231,11 @@ class Team
 
   def trial_message
     [
-      remaining_trial_days.zero? ? 'Your trial subscription has expired.' : "Your trial subscription expires in #{remaining_trial_days} day#{remaining_trial_days == 1 ? '' : 's'}.",
+      if remaining_trial_days.zero?
+        'Your trial subscription has expired.'
+      else
+        "Your trial subscription expires in #{remaining_trial_days} day#{remaining_trial_days == 1 ? '' : 's'}."
+      end,
       subscribe_text
     ].join(' ')
   end
@@ -321,6 +325,10 @@ class Team
     rescue StandardError => e
       logger.warn "Error destroying #{team}, #{e.message}."
     end
+  end
+
+  def leaderboard(options = {})
+    TeamLeaderboard.new(self, options)
   end
 
   private

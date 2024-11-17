@@ -8,9 +8,7 @@ module Api
       #   results: (paginated collection subset)
       #   next: (cursor to the next page)
       def paginate_by_cursor(coll, &)
-        if params.key?(:offset) && params.key?(:cursor)
-          raise 'Both cursor and offset parameters are present, these are mutually exclusive.'
-        end
+        raise 'Both cursor and offset parameters are present, these are mutually exclusive.' if params.key?(:offset) && params.key?(:cursor)
 
         results = { results: [], next: nil }
         size = (params[:size] || 10).to_i
@@ -26,9 +24,7 @@ module Api
           results[:next] = iterator.next_cursor.to_s
           break if results[:results].count >= size
         end
-        if params[:total_count] && coll.respond_to?(:count)
-          results[:total_count] = coll.count
-        end
+        results[:total_count] = coll.count if params[:total_count] && coll.respond_to?(:count)
         results
       end
 

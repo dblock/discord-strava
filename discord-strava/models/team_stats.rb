@@ -12,9 +12,13 @@ class TeamStats
   def_delegators :@stats, :each, :[], :count, :size, :keys, :values, :any?, :map
 
   def to_discord
-    any? ? {
-      embeds: values.map(&:to_discord_embed)
-    } : 'There are no activities in this channel.'
+    if any?
+      {
+        embeds: values.map(&:to_discord_embed)
+      }
+    else
+      'There are no activities in this channel.'
+    end
   end
 
   private

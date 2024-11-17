@@ -195,7 +195,7 @@ describe User do
 
           it 'retrieves last activity details and rebrags it with udpated description' do
             updated_last_activity = last_activity.to_discord
-            updated_last_activity[:embeds].first[:description] = "<@#{user.user_id}> on #{last_activity.start_date_local_s}\n\ndetailed description"
+            updated_last_activity[:embeds].first[:description] = "<@#{user.user_id}> 🥇 on #{last_activity.start_date_local_s}\n\ndetailed description"
             expect_any_instance_of(User).to receive(:update!).with(
               updated_last_activity,
               last_activity.channel_message
@@ -530,6 +530,63 @@ describe User do
 
     it 'hadles 400', vcr: { cassette_name: 'discord/dm_400' } do
       expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 ({"recipient_id"=>["Value \"invalid\" is not snowflake."]})'
+    end
+  end
+
+  describe '#medal_s' do
+    let!(:user) { Fabricate(:user) }
+
+    it 'no activities' do
+      expect(user.medal_s('Run')).to be_nil
+    end
+
+    context 'with an activity' do
+      let!(:activity) { Fabricate(:user_activity, user: user) }
+
+      context 'ranked first' do
+        before do
+          Fabricate(:user_activity, user: Fabricate(:user, team: user.team), distance: activity.distance - 1)
+        end
+
+        it 'returns a gold medal' do
+          expect(user.medal_s('Run')).to eq '🥇'
+        end
+      end
+
+      {
+        0 => '🥇',
+        1 => '🥈',
+        2 => '🥉',
+        3 => nil
+      }.each_pair do |count, medal|
+        context "ranked #{count + 1}" do
+          before do
+            count.times { Fabricate(:user_activity, user: Fabricate(:user, team: user.team), distance: activity.distance + 1) }
+          end
+
+          it "returns #{medal}" do
+            expect(user.medal_s('Run')).to eq medal
+          end
+        end
+      end
+    end
+
+    context 'with an activity of a different type' do
+      let!(:activity) { Fabricate(:user_activity, user: user) }
+
+      context 'ranked first' do
+        before do
+          Fabricate(:swim_activity, user: user)
+        end
+
+        it 'returns a gold medal' do
+          expect(user.medal_s('Swim')).to eq '🥈'
+        end
+
+        it 'returns a silver medal' do
+          expect(user.medal_s('Run')).to eq '🥇'
+        end
+      end
     end
   end
 end

@@ -67,6 +67,37 @@
             "type": 5
         }]
     }, {
+        "name": "leaderboard",
+        "description": "Display a team leaderboard.",
+        "type": 1,
+        "options": [{
+            "name": "metric",
+            "description": "Leaderboard measure.",
+            "type": 3,
+            "choices": [{
+                "name": "count",
+                "value": "count"
+            }, {
+                "name": "distance",
+                "value": "distance"
+            }, {
+                "name": "moving time",
+                "value": "moving_time"
+            }, {
+                "name": "elapsed time",
+                "value": "elapsed_time"
+            }, {
+                "name": "elevation",
+                "value": "elevation"
+            }, {
+                "name": "pr count",
+                "value": "pr_count"
+            }, {
+                "name": "calories",
+                "value": "calories"
+            }]
+        }]
+    }, {
         "name": "stats",
         "description": "Display stats for the past 30 days.",
         "type": 1
