@@ -6,6 +6,7 @@ class UserActivity < Activity
   belongs_to :user, inverse_of: :activities
   embeds_one :map
   embeds_one :weather
+  embeds_many :photos
 
   index(user_id: 1, start_date: 1)
   index('map._id' => 1)
@@ -73,7 +74,8 @@ class UserActivity < Activity
     Activity.attrs_from_strava(response).merge(
       start_date: response.start_date,
       start_date_local: response.start_date_local,
-      start_date_local_utc_offset: response.start_date_local.utc_offset
+      start_date_local_utc_offset: response.start_date_local.utc_offset,
+      photos: response.photos&.primary ? [Photo.attrs_from_strava(response.photos&.primary)] : []
     )
   end
 
@@ -118,10 +120,10 @@ class UserActivity < Activity
           display_field?(ActivityFields::DATE) ? start_date_local_s : nil
         ].compact.join(' on ')
       end,
-      display_field?(ActivityFields::DESCRIPTION) ? description : nil
-    ].compact.join("\n\n")
+      display_field?(ActivityFields::DESCRIPTION) && description && !description.blank? ? description : nil
+    ].compact
 
-    result[:description] = result_description unless result_description.blank?
+    result[:description] = result_description.join("\n\n") unless result_description.none?
 
     if map && map.has_image?
       if team.maps == 'full'
@@ -129,6 +131,8 @@ class UserActivity < Activity
       elsif team.maps == 'thumb'
         result[:thumbnail] = { url: map.proxy_image_url }
       end
+    elsif display_field?(ActivityFields::PHOTOS) && photos.any? && photos.first.has_image?
+      result[:image] = { url: photos.first.image_url }
     end
 
     result_fields = discord_fields
@@ -136,6 +140,13 @@ class UserActivity < Activity
     result[:timestamp] = Time.now.utc.iso8601
     result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE)
     result
+  end
+
+  def to_discord_embeds
+    embeds = [to_discord_embed]
+    # photo may be displayed instead of the map already
+    embeds.concat(photos.map(&:to_discord_embed)) if display_field?(ActivityFields::PHOTOS) && photos.any? && map && map.has_image?
+    embeds
   end
 
   def to_s

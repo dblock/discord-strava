@@ -51,9 +51,7 @@ class Activity
 
   def to_discord
     {
-      embeds: [
-        to_discord_embed
-      ]
+      embeds: to_discord_embeds
     }
   end
 

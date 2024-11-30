@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 describe UserActivity do
-  before do
-    allow(HTTParty).to receive_message_chain(:get, :body).and_return('PNG')
-  end
-
   context 'hidden?' do
     context 'default' do
       let(:activity) { Fabricate(:user_activity) }
@@ -954,6 +950,88 @@ describe UserActivity do
             }.to raise_error(Mongo::Error::OperationFailure)
           }.not_to change(UserActivity, :count)
         end
+      end
+    end
+  end
+
+  context 'with photos' do
+    let!(:tt) { Time.now }
+    let(:fixture) { 'spec/fabricators/ride_activity.json' }
+    let(:detailed_activity) { Strava::Models::Activity.new(JSON.parse(File.read(fixture))) }
+    let(:team) { Fabricate(:team) }
+    let(:user) { Fabricate(:user, team:) }
+    let(:activity) { UserActivity.create_from_strava!(user, detailed_activity) }
+
+    before do
+      Timecop.freeze(tt)
+    end
+
+    it 'to_discord' do
+      expect(activity.to_discord).to eq(
+        embeds: [
+          {
+            title: activity.name,
+            url: "https://www.strava.com/activities/#{activity.strava_id}",
+            description: "<@#{activity.user.user_id}> 🥇 on Friday, February 16, 2018 at 06:52 AM",
+            image: {
+              url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
+            },
+            fields: [
+              { inline: true, name: 'Type', value: 'Ride 🚴' },
+              { inline: true, name: 'Distance', value: '17.46mi' },
+              { inline: true, name: 'Moving Time', value: '1h10m7s' },
+              { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
+              { inline: true, name: 'Pace', value: '4m01s/mi' },
+              { inline: true, name: 'Speed', value: '14.9mph' },
+              { inline: true, name: 'Elevation', value: '1692.9ft' }
+            ],
+            timestamp: tt.utc.iso8601,
+            author: {
+              name: user.athlete.name,
+              url: user.athlete.strava_url
+            }
+          },
+          {
+            image: {
+              url: 'https://dgtzuqphqg23d.cloudfront.net/Bv93zv5t_mr57v0wXFbY_JyvtucgmU5Ym6N9z_bKeUI-128x96.jpg'
+            }
+          }
+        ]
+      )
+    end
+
+    context 'without a map' do
+      before do
+        activity.update_attributes!(map: nil)
+      end
+
+      it 'to_discord' do
+        expect(activity.to_discord).to eq(
+          embeds: [
+            {
+              title: activity.name,
+              url: "https://www.strava.com/activities/#{activity.strava_id}",
+              description: "<@#{activity.user.user_id}> 🥇 on Friday, February 16, 2018 at 06:52 AM",
+              image: {
+                url: 'https://dgtzuqphqg23d.cloudfront.net/Bv93zv5t_mr57v0wXFbY_JyvtucgmU5Ym6N9z_bKeUI-128x96.jpg'
+              },
+              fields: [
+                { inline: true, name: 'Type', value: 'Ride 🚴' },
+                { inline: true, name: 'Distance', value: '17.46mi' },
+                { inline: true, name: 'Moving Time', value: '1h10m7s' },
+                { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
+                { inline: true, name: 'Pace', value: '4m01s/mi' },
+                { inline: true, name: 'Speed', value: '14.9mph' },
+                { inline: true, name: 'Elevation', value: '1692.9ft' }
+              ],
+              timestamp: tt.utc.iso8601,
+              author: {
+                name: user.athlete.name,
+                url: user.athlete.strava_url
+              }
+            }
+          ]
+        )
       end
     end
   end
