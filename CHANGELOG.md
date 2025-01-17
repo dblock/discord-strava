@@ -1,8 +1,9 @@
 ### Changelog
 
-* 2025/11/30: Display primary activity photo - [@dblock](https://github.com/dblock).
-* 2025/11/17: Added `/strada leaderboard` and display medals - [@dblock](https://github.com/dblock).
-* 2025/10/09: Fixed [#27](https://github.com/dblock/discord-strava/issues/27), incorrect local time - [@dblock](https://github.com/dblock).
+* 2025/01/17: Guild owners can disconnect users - [@dblock](https://github.com/dblock).
+* 2024/11/30: Display primary activity photo - [@dblock](https://github.com/dblock).
+* 2024/11/17: Added `/strada leaderboard` and display medals - [@dblock](https://github.com/dblock).
+* 2024/10/09: Fixed [#27](https://github.com/dblock/discord-strava/issues/27), incorrect local time - [@dblock](https://github.com/dblock).
 * 2024/07/28: Fixed syncing activities that are created out of order - [@dblock](https://github.com/dblock).
 * 2024/07/21: Added `resubscribe` - [@dblock](https://github.com/dblock).
 * 2024/07/14: Fixed error handling during updates for multiple identical users across teams - [@dblock](https://github.com/dblock).

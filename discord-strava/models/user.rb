@@ -97,7 +97,7 @@ class User
   end
 
   def connected!
-    dm! "Your Strava account has been successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
+    dm! "Strava account successfully connected.\nI won't post any private activities, use `/strada set private on` to toggle that, and `/strada help` for other options."
   rescue DiscordStrava::Error => e
     logger.warn "Error DMing #{self}: #{e.message}"
   end
@@ -107,9 +107,9 @@ class User
       try_to_revoke_access_token
       reset_access_tokens!(connected_to_strava_at: nil)
       logger.info "Disconnected team=#{team}, user=#{self}"
-      'Your Strava account has been successfully disconnected.'
+      'Strava account successfully disconnected.'
     else
-      'Your Strava account is not connected.'
+      'Strava account is not connected.'
     end
   end
 

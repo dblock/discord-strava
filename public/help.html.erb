@@ -37,6 +37,7 @@
       Change displayed fields with <b>/strada set fields</b>, eg. <b>/strada set fields default</b>, <b>/strada set fields all</b> or <b>/strada set fields none</b>.
       Available fields are <%= ActivityFields.values.and { |v| '<b>' + v + '</b>' } %>.
       Turn maps off with <b>/strada set maps off</b>, display thumbnails with <b>/strada set maps thumb</b> and full maps with <b>/strada set maps full</b> (default).
+      Disconnect users with <b>/strada disconnect @mention</b>.
     </p>
     <%= partial 'public/partials/_footer.html.erb' %>
   </body>

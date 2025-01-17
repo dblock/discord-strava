@@ -16,7 +16,12 @@
     }, {
         "name": "disconnect",
         "description": "Disconnect from Strava.",
-        "type": 1
+        "type": 1,
+        "options": [{
+            "name": "user",
+            "description": "User to disconnect (guild owners only).",
+            "type": 6
+        }]
     }, {
         "name": "set",
         "description": "Change settings.",

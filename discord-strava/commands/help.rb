@@ -16,6 +16,10 @@ module DiscordStrava
         leaderboard count|distance|...   - leaderboard by count, distance, etc.
         stats                            - stats in current channel for the past 30 days
 
+        Admins
+        ------------
+        disconnect @mention              - disconnect someone else's Strava account
+
         Settings
         ------------
         set units imperial|metric|both   - use imperial vs. metric units, or display both
