@@ -25,9 +25,7 @@ describe 'Subscribe', :js, type: :feature do
     end
   end
 
-  context 'for a team' do
-    let!(:team) { Fabricate(:team) }
-
+  context 'stripe' do
     before do
       ENV['STRIPE_API_PUBLISHABLE_KEY'] = 'pk_test_804U1vUeVeTxBl8znwriXskf'
     end
@@ -36,37 +34,42 @@ describe 'Subscribe', :js, type: :feature do
       ENV.delete 'STRIPE_API_PUBLISHABLE_KEY'
     end
 
-    it 'subscribes team' do
-      visit "/subscribe?team_id=#{team.id}"
-      expect(find_by_id('messages')).to have_text("Subscribe team #{team.guild_name} for $19.99/yr.")
+    context 'for a team' do
+      let!(:team) { Fabricate(:team, active: false) }
 
-      allow_any_instance_of(Team).to receive(:inform_everyone!)
+      it 'subscribes team' do
+        visit "/subscribe?team_id=#{team.id}"
+        expect(find_by_id('messages')).to have_text("Subscribe team #{team.guild_name} for $19.99/yr.")
 
-      find_by_id('subscribe', visible: true)
+        allow_any_instance_of(Team).to receive(:inform_everyone!)
 
-      expect(Stripe::Customer).to receive(:create).and_return('id' => 'customer_id')
+        find_by_id('subscribe', visible: true)
 
-      find_by_id('subscribeButton').click
+        expect(Stripe::Customer).to receive(:create).and_return('id' => 'customer_id')
 
-      sleep 1
+        find_by_id('subscribeButton').click
 
-      stripe_iframe = all('iframe[name=stripe_checkout_app]').last
-      Capybara.within_frame stripe_iframe do
-        page.find_field('Email').set 'foo@bar.com'
-        page.find_field('Card number').client_set '4242 4242 4242 4242'
-        page.find_field('MM / YY').client_set '12/42'
-        page.find_field('CVC').set '123'
-        find('button[type="submit"]').click
+        sleep 1
+
+        stripe_iframe = all('iframe[name=stripe_checkout_app]').last
+        Capybara.within_frame stripe_iframe do
+          page.find_field('Email').set 'foo@bar.com'
+          page.find_field('Card number').client_set '4242 4242 4242 4242'
+          page.find_field('MM / YY').client_set '12/42'
+          page.find_field('CVC').set '123'
+          find('button[type="submit"]').click
+        end
+
+        sleep 5
+
+        find_by_id('subscribe', visible: false)
+        expect(find_by_id('messages')).to have_text("Team #{team.guild_name} successfully subscribed.\n\nThank you for your support!")
+
+        team.reload
+        expect(team.subscribed).to be true
+        expect(team.active).to be true
+        expect(team.stripe_customer_id).to eq 'customer_id'
       end
-
-      sleep 5
-
-      find_by_id('subscribe', visible: false)
-      expect(find_by_id('messages')).to have_text("Team #{team.guild_name} successfully subscribed.\n\nThank you for your support!")
-
-      team.reload
-      expect(team.subscribed).to be true
-      expect(team.stripe_customer_id).to eq 'customer_id'
     end
   end
 end

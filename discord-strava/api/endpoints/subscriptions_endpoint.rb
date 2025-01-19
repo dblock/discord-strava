@@ -26,8 +26,8 @@ module Api
               name: team.guild_name
             }
           )
-          Api::Middleware.logger.info "Subscription for team #{team} created, stripe_customer_id=#{customer['id']}."
-          team.update_attributes!(subscribed: true, subscribed_at: Time.now.utc, stripe_customer_id: customer['id'])
+          Api::Middleware.logger.info "Subscription for team #{team} created, stripe_customer_id=#{customer['id']}, active=#{team.active}."
+          team.update_attributes!(subscribed: true, active: true, subscribed_at: Time.now.utc, stripe_customer_id: customer['id'])
           present team, with: Api::Presenters::TeamPresenter
         end
       end
