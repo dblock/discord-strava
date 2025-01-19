@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-ruby '3.3.5'
+ruby '3.4.1'
 
 gem 'async'
 gem 'discordrb'
@@ -17,6 +17,7 @@ gem 'mongoid-locker'
 gem 'mongoid-scroll'
 gem 'newrelic_rpm'
 gem 'open-weather-ruby-client'
+gem 'ostruct'
 gem 'polylines'
 gem 'puma'
 gem 'rack', '~> 3.0.0'

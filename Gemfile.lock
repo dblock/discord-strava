@@ -197,6 +197,7 @@ GEM
       hashie
     opus-ruby (1.0.1)
       ffi
+    ostruct (0.6.1)
     parallel (1.26.3)
     parser (3.3.7.0)
       ast (~> 2.4.1)
@@ -348,6 +349,7 @@ DEPENDENCIES
   mongoid-shell
   newrelic_rpm
   open-weather-ruby-client
+  ostruct
   polylines
   puma
   rack (~> 3.0.0)
@@ -375,7 +377,7 @@ DEPENDENCIES
   webrick
 
 RUBY VERSION
-   ruby 3.3.5p100
+   ruby 3.4.1p100
 
 BUNDLED WITH
    2.4.2

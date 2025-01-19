@@ -530,7 +530,7 @@ describe User do
     end
 
     it 'hadles 400', vcr: { cassette_name: 'discord/dm_400' } do
-      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 ({"recipient_id"=>["Value \"invalid\" is not snowflake."]})'
+      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 ({"recipient_id" => ["Value \"invalid\" is not snowflake."]})'
     end
   end
 
