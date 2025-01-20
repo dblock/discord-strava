@@ -131,6 +131,7 @@ module DiscordStrava
     end
 
     def check_access!
+      log_info_without_repeat "Checking access for #{Team.active.count} team(s)."
       Team.active.each do |team|
         team.check_access!
       rescue StandardError => e
