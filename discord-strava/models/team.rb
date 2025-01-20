@@ -335,7 +335,10 @@ class Team
     logger.info "Checked #{guild_info[:name]} (#{guild_info[:id]})."
   rescue DiscordStrava::Error => e
     case e.message
-    when 'Missing Access (50001, 403)', 'Missing Permissions (50013, 403)'
+    when
+      'Missing Access (50001, 403)',
+      'Missing Permissions (50013, 403)',
+      'Unknown Guild (10004, 404)'
       logger.info "  Deactivating #{self}, #{e}"
       deactivate!
     else

@@ -108,20 +108,26 @@ describe DiscordStrava::App do
     let!(:team2) { Fabricate(:team) }
     let!(:team3) { Fabricate(:team) }
 
-    it 'deactivates a team on access error' do
-      allow_any_instance_of(Team).to receive(:guild_info) do |team|
-        case team
-        when team1
-          raise DiscordStrava::Error, 'Missing Access (50001, 403)'
-        when team2
-          raise DiscordStrava::Error, 'error'
+    [
+      'Missing Access (50001, 403)',
+      'Missing Permissions (50013, 403)',
+      'Unknown Guild (10004, 404)'
+    ].each do |error|
+      it "deactivates a team on #{error}" do
+        allow_any_instance_of(Team).to receive(:guild_info) do |team|
+          case team
+          when team1
+            raise DiscordStrava::Error, error
+          when team2
+            raise DiscordStrava::Error, 'error'
+          end
         end
-      end
 
-      subject.send(:check_access!)
-      expect(team1.reload.active).to be false
-      expect(team2.reload.active).to be true
-      expect(team3.reload.active).to be true
+        subject.send(:check_access!)
+        expect(team1.reload.active).to be false
+        expect(team2.reload.active).to be true
+        expect(team3.reload.active).to be true
+      end
     end
   end
 end
