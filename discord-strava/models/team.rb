@@ -331,6 +331,18 @@ class Team
     TeamLeaderboard.new(self, options)
   end
 
+  def check_access!
+    logger.info "Checked #{guild_info[:name]} (#{guild_info[:id]})."
+  rescue DiscordStrava::Error => e
+    case e.message
+    when 'Missing Access (50001, 403)', 'Missing Permissions (50013, 403)'
+      logger.info "  Deactivating #{self}, #{e}"
+      deactivate!
+    else
+      raise
+    end
+  end
+
   private
 
   def destroy_subscribed_team

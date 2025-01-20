@@ -189,4 +189,25 @@ describe Team do
       team.destroy
     end
   end
+
+  describe '#deactivate!' do
+    let!(:team) { Fabricate(:team) }
+
+    it 'sets active to false' do
+      expect(team.active).to be true
+      team.deactivate!
+      expect(team.active).to be false
+    end
+  end
+
+  describe '#check_access' do
+    let(:team) { Fabricate(:team) }
+
+    it 'deactivates a team on missing access' do
+      allow(team).to receive(:guild_info).and_raise DiscordStrava::Error, 'Missing Access (50001, 403)'
+      expect(team).to receive(:deactivate!).and_call_original
+      team.check_access!
+      expect(team.active).to be false
+    end
+  end
 end

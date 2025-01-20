@@ -102,4 +102,26 @@ describe DiscordStrava::App do
       subject.send(:check_trials!)
     end
   end
+
+  describe '#check_access!' do
+    let!(:team1) { Fabricate(:team) }
+    let!(:team2) { Fabricate(:team) }
+    let!(:team3) { Fabricate(:team) }
+
+    it 'deactivates a team on access error' do
+      allow_any_instance_of(Team).to receive(:guild_info) do |team|
+        case team
+        when team1
+          raise DiscordStrava::Error, 'Missing Access (50001, 403)'
+        when team2
+          raise DiscordStrava::Error, 'error'
+        end
+      end
+
+      subject.send(:check_access!)
+      expect(team1.reload.active).to be false
+      expect(team2.reload.active).to be true
+      expect(team3.reload.active).to be true
+    end
+  end
 end

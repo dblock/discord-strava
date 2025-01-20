@@ -48,6 +48,7 @@ module DiscordStrava
         ensure_strava_webhook!
         logger.info 'Starting crons.'
         once_and_every 60 * 60 * 24 do
+          check_access!
           check_subscribed_teams!
           check_stripe_subscribers!
           deactivate_asleep_teams!
@@ -127,6 +128,16 @@ module DiscordStrava
 
     def aggregate_stats!
       SystemStats.aggregate!
+    end
+
+    def check_access!
+      Team.active.each do |team|
+        team.check_access!
+      rescue StandardError => e
+        backtrace = e.backtrace.join("\n")
+        logger.warn "Error checking access for team #{team}, #{e.message}, #{backtrace}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
+      end
     end
 
     def refresh_discord_tokens!
