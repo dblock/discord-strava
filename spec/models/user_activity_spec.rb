@@ -786,6 +786,37 @@ describe UserActivity do
         )
       end
     end
+
+    context 'alpine ski activity' do
+      let(:team) { Fabricate(:team) }
+      let(:user) { Fabricate(:user, team: team) }
+      let(:activity) { Fabricate(:alpine_ski_activity, user: user) }
+
+      it 'to_discord' do
+        expect(activity.to_discord).to eq(
+          {
+            embeds: [
+              {
+                title: activity.name,
+                url: "https://www.strava.com/activities/#{activity.strava_id}",
+                description: "<@#{activity.user.user_id}> 🥇 on Wednesday, January 29, 2025 at 09:07 AM",
+                fields: [
+                  { inline: true, name: 'Type', value: 'Alpine Ski ⛷️' },
+                  { inline: true, name: 'Distance', value: '14.35mi' },
+                  { inline: true, name: 'Moving Time', value: '1h15m54s' },
+                  { inline: true, name: 'Elapsed Time', value: '5h40m27s' }
+                ],
+                timestamp: tt.utc.iso8601,
+                author: {
+                  name: user.athlete.name,
+                  url: user.athlete.strava_url
+                }
+              }
+            ]
+          }
+        )
+      end
+    end
   end
 
   context 'map' do
