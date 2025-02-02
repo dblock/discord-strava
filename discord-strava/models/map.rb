@@ -22,26 +22,28 @@ class Map
   end
 
   def start_latlng
-    return unless decoded_summary_polyline&.any?
+    return unless has_image?
 
     decoded_summary_polyline[0]
   end
 
   def end_latlng
-    return unless decoded_summary_polyline&.any?
+    return unless has_image?
 
     decoded_summary_polyline[-1]
   end
 
   def image_url
-    return unless decoded_summary_polyline&.any?
+    return unless has_image?
 
-    google_maps_api_key = ENV.fetch('GOOGLE_STATIC_MAPS_API_KEY', nil)
-    "https://maps.googleapis.com/maps/api/staticmap?maptype=roadmap&path=enc:#{summary_polyline}&key=#{google_maps_api_key}&size=800x800&markers=color:yellow|label:S|#{start_latlng[0]},#{start_latlng[1]}&markers=color:green|label:F|#{end_latlng[0]},#{end_latlng[1]}"
+    @image_url ||= begin
+      google_maps_api_key = ENV.fetch('GOOGLE_STATIC_MAPS_API_KEY', nil)
+      "https://maps.googleapis.com/maps/api/staticmap?maptype=roadmap&path=enc:#{CGI.escape(summary_polyline)}&key=#{google_maps_api_key}&size=800x800&markers=color:yellow|label:S|#{start_latlng[0]},#{start_latlng[1]}&markers=color:green|label:F|#{end_latlng[0]},#{end_latlng[1]}"
+    end
   end
 
   def has_image?
-    !!decoded_summary_polyline&.any?
+    !!(summary_polyline && decoded_summary_polyline&.any?)
   end
 
   def proxy_image_url
@@ -52,6 +54,16 @@ class Map
 
   def to_s
     "proxy=#{proxy_image_url}"
+  end
+
+  def cached_png
+    return unless has_image?
+
+    Api::Middleware.cache.read(image_url) || begin
+      body = HTTParty.get(image_url).body
+      Api::Middleware.cache.write(image_url, body)
+      body
+    end
   end
 
   private

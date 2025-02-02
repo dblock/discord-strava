@@ -23,7 +23,13 @@ module Api
             Api::Middleware.logger.debug "Map png for #{activity.user}, #{activity} for #{user_agent}, no map (404)."
             error!('Map Not Found', 404)
           end
-          redirect activity.map.image_url
+          if (png = activity.map.cached_png)
+            content_type 'image/png'
+            Api::Middleware.logger.debug "Map png cached for #{activity.user}, #{activity} for #{user_agent}, #{png.size} byte(s)."
+            body png
+          else
+            redirect activity.map.image_url
+          end
         end
       end
     end
