@@ -62,6 +62,7 @@ class Map
     Api::Middleware.cache.read(image_url) || begin
       body = HTTParty.get(image_url).body
       Api::Middleware.cache.write(image_url, body)
+      Api::Middleware.logger.debug "Fetched map png for #{user_activity.user}, #{user_activity}, #{body.size} byte(s)."
       body
     end
   end
