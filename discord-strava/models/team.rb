@@ -159,11 +159,18 @@ class Team
     created_at <= time_limit
   end
 
+  def guild_owners
+    [
+      guild_owner_id,
+      bot_owner_id
+    ].compact.uniq
+  end
+
   # returns DM channel
   def inform_guild_owner!(message)
     return unless guild_owner_id || bot_owner_id
 
-    [guild_owner_id, bot_owner_id].compact.uniq.map do |id|
+    guild_owners.map do |id|
       rc = Discord::Bot.instance.send_dm(id, message)
 
       {

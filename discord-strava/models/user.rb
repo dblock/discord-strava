@@ -214,10 +214,7 @@ class User
   end
 
   def guild_owner?
-    [
-      team.guild_owner_id,
-      team.bot_owner_id
-    ].compact.include?(user_id)
+    team.guild_owners.include?(user_id)
   end
 
   def medal_s(activity_type)

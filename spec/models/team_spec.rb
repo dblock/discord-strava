@@ -240,6 +240,7 @@ describe Team do
       let(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'bot_owner_id') }
 
       it 'returns an array of messages' do
+        expect(team.guild_owners).to eq %w[guild_owner_id bot_owner_id]
         expect(team.inform_guild_owner!('message')).to eq [{
           message_id: 'm1',
           channel_id: 'c1'
@@ -254,6 +255,7 @@ describe Team do
       let(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'guild_owner_id') }
 
       it 'returns one message' do
+        expect(team.guild_owners).to eq ['guild_owner_id']
         expect(team.inform_guild_owner!('message')).to eq [{
           message_id: 'm1',
           channel_id: 'c1'
@@ -265,6 +267,7 @@ describe Team do
       let(:team) { Fabricate(:team, guild_owner_id: nil, bot_owner_id: nil) }
 
       it 'returns nil' do
+        expect(team.guild_owners).to eq []
         expect(team.inform_guild_owner!('message')).to be_nil
       end
     end
