@@ -1,7 +1,7 @@
 module Discord
   class Bot < Client
     def initialize
-      super('Bot', ENV.fetch('DISCORD_CLIENT_SECRET', nil))
+      super('Bot', ENV.fetch('DISCORD_SECRET_TOKEN', nil))
     end
 
     class << self

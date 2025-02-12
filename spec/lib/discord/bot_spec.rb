@@ -1,13 +1,13 @@
 require 'spec_helper'
 describe Discord::Bot do
   describe '#instance' do
-    context 'with DISCORD_CLIENT_SECRET' do
+    context 'with DISCORD_SECRET_TOKEN' do
       before do
-        ENV['DISCORD_CLIENT_SECRET'] = 'token'
+        ENV['DISCORD_SECRET_TOKEN'] = 'token'
       end
 
       after do
-        ENV.delete 'DISCORD_CLIENT_SECRET'
+        ENV.delete 'DISCORD_SECRET_TOKEN'
       end
 
       it 'returns a singleton instance' do
@@ -30,14 +30,14 @@ describe Discord::Bot do
       end
     end
 
-    context 'without DISCORD_CLIENT_SECRET' do
+    context 'without DISCORD_SECRET_TOKEN' do
       before do
-        @secret = ENV.fetch('DISCORD_CLIENT_SECRET', nil)
-        ENV.delete 'DISCORD_CLIENT_SECRET'
+        @secret = ENV.fetch('DISCORD_SECRET_TOKEN', nil)
+        ENV.delete 'DISCORD_SECRET_TOKEN'
       end
 
       after do
-        ENV['DISCORD_CLIENT_SECRET'] = @secret
+        ENV['DISCORD_SECRET_TOKEN'] = @secret
       end
 
       it 'raises an error' do
