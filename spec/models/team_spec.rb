@@ -222,4 +222,51 @@ describe Team do
       expect(team.bot_owner_id).to eq 'bot_owner_id'
     end
   end
+
+  describe '#inform_guild_owner!' do
+    before do
+      allow_any_instance_of(Team).to receive(:update_info!)
+
+      allow(Discord::Bot.instance).to receive(:send_dm)
+        .with('guild_owner_id', 'message')
+        .and_return('id' => 'm1', 'channel_id' => 'c1')
+
+      allow(Discord::Bot.instance).to receive(:send_dm)
+        .with('bot_owner_id', 'message')
+        .and_return('id' => 'm2', 'channel_id' => 'c2')
+    end
+
+    context 'team with two different guild owners' do
+      let(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'bot_owner_id') }
+
+      it 'returns an array of messages' do
+        expect(team.inform_guild_owner!('message')).to eq [{
+          message_id: 'm1',
+          channel_id: 'c1'
+        }, {
+          message_id: 'm2',
+          channel_id: 'c2'
+        }]
+      end
+    end
+
+    context 'team with the same guild owners' do
+      let(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'guild_owner_id') }
+
+      it 'returns one message' do
+        expect(team.inform_guild_owner!('message')).to eq [{
+          message_id: 'm1',
+          channel_id: 'c1'
+        }]
+      end
+    end
+
+    context 'team with no guild owners' do
+      let(:team) { Fabricate(:team, guild_owner_id: nil, bot_owner_id: nil) }
+
+      it 'returns nil' do
+        expect(team.inform_guild_owner!('message')).to be_nil
+      end
+    end
+  end
 end

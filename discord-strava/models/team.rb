@@ -163,7 +163,7 @@ class Team
   def inform_guild_owner!(message)
     return unless guild_owner_id || bot_owner_id
 
-    [guild_owner_id, bot_owner_id].compact.map do |id|
+    [guild_owner_id, bot_owner_id].compact.uniq.map do |id|
       rc = Discord::Bot.instance.send_dm(id, message)
 
       {
