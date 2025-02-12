@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe ActivitySummary do
+  include_context 'team activation'
+
   let(:activity_summary) { Fabricate(:activity_summary) }
 
   describe '#to_discord_embed' do

@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Team do
+  include_context 'team activation'
+
   describe '#purge!' do
     let!(:active_team) { Fabricate(:team) }
     let!(:inactive_team) { Fabricate(:team, active: false) }
@@ -208,6 +210,16 @@ describe Team do
       expect(team).to receive(:deactivate!).and_call_original
       team.check_access!
       expect(team.active).to be false
+    end
+  end
+
+  describe '#update_info!' do
+    let(:team) { Fabricate(:team) }
+
+    it 'updates the bot owner' do
+      team.update_info!
+      expect(team.bot_owner_name).to eq 'bot_owner_name'
+      expect(team.bot_owner_id).to eq 'bot_owner_id'
     end
   end
 end

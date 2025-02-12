@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe TeamLeaderboard do
+  include_context 'team activation'
+
   let!(:team) { Fabricate(:team) }
 
   context 'initialize' do

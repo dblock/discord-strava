@@ -1,7 +1,44 @@
 module Discord
-  module OAuth2
-    extend Server
-    extend self
+  class Client
+    include Connection
+
+    attr_reader :token_type, :token
+
+    def initialize(token_type, token)
+      raise 'Missing token type or token.' unless token_type && token
+
+      @token_type = token_type
+      @token = token
+    end
+
+    def info(guild_id)
+      get("guilds/#{guild_id}")
+    end
+
+    def create_dm(recipient_id)
+      post(
+        'users/@me/channels', {
+          recipient_id:
+        }
+      )
+    end
+
+    def send_message(channel_id, message)
+      post("channels/#{channel_id}/messages", message.is_a?(String) ? { content: message } : message)
+    end
+
+    def update_message(channel_id, message_id, message)
+      patch("channels/#{channel_id}/messages/#{message_id}", message.is_a?(String) ? { content: message } : message)
+    end
+
+    def delete_message(channel_id, message_id)
+      delete("channels/#{channel_id}/messages/#{message_id}")
+    end
+
+    def send_dm(recipient_id, message)
+      channel = create_dm(recipient_id)
+      send_message(channel['id'], message)
+    end
 
     def exchange_code(code)
       rc = post(
@@ -11,7 +48,7 @@ module Discord
           code:,
           grant_type: 'authorization_code',
           redirect_uri: ENV.fetch('URL', nil),
-          scope: 'bot'
+          scope: 'identify+bot'
         }, :url_encoded
       )
 

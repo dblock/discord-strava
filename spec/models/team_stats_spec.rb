@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe TeamStats do
+  include_context 'team activation'
+
   let(:team) { Fabricate(:team) }
 
   context 'with no activities' do

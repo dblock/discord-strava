@@ -5,6 +5,8 @@ describe DiscordStrava::App do
     DiscordStrava::App.instance
   end
 
+  include_context 'team activation'
+
   describe '#instance' do
     it 'is an instance of the strava app' do
       expect(subject).to be_a(DiscordStrava::App)

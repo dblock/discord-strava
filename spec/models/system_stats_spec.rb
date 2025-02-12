@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe SystemStats do
+  include_context 'team activation'
+
   let(:stats) { SystemStats.aggregate! }
 
   context 'aggregate!' do

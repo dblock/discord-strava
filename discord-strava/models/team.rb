@@ -10,6 +10,9 @@ class Team
   field :guild_name, type: String
   field :guild_owner_id, type: String
 
+  field :bot_owner_name, type: String
+  field :bot_owner_id, type: String
+
   field :token, type: String
   field :token_expires_at, type: DateTime
   field :refresh_token, type: String
@@ -53,10 +56,22 @@ class Team
   before_destroy :destroy_subscribed_team
 
   def refresh_token!
-    update_attributes!(Discord::OAuth2.refresh_token(refresh_token))
+    update_attributes!(Discord::Bot.instance.refresh_token(refresh_token))
     logger.info "Refreshed token for team #{self}, expires on #{token_expires_at}."
   rescue Faraday::Error => e
     logger.warn "Error refreshing token for team #{self}, #{e.message} (#{e.response[:body]})."
+    NewRelic::Agent.notice_error(e, custom_params: { team: to_s })
+  end
+
+  def discord_client
+    @discord_client ||= Discord::Client.new('Bearer', token)
+  end
+
+  def update_info!
+    bot_owner = discord_client.get('users/@me')
+    update_attributes!(bot_owner_name: bot_owner['username'], bot_owner_id: bot_owner['id'])
+  rescue StandardError => e
+    logger.warn "Error updating information for team #{self}, #{e.message}."
     NewRelic::Agent.notice_error(e, custom_params: { team: to_s })
   end
 
@@ -146,21 +161,23 @@ class Team
 
   # returns DM channel
   def inform_guild_owner!(message)
-    return unless guild_owner_id
+    return unless guild_owner_id || bot_owner_id
 
-    rc = Discord::Messages.send_dm(guild_owner_id, message)
+    [guild_owner_id, bot_owner_id].compact.map do |id|
+      rc = Discord::Bot.instance.send_dm(id, message)
 
-    {
-      message_id: rc['id'],
-      channel_id: rc['channel_id']
-    }
+      {
+        message_id: rc['id'],
+        channel_id: rc['channel_id']
+      }
+    end
   end
 
   def inform_system!(message)
     system_channel_id = guild_info[:system_channel_id]
     return unless system_channel_id
 
-    rc = Discord::Messages.send_message(system_channel_id, message)
+    rc = Discord::Bot.instance.send_message(system_channel_id, message)
 
     {
       message_id: rc['id'],
@@ -369,15 +386,14 @@ class Team
     return unless active? && (active_changed? || saved_change_to_active?)
 
     inform_activated!
+    update_info!
   end
 
   def guild_info
-    @guild_info ||= Discord::Guilds.info(guild_id)
+    @guild_info ||= Discord::Bot.instance.info(guild_id)
   end
 
   def inform_activated!
-    return unless ENV.key?('DISCORD_CLIENT_ID') # tests
-
     inform_system!(activated_text)
   end
 

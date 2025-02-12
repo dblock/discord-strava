@@ -20,6 +20,8 @@ module Api
             end
           end
         end
+
+        include_context 'team activation'
       end
 
       def app

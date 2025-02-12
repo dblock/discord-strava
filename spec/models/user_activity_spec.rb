@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe UserActivity do
+  include_context 'team activation'
+
   context 'hidden?' do
     context 'default' do
       let(:activity) { Fabricate(:user_activity) }
@@ -104,7 +106,7 @@ describe UserActivity do
     let!(:activity) { Fabricate(:user_activity, user:) }
 
     it 'sends a message to the subscribed channel' do
-      expect(Discord::Messages).to receive(:send_message).with(
+      expect(Discord::Bot.instance).to receive(:send_message).with(
         user.channel_id,
         activity.to_discord
       ).and_return('id' => '1', 'channel_id' => '2')
@@ -112,7 +114,7 @@ describe UserActivity do
     end
 
     it 'disables user sync on access error' do
-      expect(Discord::Messages).to receive(:send_message).with(
+      expect(Discord::Bot.instance).to receive(:send_message).with(
         user.channel_id,
         activity.to_discord
       ).and_raise(Faraday::ForbiddenError.new('forbidden'))
@@ -130,7 +132,7 @@ describe UserActivity do
       let!(:activity) { Fabricate(:user_activity, user:, channel_message: Fabricate(:channel_message)) }
 
       it 'deletes a previously sent message' do
-        expect(Discord::Messages).to receive(:delete_message).with(
+        expect(Discord::Bot.instance).to receive(:delete_message).with(
           activity.channel_message.channel_id,
           activity.channel_message.message_id
         ).and_return('id' => '1', 'channel_id' => '2')
@@ -139,7 +141,7 @@ describe UserActivity do
       end
 
       it 'ignores a previously delete message' do
-        allow(Discord::Messages).to receive(:delete_message)
+        allow(Discord::Bot.instance).to receive(:delete_message)
         2.times { expect(activity.unbrag!).to be_nil }
         expect(activity.channel_message).to be_nil
       end
@@ -149,7 +151,7 @@ describe UserActivity do
       let!(:activity) { Fabricate(:user_activity, user:) }
 
       it 'ignores a previously delete message' do
-        expect(Discord::Messages).not_to receive(:delete_message)
+        expect(Discord::Bot.instance).not_to receive(:delete_message)
         expect(activity.unbrag!).to be_nil
       end
     end

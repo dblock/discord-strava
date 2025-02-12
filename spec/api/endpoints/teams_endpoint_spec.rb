@@ -49,7 +49,7 @@ describe Api::Endpoints::TeamsEndpoint do
       before do
         ENV['DISCORD_CLIENT_ID'] = 'client_id'
         ENV['DISCORD_CLIENT_SECRET'] = 'client_secret'
-        allow(Discord::OAuth2).to receive(:post).with('oauth2/token', hash_including(code: 'code'), :url_encoded).and_return(oauth_access)
+        allow(Discord::Bot.instance).to receive(:post).with('oauth2/token', hash_including(code: 'code'), :url_encoded).and_return(oauth_access)
       end
 
       after do

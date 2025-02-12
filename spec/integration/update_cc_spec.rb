@@ -18,6 +18,8 @@ describe 'Update cc', :js, type: :feature do
     end
 
     context 'a team with a stripe customer ID' do
+      include_context 'team activation'
+
       let!(:team) { Fabricate(:team, stripe_customer_id: 'stripe_customer_id') }
 
       it 'updates cc' do
@@ -45,6 +47,7 @@ describe 'Update cc', :js, type: :feature do
     end
 
     context 'a team without a stripe customer ID' do
+      include_context 'team activation'
       let!(:team) { Fabricate(:team, stripe_customer_id: nil) }
 
       it 'displays error' do

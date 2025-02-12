@@ -13,6 +13,8 @@ describe 'Subscribe', :js, type: :feature do
   end
 
   context 'for a subscribed team' do
+    include_context 'team activation'
+
     let!(:team) { Fabricate(:team, subscribed: true) }
 
     before do
@@ -35,6 +37,8 @@ describe 'Subscribe', :js, type: :feature do
     end
 
     context 'for a team' do
+      include_context 'team activation'
+
       let!(:team) { Fabricate(:team, active: false) }
 
       it 'subscribes team' do

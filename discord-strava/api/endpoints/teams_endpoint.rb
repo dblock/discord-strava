@@ -36,7 +36,7 @@ module Api
           requires :permissions, type: Integer
         end
         post do
-          oauth2_response = Discord::OAuth2.exchange_code(params[:code])
+          oauth2_response = Discord::Bot.instance.exchange_code(params[:code])
 
           team = Team.where(token: oauth2_response[:token]).first
           team ||= Team.where(guild_id: oauth2_response[:guild_id]).first

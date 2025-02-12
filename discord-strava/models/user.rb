@@ -44,7 +44,7 @@ class User
 
   def inform!(message)
     logger.info "Posting '#{message}' for #{self} on #{channel_id}."
-    rc = Discord::Messages.send_message(channel_id, message)
+    rc = Discord::Bot.instance.send_message(channel_id, message)
 
     {
       message_id: rc['id'],
@@ -54,7 +54,7 @@ class User
 
   def update!(message, channel_message)
     logger.info "Updating #{self}, message_id=#{channel_message.message_id}, channel_id=#{channel_message.channel_id} with #{message}."
-    rc = Discord::Messages.update_message(channel_message.channel_id, channel_message.message_id, message)
+    rc = Discord::Bot.instance.update_message(channel_message.channel_id, channel_message.message_id, message)
 
     {
       message_id: rc['id'],
@@ -64,7 +64,7 @@ class User
 
   def delete!(channel_message)
     logger.info "Deleting #{self}, message_id=#{channel_message.message_id}, channel_id=#{channel_message.channel_id}."
-    Discord::Messages.delete_message(channel_message.channel_id, channel_message.message_id)
+    Discord::Bot.instance.delete_message(channel_message.channel_id, channel_message.message_id)
     nil
   end
 
@@ -137,7 +137,7 @@ class User
   end
 
   def dm!(message)
-    rc = Discord::Messages.send_dm(user_id, message)
+    rc = Discord::Bot.instance.send_dm(user_id, message)
 
     {
       message_id: rc['id'],
