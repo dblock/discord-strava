@@ -371,6 +371,36 @@ describe User do
       end
     end
 
+    context 'guild_owner?' do
+      context 'team with both guild_owner_id and bot_owner_id' do
+        let!(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'bot_owner_id') }
+
+        it 'returns true if the user is the guild owner' do
+          expect(Fabricate(:user, user_id: team.guild_owner_id)).to be_guild_owner
+        end
+
+        it 'returns true if the user is the bot owner' do
+          expect(Fabricate(:user, user_id: team.bot_owner_id)).to be_guild_owner
+        end
+
+        it 'returns false by default' do
+          expect(Fabricate(:user)).not_to be_guild_owner
+        end
+      end
+
+      context 'team with guild_owner_id' do
+        let!(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: nil) }
+
+        it 'returns true if the user is the guild owner' do
+          expect(Fabricate(:user, user_id: team.guild_owner_id)).to be_guild_owner
+        end
+
+        it 'returns false by default' do
+          expect(Fabricate(:user)).not_to be_guild_owner
+        end
+      end
+    end
+
     context 'brag!' do
       let!(:user) { Fabricate(:user) }
 
