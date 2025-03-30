@@ -70,6 +70,18 @@
             "name": "followers",
             "description": "Sync followers only activities (default is true).",
             "type": 5
+        }, {
+            "name": "retention",
+            "description": "Set the amount of time to retain activities (default is 30 days).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 12
+        }, {
+            "name": "leaderboard",
+            "description": "Leaderboard metric and range (default is distance).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 64
         }]
     }, {
         "name": "leaderboard",
@@ -101,6 +113,13 @@
                 "name": "calories",
                 "value": "calories"
             }]
+        }, {
+            "name": "range",
+            "description": "Date range (since, between, etc.).",
+            "type": 3,
+            "placeholder": "last week",
+            "min_length": 1,
+            "max_length": 64
         }]
     }, {
         "name": "stats",

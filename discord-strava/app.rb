@@ -54,6 +54,7 @@ module DiscordStrava
           deactivate_asleep_teams!
           refresh_discord_tokens!
           check_trials!
+          prune_activities!
           aggregate_stats!
         end
         once_and_every 60 * 60 do
@@ -124,6 +125,18 @@ module DiscordStrava
     rescue StandardError => e
       logger.warn "Error checking trials, #{e.message}."
       NewRelic::Agent.notice_error(e)
+    end
+
+    def prune_activities!
+      total = 0
+      log_info_without_repeat "Pruning activities for #{Team.count} team(s)."
+      Team.each do |team|
+        total += team.prune_activities!
+      rescue StandardError => e
+        logger.warn "Error pruning team #{team}, #{e.message}."
+        NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s })
+      end
+      log_info_without_repeat "Pruned #{total}/#{Activity.count} activities."
     end
 
     def aggregate_stats!

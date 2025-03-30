@@ -3,6 +3,8 @@ source 'http://rubygems.org'
 ruby '3.4.1'
 
 gem 'async'
+gem 'chronic'
+gem 'chronic_duration'
 gem 'discordrb'
 gem 'ed25519'
 gem 'grape'

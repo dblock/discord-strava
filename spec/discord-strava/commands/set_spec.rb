@@ -23,8 +23,10 @@ describe DiscordStrava::Commands::Set do
       it 'shows current settings' do
         expect(response).to eq([
           "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*.",
+          'Activities are retained for *1 month*.',
           'Activity fields are *set to default*.',
-          "Maps for team #{team.guild_name} are *displayed in full*.",
+          'Maps are *displayed in full*.',
+          'Default leaderboard is *distance*.',
           'Your activities will sync.',
           'Your private activities will not be posted.',
           'Your followers only activities will be posted.'
@@ -201,7 +203,7 @@ describe DiscordStrava::Commands::Set do
             it 'shows current value of units set to km' do
               team.update_attributes!(units: 'km')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celcius*."
+                "Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celsius*."
               )
             end
 
@@ -232,7 +234,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to km' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celcius*."
+                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -245,7 +247,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to metric' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celcius*."
+                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -271,7 +273,7 @@ describe DiscordStrava::Commands::Set do
             it 'changes units' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celcius*."
+                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -453,6 +455,98 @@ describe DiscordStrava::Commands::Set do
               expect(team.reload.activity_fields).to eq ['Default']
             end
           end
+
+          context 'leaderboard' do
+            context 'no value' do
+              let(:args) { ['set', { 'leaderboard' => '' }] }
+
+              it 'shows current value of leaderboard' do
+                expect(response).to eq(
+                  "Default leaderboard for team #{team.guild_name} is *distance*."
+                )
+              end
+            end
+
+            context 'no value' do
+              let(:args) { ['set', { 'leaderboard' => '' }] }
+
+              it 'shows current value of leaderboard as set' do
+                team.update_attributes!(default_leaderboard: 'elapsed time')
+                expect(response).to eq(
+                  "Default leaderboard for team #{team.guild_name} is *elapsed time*."
+                )
+              end
+            end
+
+            context 'elapsed time' do
+              let(:args) { ['set', { 'leaderboard' => 'elapsed time' }] }
+
+              it 'sets leaderboard to elapsed time' do
+                team.update_attributes!(default_leaderboard: 'distance')
+                expect(response).to eq(
+                  "Default leaderboard for team #{team.guild_name} is now *elapsed time*."
+                )
+                expect(team.reload.default_leaderboard).to eq 'elapsed time'
+              end
+            end
+
+            context 'invalid' do
+              let(:args) { ['set', { 'leaderboard' => 'foobar' }] }
+
+              it 'displays an error' do
+                team.update_attributes!(default_leaderboard: 'distance')
+                expect(response).to eq(
+                  "Sorry, I don't understand 'foobar'."
+                )
+                expect(team.reload.default_leaderboard).to eq 'distance'
+              end
+            end
+          end
+
+          context 'retention' do
+            context 'current' do
+              let(:args) { ['set', { 'retention' => '' }] }
+
+              it 'shows current retention value' do
+                expect(response).to eq(
+                  "Activities in team #{team.guild_name} are retained for *1 month*."
+                )
+              end
+            end
+
+            context 'changed' do
+              let(:args) { ['set', { 'retention' => '' }] }
+
+              it 'shows changed retention value' do
+                team.update_attributes!(retention: 15 * 24 * 60 * 60)
+                expect(response).to eq(
+                  "Activities in team #{team.guild_name} are retained for *15 days*."
+                )
+              end
+            end
+
+            context 'change' do
+              let(:args) { ['set', { 'retention' => '7 days' }] }
+
+              it 'sets retention' do
+                expect(response).to eq(
+                  "Activities in team #{team.guild_name} are now retained for *7 days*."
+                )
+                expect(team.reload.retention).to eq 7 * 24 * 60 * 60
+              end
+            end
+
+            context 'invalid' do
+              let(:args) { ['set', { 'retention' => 'foobar' }] }
+
+              it 'displays an error for an invalid retention value' do
+                expect(response).to eq(
+                  'An invalid word "foobar" was used in the string to be parsed.'
+                )
+                expect(team.reload.retention).to eq 30 * 24 * 60 * 60
+              end
+            end
+          end
         end
 
         context 'not as a team admin' do
@@ -477,7 +571,7 @@ describe DiscordStrava::Commands::Set do
               it 'cannot set units' do
                 team.update_attributes!(units: 'km')
                 expect(response).to eq(
-                  "Sorry, only a Discord admin can change units. Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celcius*."
+                  "Sorry, only a Discord admin can change units. Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celsius*."
                 )
                 expect(team.reload.units).to eq 'km'
               end
@@ -527,7 +621,57 @@ describe DiscordStrava::Commands::Set do
                 expect(response).to eq(
                   "Sorry, only a Discord admin can change fields. Activity fields for team #{team.guild_name} are *not displayed*."
                 )
+                expect(team.activity_fields).to eq(['None'])
                 expect(command.team.activity_fields).to eq(['None'])
+              end
+            end
+          end
+
+          context 'leaderboard' do
+            context 'no args' do
+              let(:args) { %w[set leaderboard] }
+
+              it 'shows current value of leaderboard' do
+                expect(response).to eq(
+                  "Default leaderboard for team #{team.guild_name} is *distance*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'leaderboard' => 'value' }] }
+
+              it 'cannot set leaderboard' do
+                team.update_attributes!(default_leaderboard: 'elapsed time')
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the default leaderboard. Default leaderboard for team #{team.guild_name} is *elapsed time*."
+                )
+                expect(team.reload.default_leaderboard).to eq('elapsed time')
+                expect(command.team.default_leaderboard).to eq('elapsed time')
+              end
+            end
+          end
+
+          context 'retention' do
+            context 'no args' do
+              let(:args) { %w[set retention] }
+
+              it 'shows current value of retention' do
+                expect(response).to eq(
+                  "Activities in team #{team.guild_name} are retained for *1 month*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'retention' => '1 month' }] }
+
+              it 'cannot set retention' do
+                team.update_attributes!(retention: 60 * 24 * 60 * 60)
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change activity retention. Activities in team #{team.guild_name} are retained for *2 months*."
+                )
+                expect(team.reload.retention).to eq(60 * 24 * 60 * 60)
               end
             end
           end

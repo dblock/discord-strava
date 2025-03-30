@@ -24,6 +24,10 @@
     </p>
     <p>
       Try <b>/strada leaderboard</b> to see a distance leaderboard, or <b>/strada stats</b> to see aggregate stats in the current channel for the past 30 days.
+      Try <b>/strada leaderboard distance</b>, <b>/strada leaderboard time</b> or <b>/strada leaderboard count</b>.
+      Leaderboard supports longer ranges which may require adjusting <b>retention</b>.
+      Try <b>/strada leaderboard last week</b>, or <b>/strada leaderboard elapsed time last month</b>.
+      Leaderboard also understands <b>since 2024</b> or <b>between January and March</b>.
     </p>
     <p>
       Stop syncing activities with <b>/strada set sync false</b> and resume with <b>/strada set sync true</b> (default).
@@ -31,9 +35,8 @@
       Publish followers only activities with <b>/strada set followers true</b> (default) or hide them with <b>/strada set followers false</b>.
     </p>
     <p>
-      Discord server admins can change can change <b>units</b> with <b>/strada set units imperial</b> (miles, feet, yards, and degrees Fahrenheit, default),
-      <b>/strada set units metric</b> (kilometers, meters, and degrees Celcius),
-      or <b>/strada set units both</b> to display both values.
+      Strada retains activities for 30 days. Discord server admins can change this with <b>/strada set retention 60 days</b> or <b>/strada set retention 3 months</b> to change this.
+      Change <b>units</b> with <b>/strada set units imperial</b> (miles, feet, yards, and degrees Fahrenheit, default), <b>/strada set units metric</b> (kilometers, meters, and degrees Celsius), or <b>/strada set units both</b> to display both values.
       Change displayed fields with <b>/strada set fields</b>, eg. <b>/strada set fields default</b>, <b>/strada set fields all</b> or <b>/strada set fields none</b>.
       Available fields are <%= ActivityFields.values.and { |v| '<b>' + v + '</b>' } %>.
       Turn maps off with <b>/strada set maps off</b>, display thumbnails with <b>/strada set maps thumb</b> and full maps with <b>/strada set maps full</b> (default).

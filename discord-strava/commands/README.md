@@ -1,0 +1,1 @@
+Documentation reference for [strada.json](strada.json) is [here](https://discord.com/developers/docs/interactions/application-commands).

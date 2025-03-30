@@ -32,7 +32,7 @@ describe TeamLeaderboard do
     end
   end
 
-  TeamLeaderboard::MEASURABLE_VALUES.each do |metric|
+  (TeamLeaderboard::MEASURABLE_VALUES - ['count']).each do |metric|
     context metric do
       let(:leaderboard) { TeamLeaderboard.new(team, metric: metric) }
 
@@ -41,15 +41,45 @@ describe TeamLeaderboard do
       end
     end
   end
+
+  context 'with a date' do
+    context 'range' do
+      let(:dt) { 1.month.ago }
+      let(:leaderboard) { TeamLeaderboard.new(team, metric: 'count', start_date: dt, end_date: dt + 1.day) }
+
+      it 'returns no activities by default' do
+        expect(leaderboard.to_discord).to eq "There are no activities between #{dt.to_fs(:long)} and #{(dt + 1.day).to_fs(:long)} in this channel."
+      end
+    end
+
+    context 'start' do
+      let(:dt) { 1.month.ago }
+      let(:leaderboard) { TeamLeaderboard.new(team, metric: 'count', start_date: dt) }
+
+      it 'returns no activities by default' do
+        expect(leaderboard.to_discord).to eq "There are no activities after #{dt.to_fs(:long)} in this channel."
+      end
+    end
+
+    context 'end' do
+      let(:dt) { 1.month.ago }
+      let(:leaderboard) { TeamLeaderboard.new(team, metric: 'count', end_date: dt) }
+
+      it 'returns no activities by default' do
+        expect(leaderboard.to_discord).to eq "There are no activities before #{dt.to_fs(:long)} in this channel."
+      end
+    end
+  end
+
   context 'with activities' do
     let(:user1) { Fabricate(:user, team: team) }
     let(:user2) { Fabricate(:user, team: team) }
-    let!(:user1_activity_1) { Fabricate(:user_activity, user: user1, team: team) }
-    let!(:user1_activity_2) { Fabricate(:user_activity, user: user1, team: team) }
-    let!(:user1_activity_3) { Fabricate(:user_activity, user: user1, team: team) }
-    let!(:user1_swim_activity_1) { Fabricate(:swim_activity, user: user1, team: team) }
-    let!(:user1_swim_activity_2) { Fabricate(:swim_activity, user: user1, team: team) }
-    let!(:user2_activity_1) { Fabricate(:user_activity, user: user2, team: team) }
+    let!(:user1_activity_1) { Fabricate(:user_activity, user: user1, team: team, start_date: 1.month.ago) }
+    let!(:user1_activity_2) { Fabricate(:user_activity, user: user1, team: team, start_date: 3.days.ago) }
+    let!(:user1_activity_3) { Fabricate(:user_activity, user: user1, team: team, start_date: Time.now) }
+    let!(:user1_swim_activity_1) { Fabricate(:swim_activity, user: user1, team: team, start_date: 1.month.ago) }
+    let!(:user1_swim_activity_2) { Fabricate(:swim_activity, user: user1, team: team, start_date: Time.now) }
+    let!(:user2_activity_1) { Fabricate(:user_activity, user: user2, team: team, start_date: 2.months.ago) }
     let!(:another_activity) { Fabricate(:user_activity, user: Fabricate(:user, team: Fabricate(:team))) }
 
     TeamLeaderboard::MEASURABLE_VALUES.each do |metric|
@@ -67,9 +97,21 @@ describe TeamLeaderboard do
       it 'aggregate!' do
         expect(leaderboard.aggregate!.to_a).to eq(
           [
-            { '_id' => { 'user_id' => user1.id, 'type' => 'Run' }, 'distance' => user1_activity_1.distance + user1_activity_2.distance + user1_activity_3.distance, 'rank' => 1 },
-            { '_id' => { 'user_id' => user2.id, 'type' => 'Run' }, 'distance' => user2_activity_1.distance, 'rank' => 2 },
-            { '_id' => { 'user_id' => user1.id, 'type' => 'Swim' }, 'distance' => user1_swim_activity_1.distance + user1_swim_activity_2.distance, 'rank' => 3 }
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Run' },
+              'distance' => user1_activity_1.distance + user1_activity_2.distance + user1_activity_3.distance,
+              'rank' => 1
+            },
+            {
+              '_id' => { 'user_id' => user2.id, 'type' => 'Run' },
+              'distance' => user2_activity_1.distance,
+              'rank' => 2
+            },
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Swim' },
+              'distance' => user1_swim_activity_1.distance + user1_swim_activity_2.distance,
+              'rank' => 3
+            }
           ]
         )
       end
@@ -138,6 +180,69 @@ describe TeamLeaderboard do
             ]
           )
         end
+      end
+    end
+
+    context 'distance leaderboard for the last 3 weeks' do
+      let(:leaderboard) { team.leaderboard(metric: 'distance', start_date: 5.days.ago) }
+
+      it 'aggregate!' do
+        expect(leaderboard.aggregate!.to_a).to eq(
+          [
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Run' },
+              'distance' => user1_activity_2.distance + user1_activity_3.distance,
+              'rank' => 1
+            },
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Swim' },
+              'distance' => user1_swim_activity_2.distance,
+              'rank' => 2
+            }
+          ]
+        )
+      end
+    end
+
+    context 'distance leaderboard up to two days ago' do
+      let(:leaderboard) { team.leaderboard(metric: 'distance', end_date: 2.days.ago) }
+
+      it 'aggregate!' do
+        expect(leaderboard.aggregate!.to_a).to eq(
+          [
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Run' },
+              'distance' => user1_activity_1.distance + user1_activity_2.distance,
+              'rank' => 1
+            },
+            {
+              '_id' => { 'user_id' => user2.id, 'type' => 'Run' },
+              'distance' => user2_activity_1.distance,
+              'rank' => 2
+            },
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Swim' },
+              'distance' => user1_swim_activity_1.distance,
+              'rank' => 3
+            }
+          ]
+        )
+      end
+    end
+
+    context 'distance leaderboard for the last 3 weeks and up to two days ago' do
+      let(:leaderboard) { team.leaderboard(metric: 'distance', start_date: 5.days.ago, end_date: 2.days.ago) }
+
+      it 'aggregate!' do
+        expect(leaderboard.aggregate!.to_a).to eq(
+          [
+            {
+              '_id' => { 'user_id' => user1.id, 'type' => 'Run' },
+              'distance' => user1_activity_2.distance,
+              'rank' => 1
+            }
+          ]
+        )
       end
     end
   end

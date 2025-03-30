@@ -1,5 +1,7 @@
 ### Changelog
 
+* 2025/03/30: Added `set retention` - [@dblock](https://github.com/dblock).
+* 2025/03/30: Added leaderboard ranges - [@dblock](https://github.com/dblock).
 * 2025/02/12: Users that installed the bot are now guild owners - [@dblock](https://github.com/dblock).
 * 2025/01/17: Guild owners can disconnect users - [@dblock](https://github.com/dblock).
 * 2024/11/30: Display primary activity photo - [@dblock](https://github.com/dblock).

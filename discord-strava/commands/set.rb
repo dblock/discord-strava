@@ -12,8 +12,10 @@ module DiscordStrava
         if first_selection.empty? || options.first[:name] != 'set'
           messages = [
             "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
+            "Activities are retained for *#{command.team.retention_s}*.",
             "Activity fields are *#{command.team.activity_fields_s}*.",
-            "Maps for team #{command.team.guild_name} are *#{command.team.maps_s}*.",
+            "Maps are *#{command.team.maps_s}*.",
+            "Default leaderboard is *#{command.team.default_leaderboard_s}*.",
             "Your activities will #{command.user.sync_activities? ? '' : 'not '}sync.",
             "Your private activities will #{command.user.private_activities? ? '' : 'not '}be posted.",
             "Your followers only activities will #{command.user.followers_only_activities? ? '' : 'not '}be posted."
@@ -77,6 +79,32 @@ module DiscordStrava
               command.team.update_attributes!(maps: parsed_value) if parsed_value
               logger.info "SET: #{command.team} - maps set to #{command.team.maps}"
               "Maps for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.maps_s}*."
+            end
+          when 'leaderboard'
+            v = nil if v&.blank?
+            changed = v && command.team.default_leaderboard != v
+            if !command.user.guild_owner? && changed
+              logger.info "SET: #{command.team} - not admin, default leaderboard remain set to #{command.team.default_leaderboard}"
+              "Sorry, only a Discord admin can change the default leaderboard. Default leaderboard for team #{command.team.guild_name} is *#{command.team.default_leaderboard_s}*."
+            else
+              command.team.update_attributes!(default_leaderboard: v) if Leaderboard.parse_expression(v) && changed
+              logger.info "SET: #{command.team} - default leaderboard set to #{command.team.default_leaderboard}"
+              "Default leaderboard for team #{command.team.guild_name} is#{changed ? ' now' : ''} *#{command.team.default_leaderboard_s}*."
+            end
+          when 'retention'
+            begin
+              v = ChronicDuration.parse(v) if v
+              changed = v && command.team.retention != v
+              if !command.user.guild_owner? && changed
+                logger.info "SET: #{command.team} - not admin, default activity retention remains set to #{command.team.retention}"
+                "Sorry, only a Discord admin can change activity retention. Activities in team #{command.team.guild_name} are retained for *#{command.team.retention_s}*."
+              else
+                command.team.update_attributes!(retention: v) if changed
+                logger.info "SET: #{command.team} - activity retention set to #{command.team.retention} (#{command.team.retention_s})"
+                "Activities in team #{command.team.guild_name} are#{changed ? ' now' : ''} retained for *#{command.team.retention_s}*."
+              end
+            rescue ChronicDuration::DurationParseError => e
+              e.to_s
             end
           else
             "Invalid setting #{k}, type `help` for instructions."

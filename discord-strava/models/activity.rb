@@ -23,7 +23,6 @@ class Activity
 
   index(team_id: 1, bragged_at: 1)
   index(distance: 1, moving_time: 1, elapsed_time: 1, total_elevation_gain: 1)
-  index({ updated_at: 1 }, { expire_after_seconds: 30.days })
   index({ team_id: 1, strava_id: 1, user_id: 1 }, unique: true)
 
   embeds_one :channel_message, inverse_of: nil
