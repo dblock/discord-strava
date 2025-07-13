@@ -999,6 +999,10 @@ describe UserActivity do
       Timecop.freeze(tt)
     end
 
+    it 'includes calories' do
+      expect(activity.calories).to eq 870.2
+    end
+
     it 'to_discord' do
       expect(activity.to_discord).to eq(
         embeds: [
