@@ -11,6 +11,6 @@ Integrate Strava into Discord. Hosted at [strada.playplay.io](https://strada.pla
 
 ### Copyright & License
 
-Copyright [Daniel Doubrovkine, Vestris LLC](https://www.vestris.com), 2023
+Copyright [Daniel Doubrovkine, Vestris LLC](https://www.vestris.com), 2023-2025
 
 [MIT License](LICENSE)

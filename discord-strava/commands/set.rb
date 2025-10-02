@@ -16,9 +16,9 @@ module DiscordStrava
             "Activity fields are *#{command.team.activity_fields_s}*.",
             "Maps are *#{command.team.maps_s}*.",
             "Default leaderboard is *#{command.team.default_leaderboard_s}*.",
-            "Your activities will #{command.user.sync_activities? ? '' : 'not '}sync.",
-            "Your private activities will #{command.user.private_activities? ? '' : 'not '}be posted.",
-            "Your followers only activities will #{command.user.followers_only_activities? ? '' : 'not '}be posted."
+            "Your activities will #{'not ' unless command.user.sync_activities?}sync.",
+            "Your private activities will #{'not ' unless command.user.private_activities?}be posted.",
+            "Your followers only activities will #{'not ' unless command.user.followers_only_activities?}be posted."
           ]
           logger.info "SET: #{command.team}, user=#{command.user} - set"
           messages.join("\n")
@@ -56,7 +56,7 @@ module DiscordStrava
             else
               command.team.update_attributes!(units: v) unless v.nil?
               logger.info "SET: #{command.team} - units set to #{command.team.units}"
-              "Activities for team #{command.team.guild_name}#{changed ? ' now' : ''} display *#{command.team.units_s}*."
+              "Activities for team #{command.team.guild_name}#{' now' if changed} display *#{command.team.units_s}*."
             end
           when 'fields'
             parsed_fields = ActivityFields.parse_s(v) if v
@@ -67,7 +67,7 @@ module DiscordStrava
             else
               command.team.update_attributes!(activity_fields: parsed_fields) if changed && parsed_fields&.any?
               logger.info "SET: #{command.team} - activity fields set to #{command.team.activity_fields.and}"
-              "Activity fields for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.activity_fields_s}*."
+              "Activity fields for team #{command.team.guild_name} are#{' now' if changed} *#{command.team.activity_fields_s}*."
             end
           when 'maps'
             parsed_value = MapTypes.parse_s(v) if v
@@ -78,7 +78,7 @@ module DiscordStrava
             else
               command.team.update_attributes!(maps: parsed_value) if parsed_value
               logger.info "SET: #{command.team} - maps set to #{command.team.maps}"
-              "Maps for team #{command.team.guild_name} are#{changed ? ' now' : ''} *#{command.team.maps_s}*."
+              "Maps for team #{command.team.guild_name} are#{' now' if changed} *#{command.team.maps_s}*."
             end
           when 'leaderboard'
             v = nil if v&.blank?
@@ -89,7 +89,7 @@ module DiscordStrava
             else
               command.team.update_attributes!(default_leaderboard: v) if Leaderboard.parse_expression(v) && changed
               logger.info "SET: #{command.team} - default leaderboard set to #{command.team.default_leaderboard}"
-              "Default leaderboard for team #{command.team.guild_name} is#{changed ? ' now' : ''} *#{command.team.default_leaderboard_s}*."
+              "Default leaderboard for team #{command.team.guild_name} is#{' now' if changed} *#{command.team.default_leaderboard_s}*."
             end
           when 'retention'
             begin
@@ -101,7 +101,7 @@ module DiscordStrava
               else
                 command.team.update_attributes!(retention: v) if changed
                 logger.info "SET: #{command.team} - activity retention set to #{command.team.retention} (#{command.team.retention_s})"
-                "Activities in team #{command.team.guild_name} are#{changed ? ' now' : ''} retained for *#{command.team.retention_s}*."
+                "Activities in team #{command.team.guild_name} are#{' now' if changed} retained for *#{command.team.retention_s}*."
               end
             rescue ChronicDuration::DurationParseError => e
               e.to_s

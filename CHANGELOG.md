@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2025/10/02: Upgrade to Ruby 3.4.6 - [@dblock](https://github.com/dblock).
 * 2025/07/13: Fix: missing calories in activities - [@dblock](https://github.com/dblock).
 * 2025/05/25: Assign medals based on rank within an activity type - [@JonEHolland](https://github.com/JonEHolland), [@dblock](https://github.com/dblock).
 * 2025/03/30: Added `set retention` - [@dblock](https://github.com/dblock).

@@ -647,12 +647,12 @@ describe User do
       )
     end
 
-    it 'hadles 403', vcr: { cassette_name: 'discord/dm_403' } do
+    it 'handles 403', vcr: { cassette_name: 'discord/dm_403' } do
       expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'Cannot send messages to this user (50007, 403)'
     end
 
-    it 'hadles 400', vcr: { cassette_name: 'discord/dm_400' } do
-      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 ({"recipient_id" => ["Value \"invalid\" is not snowflake."]})'
+    it 'handles 400', vcr: { cassette_name: 'discord/dm_400' } do
+      expect { user.dm!('test') }.to raise_error DiscordStrava::Error, 'the server responded with status 400 for POST https://discord.com/api/users/@me/channels ({"recipient_id" => ["Value \"invalid\" is not snowflake."]})'
     end
   end
 end

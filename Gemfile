@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-ruby '3.4.1'
+ruby '3.4.6'
 
 gem 'async'
 gem 'chronic'
@@ -60,5 +60,4 @@ group :test do
   gem 'timecop'
   gem 'vcr'
   gem 'webmock'
-  gem 'webrick'
 end

@@ -267,7 +267,7 @@ class Team
       if remaining_trial_days.zero?
         'Your trial subscription has expired.'
       else
-        "Your trial subscription expires in #{remaining_trial_days} day#{remaining_trial_days == 1 ? '' : 's'}."
+        "Your trial subscription expires in #{remaining_trial_days} day#{'s' unless remaining_trial_days == 1}."
       end,
       subscribe_text
     ].join(' ')
@@ -307,7 +307,7 @@ class Team
       current_period_end = Time.at(subscription.current_period_end).strftime('%B %d, %Y')
       if subscription.status == 'active'
         [
-          "Subscribed to #{subscription.plan.name} (#{amount}), will#{subscription.cancel_at_period_end ? ' not' : ''} auto-renew on #{current_period_end}."
+          "Subscribed to #{subscription.plan.name} (#{amount}), will#{' not' if subscription.cancel_at_period_end} auto-renew on #{current_period_end}."
         ].compact.join("\n")
       else
         "#{subscription.status.titleize} subscription created #{Time.at(subscription.created).strftime('%B %d, %Y')} to #{subscription.plan.name} (#{amount})."
