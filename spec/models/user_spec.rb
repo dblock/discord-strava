@@ -196,9 +196,10 @@ describe User do
               allow(user).to receive(:latest_bragged_activity).and_return(last_activity)
             end
 
-            it 'retrieves last activity details and rebrags it with updated description and image' do
+            it 'retrieves last activity details and rebrags it with updated description, device and image' do
               updated_last_activity = last_activity.to_discord
               updated_last_activity[:embeds][0][:description] = "<@#{user.user_id}> 🥇 on #{last_activity.start_date_local_s}\n\ndetailed description"
+              updated_last_activity[:embeds][0][:fields] << { inline: true, name: 'Device', value: 'Strava iPhone App' }
               updated_last_activity[:embeds][1] = { image: { url: 'https://dgtzuqphqg23d.cloudfront.net/Bv93zv5t_mr57v0wXFbY_JyvtucgmU5Ym6N9z_bKeUI-128x96.jpg' } }
               expect_any_instance_of(User).to receive(:update!).with(
                 updated_last_activity,

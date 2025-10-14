@@ -20,7 +20,9 @@ describe Activity do
         total_elevation_gain: 100.0,
         private: false,
         visibility: 'everyone',
-        description: 'Great morning run!'
+        description: 'Great morning run!',
+        device_name: 'Garmin',
+        gear: double(name: 'Adidas Solarglide')
       )
     end
 
@@ -43,6 +45,8 @@ describe Activity do
       expect(attrs[:private]).to eq(false)
       expect(attrs[:visibility]).to eq('everyone')
       expect(attrs[:description]).to eq('Great morning run!')
+      expect(attrs[:device]).to eq('Garmin')
+      expect(attrs[:gear]).to eq('Adidas Solarglide')
     end
 
     it 'handles nil values gracefully' do
@@ -63,7 +67,9 @@ describe Activity do
         total_elevation_gain: nil,
         private: false,
         visibility: 'everyone',
-        description: nil
+        description: nil,
+        device_name: nil,
+        gear: double(name: nil)
       )
 
       attrs = Activity.attrs_from_strava(strava_response_nil)

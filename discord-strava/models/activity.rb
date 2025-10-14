@@ -20,6 +20,8 @@ class Activity
   field :private, type: Boolean
   field :visibility, type: String
   field :type, type: String
+  field :device, type: String
+  field :gear, type: String
 
   index(team_id: 1, bragged_at: 1)
   index(distance: 1, moving_time: 1, elapsed_time: 1, total_elevation_gain: 1)
@@ -71,7 +73,9 @@ class Activity
       total_elevation_gain: response.total_elevation_gain,
       private: response.private,
       visibility: response.visibility,
-      description: response.description
+      description: response.description,
+      device: response.device_name,
+      gear: response.gear&.name
     }
   end
 
