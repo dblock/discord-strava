@@ -9,9 +9,7 @@ class MapTypes
     return unless s
 
     value = parse(s)
-    unless value
-      raise DiscordStrava::Error, "Invalid value: #{s}, possible values are #{MapTypes.values.and}."
-    end
+    raise DiscordStrava::Error, "Invalid value: #{s}, possible values are #{MapTypes.values.and}." unless value
 
     value
   end

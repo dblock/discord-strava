@@ -14,7 +14,7 @@ module DiscordStrava
         end
 
         def parse_date(date_time, guess = :first)
-          if year = Leaderboard.parse_year(date_time)
+          if (year = Leaderboard.parse_year(date_time))
             year
           else
             parsed = Chronic.parse(date_time, context: :past, guess: false)
@@ -59,7 +59,7 @@ module DiscordStrava
 
             if expression.blank?
               # pass
-            elsif year = Leaderboard.parse_year(expression)
+            elsif (year = Leaderboard.parse_year(expression))
               result[:start_date] = year
               result[:end_date] ||= year.end_of_year
             else

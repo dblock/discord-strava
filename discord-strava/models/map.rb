@@ -70,15 +70,13 @@ class Map
   private
 
   def update_decoded_summary_polyline
-    unless summary_polyline && (summary_polyline_changed? || saved_change_to_summary_polyline? || decoded_summary_polyline.nil?)
-      return
-    end
+    return unless summary_polyline && (summary_polyline_changed? || saved_change_to_summary_polyline? || decoded_summary_polyline.nil?)
 
     update_decoded_summary_polyline!
   end
 
   def update_decoded_summary_polyline!
-    return unless summary_polyline && summary_polyline.length > 0
+    return unless summary_polyline&.length&.positive?
 
     self.decoded_summary_polyline = Polylines::Decoder.decode_polyline(summary_polyline)
   end

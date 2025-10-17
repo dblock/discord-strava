@@ -106,7 +106,7 @@ class TeamLeaderboard
 
   def to_discord
     top = aggregate!.map { |row|
-      next unless row[metric] > 0
+      next unless row[metric].positive?
 
       Row.new(
         team: team,

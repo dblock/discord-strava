@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe DiscordStrava::App do
   subject do
-    DiscordStrava::App.instance
+    described_class.instance
   end
 
   include_context 'team activation'
 
   describe '#instance' do
     it 'is an instance of the strava app' do
-      expect(subject).to be_a(DiscordStrava::App)
-      expect(subject).to be_an_instance_of(DiscordStrava::App)
+      expect(subject).to be_a(described_class)
+      expect(subject).to be_an_instance_of(described_class)
     end
   end
 

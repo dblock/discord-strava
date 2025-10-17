@@ -47,7 +47,7 @@ class TeamStats
         },
         { '$sort' => { count: -1 } }
       ]
-    ).map { |row|
+    ).to_h do |row|
       type = row['_id']['type']
       [type, ActivitySummary.new(
         team:,
@@ -56,6 +56,6 @@ class TeamStats
         athlete_count: team.activities.where(type:).distinct(:user_id).count,
         stats: Hashie::Mash.new(row.except('_id').except('count'))
       )]
-    }.to_h
+    end
   end
 end

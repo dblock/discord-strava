@@ -24,7 +24,7 @@ module Api
           Api::Middleware.logger.warn "#{e.class.name}: #{e.message}\n  #{backtrace}"
           error!({
                    type: 'param_error',
-                   message: e.document.errors.full_messages.uniq.join(', ') + '.',
+                   message: "#{e.document.errors.full_messages.uniq.join(', ')}.",
                    detail: e.document.errors.messages.transform_values(&:uniq)
                  }, 400)
         end
@@ -45,7 +45,7 @@ module Api
                    message: 'Invalid parameters.',
                    detail: e.errors.transform_keys do |k|
                      # JSON does not permit having a key of type Array
-                     k.count == 1 ? k.first : k.join(', ')
+                     k.one? ? k.first : k.join(', ')
                    end
                  }, 400)
         end

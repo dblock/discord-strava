@@ -130,7 +130,7 @@ module DiscordStrava
       when :day
         interval = 60 * 60 * 24
       end
-      raise "Invalid interval \"#{interval}\"." unless interval.is_a?(Integer) && interval > 0
+      raise "Invalid interval \"#{interval}\"." unless interval.is_a?(Integer) && interval.positive?
 
       interval
     end

@@ -87,7 +87,7 @@ describe User do
 
         context 'sync_and_brag!' do
           it 'syncs and brags' do
-            expect_any_instance_of(User).to receive(:inform!)
+            expect_any_instance_of(described_class).to receive(:inform!)
             user.sync_and_brag!
           end
 
@@ -143,9 +143,9 @@ describe User do
           end
 
           it 'uses a lock' do
-            user_instance_2 = User.find(user._id)
+            user_instance_2 = described_class.find(user._id)
             bragged_activities = []
-            allow_any_instance_of(User).to receive(:inform!) do |_, args|
+            allow_any_instance_of(described_class).to receive(:inform!) do |_, args|
               bragged_activities << args[:embeds].first[:title]
               { message_id: 'message', channel_id: 'channel' }
             end
@@ -159,7 +159,7 @@ describe User do
         context 'with bragged activities' do
           before do
             user.sync_new_strava_activities!
-            allow_any_instance_of(User).to receive(:inform!).and_return({ message_id: 'id', channel_id: 'C1' })
+            allow_any_instance_of(described_class).to receive(:inform!).and_return({ message_id: 'id', channel_id: 'C1' })
             user.brag!
           end
 
@@ -201,7 +201,7 @@ describe User do
               updated_last_activity[:embeds][0][:description] = "<@#{user.user_id}> 🥇 on #{last_activity.start_date_local_s}\n\ndetailed description"
               updated_last_activity[:embeds][0][:fields] << { inline: true, name: 'Device', value: 'Strava iPhone App' }
               updated_last_activity[:embeds][1] = { image: { url: 'https://dgtzuqphqg23d.cloudfront.net/Bv93zv5t_mr57v0wXFbY_JyvtucgmU5Ym6N9z_bKeUI-128x96.jpg' } }
-              expect_any_instance_of(User).to receive(:update!).with(
+              expect_any_instance_of(described_class).to receive(:update!).with(
                 updated_last_activity,
                 last_activity.channel_message
               )
@@ -209,7 +209,7 @@ describe User do
             end
 
             it 'does not rebrag if the activity has not changed' do
-              expect_any_instance_of(User).to receive(:update!).once
+              expect_any_instance_of(described_class).to receive(:update!).once
               2.times { user.rebrag! }
             end
           end
@@ -500,8 +500,8 @@ describe User do
       let(:activity_id) { '1473024961' }
 
       it 'syncs an activity and brags' do
-        expect_any_instance_of(User).to receive(:sync_strava_activity!).with(activity_id)
-        expect_any_instance_of(User).to receive(:brag!)
+        expect_any_instance_of(described_class).to receive(:sync_strava_activity!).with(activity_id)
+        expect_any_instance_of(described_class).to receive(:brag!)
         user.sync_activity_and_brag!(activity_id)
       end
 

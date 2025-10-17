@@ -8,7 +8,7 @@ RSpec.shared_context 'discord command', shared_context: :metadata do
   let(:args) { [] }
   let(:command_options) do
     result = []
-    for arg in Array(args).reverse do
+    Array(args).reverse.each do |arg|
       if arg.is_a?(Hash)
         arg.each_pair do |k, v|
           result = [{

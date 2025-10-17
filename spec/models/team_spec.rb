@@ -12,13 +12,13 @@ describe Team do
 
     it 'destroys teams inactive for two weeks' do
       expect {
-        Team.purge!
-      }.to change(Team, :count).by(-2)
-      expect(Team.find(active_team.id)).to eq active_team
-      expect(Team.find(inactive_team.id)).to eq inactive_team
-      expect(Team.find(inactive_team_one_week_ago.id)).to eq inactive_team_one_week_ago
-      expect(Team.find(inactive_team_two_weeks_ago.id)).to be_nil
-      expect(Team.find(inactive_team_a_month_ago.id)).to be_nil
+        described_class.purge!
+      }.to change(described_class, :count).by(-2)
+      expect(described_class.find(active_team.id)).to eq active_team
+      expect(described_class.find(inactive_team.id)).to eq inactive_team
+      expect(described_class.find(inactive_team_one_week_ago.id)).to eq inactive_team_one_week_ago
+      expect(described_class.find(inactive_team_two_weeks_ago.id)).to be_nil
+      expect(described_class.find(inactive_team_a_month_ago.id)).to be_nil
     end
 
     context 'with a subscribed team' do
@@ -28,10 +28,10 @@ describe Team do
 
       it 'does not destroy team the subscribed team' do
         expect {
-          Team.purge!
-        }.to change(Team, :count).by(-1)
-        expect(Team.find(inactive_team_two_weeks_ago.id)).to be_nil
-        expect(Team.find(inactive_team_a_month_ago.id)).not_to be_nil
+          described_class.purge!
+        }.to change(described_class, :count).by(-1)
+        expect(described_class.find(inactive_team_two_weeks_ago.id)).to be_nil
+        expect(described_class.find(inactive_team_a_month_ago.id)).not_to be_nil
       end
     end
   end
@@ -225,7 +225,7 @@ describe Team do
 
   describe '#inform_guild_owner!' do
     before do
-      allow_any_instance_of(Team).to receive(:update_info!)
+      allow_any_instance_of(described_class).to receive(:update_info!)
 
       allow(Discord::Bot.instance).to receive(:send_dm)
         .with('guild_owner_id', 'message')

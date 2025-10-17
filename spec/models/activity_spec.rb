@@ -27,7 +27,7 @@ describe Activity do
     end
 
     it 'extracts all fields including calories and max_heartrate' do
-      attrs = Activity.attrs_from_strava(strava_response)
+      attrs = described_class.attrs_from_strava(strava_response)
 
       expect(attrs[:strava_id]).to eq('123456789')
       expect(attrs[:name]).to eq('Morning Run')
@@ -42,7 +42,7 @@ describe Activity do
       expect(attrs[:calories]).to eq(450.5)
       expect(attrs[:type]).to eq('Run')
       expect(attrs[:total_elevation_gain]).to eq(100.0)
-      expect(attrs[:private]).to eq(false)
+      expect(attrs[:private]).to be(false)
       expect(attrs[:visibility]).to eq('everyone')
       expect(attrs[:description]).to eq('Great morning run!')
       expect(attrs[:device]).to eq('Garmin')
@@ -72,7 +72,7 @@ describe Activity do
         gear: double(name: nil)
       )
 
-      attrs = Activity.attrs_from_strava(strava_response_nil)
+      attrs = described_class.attrs_from_strava(strava_response_nil)
 
       expect(attrs[:calories]).to be_nil
       expect(attrs[:max_heartrate]).to be_nil
@@ -83,7 +83,7 @@ describe Activity do
 
   describe '#pace_per_mile_s' do
     it 'rounds up 60 seconds' do
-      expect(Activity.new(average_speed: 3.354).pace_per_mile_s).to eq '8m00s/mi'
+      expect(described_class.new(average_speed: 3.354).pace_per_mile_s).to eq '8m00s/mi'
     end
   end
 

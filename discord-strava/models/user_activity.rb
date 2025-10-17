@@ -125,7 +125,7 @@ class UserActivity < Activity
 
     result[:description] = result_description.join("\n\n") unless result_description.none?
 
-    if map && map.has_image?
+    if map&.has_image?
       if team.maps == 'full'
         result[:image] = { url: map.proxy_image_url }
       elsif team.maps == 'thumb'
@@ -136,7 +136,7 @@ class UserActivity < Activity
     end
 
     result_fields = discord_fields
-    result[:fields] = result_fields if result_fields && result_fields.any?
+    result[:fields] = result_fields if result_fields&.any?
     result[:timestamp] = Time.now.utc.iso8601
     result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE)
     result
@@ -145,7 +145,7 @@ class UserActivity < Activity
   def to_discord_embeds
     embeds = [to_discord_embed]
     # photo may be displayed instead of the map already
-    embeds.concat(photos.map(&:to_discord_embed)) if display_field?(ActivityFields::PHOTOS) && photos.any? && map && map.has_image?
+    embeds.concat(photos.map(&:to_discord_embed)) if display_field?(ActivityFields::PHOTOS) && photos.any? && map&.has_image?
     embeds
   end
 
@@ -209,11 +209,11 @@ class UserActivity < Activity
     main = current_weather.weather&.first&.main
 
     case team.units
-    when 'km' then
+    when 'km'
       ["#{current_weather.temp_c.to_i}°C", main].compact.join(' ')
-    when 'mi' then
+    when 'mi'
       ["#{current_weather.temp_f.to_i}°F", main].compact.join(' ')
-    when 'both' then
+    when 'both'
       [
         [
           "#{current_weather.temp_f.to_i}°F",
@@ -221,6 +221,6 @@ class UserActivity < Activity
         ].join(ActivityMethods::UNIT_SEPARATOR),
         main
       ].compact.join(' ')
-     end
+    end
   end
 end

@@ -11,7 +11,7 @@ describe Discord::Bot do
       end
 
       it 'returns a singleton instance' do
-        expect(described_class.instance).to be_a(Discord::Bot)
+        expect(described_class.instance).to be_a(described_class)
       end
 
       it 'initializes with the correct token type and token' do

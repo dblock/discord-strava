@@ -1,7 +1,5 @@
 module Discord
   module Interactions
-    extend self
-
     class Signature
       class << self
         def verify!(public_key, signature, timestamp, input)

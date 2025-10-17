@@ -3,10 +3,6 @@ module DiscordStrava
     class Command < Discord::Requests::Command
       include DiscordStrava::Loggable
 
-      def initialize(params, request)
-        super
-      end
-
       def team
         @team ||= Team.where(guild_id: self[:guild_id]).first || raise("Missing team with guild_id=#{self[:guild_id]}.")
       end
@@ -41,7 +37,7 @@ module DiscordStrava
       private
 
       def user_info
-        if self[:channel][:type] == 0 && key?(:member) # message type 0, text
+        if (self[:channel][:type]).zero? && key?(:member) # message type 0, text
           self[:member][:user] || {}
         elsif self[:channel][:type] == 1 # message type 1, DM
           self[:user] || {}

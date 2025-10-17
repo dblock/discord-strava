@@ -10,25 +10,21 @@ module Api
         sort_order = params[:sort].to_s
         unless options[:default_sort_order] == sort_order
           supported_sort_orders = route_sort
-          if supported_sort_orders.blank?
-            error!("This API doesn't support sorting", 400)
-          end
+          error!("This API doesn't support sorting", 400) if supported_sort_orders.blank?
           unless supported_sort_orders.include?(sort_order)
-            error!("Invalid sort order: #{sort_order}, must be#{' one of' unless supported_sort_orders.count == 1} '#{supported_sort_orders.join('\', \'')}'", 400)
+            error!("Invalid sort order: #{sort_order}, must be#{' one of' unless supported_sort_orders.one?} '#{supported_sort_orders.join('\', \'')}'", 400)
           end
         end
         sort_order.split(',').map do |sort_entry|
           sort_order = {}
           if sort_entry[0] == '-'
             sort_order[:direction] = :desc
-            sort_order[:column] = sort_entry[1..-1]
+            sort_order[:column] = sort_entry[1..]
           else
             sort_order[:direction] = :asc
             sort_order[:column] = sort_entry
           end
-          if sort_order[:column].blank?
-            error!("Invalid sort: #{sort_entry}", 400)
-          end
+          error!("Invalid sort: #{sort_entry}", 400) if sort_order[:column].blank?
           sort_order
         end
       end

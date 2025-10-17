@@ -12,9 +12,7 @@ module Api
       end
 
       link :next do |opts|
-        if represented.next
-          "#{request_url(opts)}#{query_string_for_cursor(represented.next, opts)}"
-        end
+        "#{request_url(opts)}#{query_string_for_cursor(represented.next, opts)}" if represented.next
       end
 
       private

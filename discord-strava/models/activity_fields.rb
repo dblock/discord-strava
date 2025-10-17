@@ -56,7 +56,7 @@ class ActivityFields
     errors.uniq!
 
     if errors.any?
-      raise DiscordStrava::Error, "Invalid field#{'s' unless errors.count == 1}: #{errors.and}, possible values are #{ActivityFields.values.and}."
+      raise DiscordStrava::Error, "Invalid field#{'s' unless errors.one?}: #{errors.and}, possible values are #{ActivityFields.values.and}."
     end
 
     if fields.count > 1

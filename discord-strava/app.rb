@@ -115,7 +115,7 @@ module DiscordStrava
       log_info_without_repeat "Checking trials for #{Team.active.trials.count} team(s)."
       Team.active.trials.each do |team|
         logger.info "Team #{team} has #{team.remaining_trial_days} trial days left."
-        next unless team.remaining_trial_days > 0 && team.remaining_trial_days <= 3
+        next unless team.remaining_trial_days.positive? && team.remaining_trial_days <= 3
 
         team.inform_trial!
       rescue StandardError => e

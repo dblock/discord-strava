@@ -16,21 +16,17 @@ module Discord
       end
 
       def options
-        self[:data][:options].map { |option|
+        self[:data][:options].to_h do |option|
           name = option[:name]
-          args = option[:options].map { |arg|
+          args = option[:options].to_h do |arg|
             [arg[:name], arg]
-          }.to_h
+          end
           [name, option.merge(args: args)].compact
-        }.to_h
+        end
       end
 
       def text
         [name, options.map { |key, value| [key, value[:value]] }].flatten.compact.join(' ')
-      end
-
-      def initialize(params, request)
-        super
       end
 
       def matches?(route, options = [])
