@@ -180,6 +180,15 @@ describe User do
             expect(user.activities_at).not_to eq past
           end
 
+          it 'does not reset activities_at to a date in the future' do
+            expect {
+              past_date = Time.parse('1999-01-01T12:34Z')
+              Timecop.travel(past_date) do
+                user.brag!
+              end
+            }.not_to change(user, :activities_at)
+          end
+
           it 'sets activities_at to the most recent bragged activity' do
             expect(user.activities_at).to eq user.activities.bragged.max(:start_date)
           end

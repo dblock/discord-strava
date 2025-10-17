@@ -157,7 +157,7 @@ class User
     activity = activities.unbragged.asc(:start_date).first
     return unless activity
 
-    update_attributes!(activities_at: activity.start_date) if activities_at.nil? || (activities_at < activity.start_date)
+    update_attributes!(activities_at: activity.start_date) if activities_at.nil? || (activities_at < activity.start_date && activity.start_date <= Time.now.utc)
     result = activity.brag!
     return unless result
 
