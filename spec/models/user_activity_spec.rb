@@ -912,7 +912,7 @@ describe UserActivity do
   describe 'create_from_strava!' do
     let(:user) { Fabricate(:user) }
     let(:detailed_activity) do
-      Strava::Models::Activity.new(
+      Strava::Models::DetailedActivity.new(
         JSON.parse(
           File.read(
             File.join(__dir__, '../fabricators/activity.json')
@@ -1000,7 +1000,7 @@ describe UserActivity do
   context 'with photos' do
     let!(:tt) { Time.now }
     let(:fixture) { 'spec/fabricators/ride_activity.json' }
-    let(:detailed_activity) { Strava::Models::Activity.new(JSON.parse(File.read(fixture))) }
+    let(:detailed_activity) { Strava::Models::DetailedActivity.new(JSON.parse(File.read(fixture))) }
     let(:team) { Fabricate(:team) }
     let(:user) { Fabricate(:user, team:) }
     let(:activity) { described_class.create_from_strava!(user, detailed_activity) }

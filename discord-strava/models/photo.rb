@@ -35,7 +35,7 @@ class Photo
     embed
   end
 
-  def self.attrs_from_strava(response)
+  def self.detailed_attrs_from_strava(response)
     {
       unique_id: response.unique_id,
       urls: response.urls,
@@ -46,6 +46,14 @@ class Photo
       uploaded_at: response.uploaded_at,
       sizes: response.sizes,
       default_photo: response.default_photo
+    }
+  end
+
+  def self.summary_attrs_from_strava(response)
+    {
+      unique_id: response.unique_id,
+      urls: response.urls,
+      source: response.source
     }
   end
 

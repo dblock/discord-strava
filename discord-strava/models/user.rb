@@ -83,7 +83,7 @@ class User
     raise 'Missing refresh_token in OAuth response.' unless response.refresh_token
     raise 'Missing expires_at in OAuth response.' unless response.expires_at
 
-    create_athlete(Athlete.attrs_from_strava(response.athlete))
+    create_athlete(Athlete.summary_attrs_from_strava(response.athlete))
     update_attributes!(
       token_type: response.token_type,
       access_token: response.access_token,
