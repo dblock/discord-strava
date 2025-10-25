@@ -26,7 +26,7 @@ GEM
       metrics (~> 0.12)
       traces (~> 0.18)
     base64 (0.3.0)
-    benchmark (0.4.1)
+    benchmark (0.5.0)
     bigdecimal (3.3.1)
     bson (5.1.1)
     capybara (3.40.0)
@@ -307,7 +307,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    strava-ruby-client (3.0.0.pre.1)
+    strava-ruby-client (3.0.0)
       activesupport
       faraday (>= 2.0)
       faraday-multipart (>= 1.0)
