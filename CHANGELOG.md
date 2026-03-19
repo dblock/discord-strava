@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/03/19: Upgrade to Ruby 3.4.9 - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/19: Delete activities that become private after being posted - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/19: Refresh Strava athlete profile during activity syncs so renamed athletes show up on new posts immediately - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/19: Automatically disconnect users from Strava when Discord reports they have left the server - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
