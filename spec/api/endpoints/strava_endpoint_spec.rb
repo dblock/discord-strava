@@ -54,6 +54,10 @@ describe Api::Endpoints::StravaEndpoint do
       context 'with a connected user' do
         let!(:user) { Fabricate(:user, access_token: 'token') }
 
+        before do
+          allow_any_instance_of(User).to receive(:left_guild?).and_return(false)
+        end
+
         it 'syncs user' do
           expect_any_instance_of(Logger).to receive(:info).with(/Syncing activity/).and_call_original
           expect_any_instance_of(User).to receive(:sync_activity_and_brag!).with(event_data[:object_id]).once
@@ -68,6 +72,29 @@ describe Api::Endpoints::StravaEndpoint do
           expect(last_response.status).to eq 200
           response = JSON.parse(last_response.body)
           expect(response['ok']).to be true
+        end
+
+        context 'with a user that left the guild' do
+          before do
+            allow_any_instance_of(User).to receive(:left_guild?).and_return(true)
+          end
+
+          it 'disconnects the user instead of syncing' do
+            expect_any_instance_of(Logger).to receive(:info).with(/left the guild/).and_call_original
+            expect_any_instance_of(User).to receive(:disconnect!)
+            expect_any_instance_of(User).not_to receive(:sync_activity_and_brag!)
+            post '/api/strava/event',
+                 JSON.dump(
+                   event_data.merge(
+                     aspect_type: 'create',
+                     owner_id: user.athlete.athlete_id.to_s
+                   )
+                 ),
+                 'CONTENT_TYPE' => 'application/json'
+            expect(last_response.status).to eq 200
+            response = JSON.parse(last_response.body)
+            expect(response['ok']).to be true
+          end
         end
 
         context 'with an expired subscription' do
@@ -189,6 +216,30 @@ describe Api::Endpoints::StravaEndpoint do
             expect(last_response.status).to eq 200
             response = JSON.parse(last_response.body)
             expect(response['ok']).to be true
+          end
+
+          context 'with a user that left the guild' do
+            before do
+              allow_any_instance_of(User).to receive(:left_guild?).and_return(true)
+            end
+
+            it 'disconnects the user instead of rebragging' do
+              expect_any_instance_of(Logger).to receive(:info).with(/left the guild/).and_call_original
+              expect_any_instance_of(User).to receive(:disconnect!)
+              expect_any_instance_of(User).not_to receive(:rebrag_activity!)
+              post '/api/strava/event',
+                   JSON.dump(
+                     event_data.merge(
+                       aspect_type: 'update',
+                       object_id: activity.strava_id,
+                       owner_id: user.athlete.athlete_id.to_s
+                     )
+                   ),
+                   'CONTENT_TYPE' => 'application/json'
+              expect(last_response.status).to eq 200
+              response = JSON.parse(last_response.body)
+              expect(response['ok']).to be true
+            end
           end
 
           it 'ignores non-existent activities' do
@@ -327,6 +378,30 @@ describe Api::Endpoints::StravaEndpoint do
               response = JSON.parse(last_response.body)
               expect(response['ok']).to be true
               expect(activity.reload.channel_message).to be_nil
+            end
+
+            context 'with a user that left the guild' do
+              before do
+                allow_any_instance_of(User).to receive(:left_guild?).and_return(true)
+              end
+
+              it 'disconnects the user instead of deleting the activity message' do
+                expect_any_instance_of(Logger).to receive(:info).with(/left the guild/).and_call_original
+                expect_any_instance_of(User).to receive(:disconnect!)
+                expect_any_instance_of(UserActivity).not_to receive(:unbrag!)
+                post '/api/strava/event',
+                     JSON.dump(
+                       event_data.merge(
+                         aspect_type: 'delete',
+                         object_id: activity.strava_id,
+                         owner_id: user.athlete.athlete_id.to_s
+                       )
+                     ),
+                     'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 200
+                response = JSON.parse(last_response.body)
+                expect(response['ok']).to be true
+              end
             end
 
             context 'with multiple connected users with the same athlete id' do

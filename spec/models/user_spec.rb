@@ -488,6 +488,27 @@ describe User do
       end
     end
 
+    describe '#left_guild?' do
+      let(:user) { Fabricate(:user) }
+
+      it 'returns false when the user is still in the guild' do
+        expect(Discord::Bot.instance).to receive(:guild_member).with(user.team.guild_id, user.user_id).and_return({})
+        expect(user.left_guild?).to be false
+      end
+
+      it 'returns true when Discord reports an unknown member' do
+        allow(Discord::Bot.instance).to receive(:guild_member).with(user.team.guild_id, user.user_id)
+                                                              .and_raise(DiscordStrava::Error, 'Unknown Member (10007, 404)')
+        expect(user.left_guild?).to be true
+      end
+
+      it 're-raises other Discord errors' do
+        allow(Discord::Bot.instance).to receive(:guild_member).with(user.team.guild_id, user.user_id)
+                                                              .and_raise(DiscordStrava::Error, 'Missing Access (50001, 403)')
+        expect { user.left_guild? }.to raise_error(DiscordStrava::Error, 'Missing Access (50001, 403)')
+      end
+    end
+
     describe '#dm_connect!' do
       let(:user) { Fabricate(:user) }
       let(:url) { "https://www.strava.com/oauth/authorize?client_id=client-id&redirect_uri=https://strada.playplay.io/connect&response_type=code&scope=activity:read_all&state=#{user.id}" }

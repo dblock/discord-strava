@@ -5,6 +5,8 @@ class User
   include StravaTokens
   include Brag
 
+  UNKNOWN_MEMBER_ERROR = 'Unknown Member (10007, 404)'.freeze
+
   field :channel_id, type: String
   field :user_id, type: String
   field :user_name, type: String
@@ -224,6 +226,15 @@ class User
 
   def guild_owner?
     team.guild_owners.include?(user_id)
+  end
+
+  def left_guild?
+    Discord::Bot.instance.guild_member(team.guild_id, user_id)
+    false
+  rescue DiscordStrava::Error => e
+    raise unless e.message == UNKNOWN_MEMBER_ERROR
+
+    true
   end
 
   def medal_s(activity_type)
