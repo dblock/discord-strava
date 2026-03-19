@@ -77,6 +77,12 @@
             "min_length": 1,
             "max_length": 12
         }, {
+            "name": "timezone",
+            "description": "Set the team timezone used for activity day boundaries.",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 64
+        }, {
             "name": "userlimit",
             "description": "Set the max activities posted per user per day (default is unlimited).",
             "type": 3,

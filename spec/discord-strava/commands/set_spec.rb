@@ -24,6 +24,7 @@ describe DiscordStrava::Commands::Set do
         expect(response).to eq([
           "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*.",
           'Activities are retained for *1 month*.',
+          'Timezone is *(GMT-05:00) Eastern Time (US & Canada)*.',
           'Max activities per user per day are *unlimited*.',
           'Max activities per channel per day are *unlimited*.',
           'Activity fields are *set to default*.',
@@ -550,6 +551,40 @@ describe DiscordStrava::Commands::Set do
             end
           end
 
+          context 'timezone' do
+            context 'no args' do
+              let(:args) { %w[set timezone] }
+
+              it 'shows the current timezone' do
+                expect(response).to eq(
+                  "Timezone for team #{team.guild_name} is *(GMT-05:00) Eastern Time (US & Canada)*."
+                )
+              end
+            end
+
+            context 'change' do
+              let(:args) { ['set', { 'timezone' => 'Pacific Time (US & Canada)' }] }
+
+              it 'sets the timezone' do
+                expect(response).to eq(
+                  "Timezone for team #{team.guild_name} is now *(GMT-08:00) Pacific Time (US & Canada)*."
+                )
+                expect(team.reload.timezone).to eq 'Pacific Time (US & Canada)'
+              end
+            end
+
+            context 'invalid' do
+              let(:args) { ['set', { 'timezone' => 'Foo/Bar' }] }
+
+              it 'displays an error for an invalid timezone value' do
+                expect(response).to eq(
+                  "TimeZone _Foo/Bar_ is invalid, see https://github.com/rails/rails/blob/v#{ActiveSupport.gem_version}/activesupport/lib/active_support/values/time_zone.rb#L30 for a list. Timezone for team #{team.guild_name} is currently *(GMT-05:00) Eastern Time (US & Canada)*."
+                )
+                expect(team.reload.timezone).to eq 'Eastern Time (US & Canada)'
+              end
+            end
+          end
+
           context 'userlimit' do
             context 'no args' do
               let(:args) { %w[set userlimit] }
@@ -732,6 +767,30 @@ describe DiscordStrava::Commands::Set do
                   "Sorry, only a Discord admin can change activity retention. Activities in team #{team.guild_name} are retained for *2 months*."
                 )
                 expect(team.reload.retention).to eq(60 * 24 * 60 * 60)
+              end
+            end
+          end
+
+          context 'timezone' do
+            context 'no args' do
+              let(:args) { %w[set timezone] }
+
+              it 'shows the current timezone' do
+                expect(response).to eq(
+                  "Timezone for team #{team.guild_name} is *(GMT-05:00) Eastern Time (US & Canada)*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'timezone' => 'Pacific Time (US & Canada)' }] }
+
+              it 'cannot set timezone' do
+                team.update_attributes!(timezone: 'Hawaii')
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the timezone. Timezone for team #{team.guild_name} is *(GMT-10:00) Hawaii*."
+                )
+                expect(team.reload.timezone).to eq 'Hawaii'
               end
             end
           end

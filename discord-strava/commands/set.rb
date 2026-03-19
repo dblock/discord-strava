@@ -13,6 +13,7 @@ module DiscordStrava
           messages = [
             "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
             "Activities are retained for *#{command.team.retention_s}*.",
+            "Timezone is *#{command.team.timezone_s}*.",
             "Max activities per user per day are *#{command.team.max_activities_per_user_per_day_s}*.",
             "Max activities per channel per day are *#{command.team.max_activities_per_channel_per_day_s}*.",
             "Activity fields are *#{command.team.activity_fields_s}*.",
@@ -92,6 +93,21 @@ module DiscordStrava
               command.team.update_attributes!(default_leaderboard: v) if Leaderboard.parse_expression(v) && changed
               logger.info "SET: #{command.team} - default leaderboard set to #{command.team.default_leaderboard}"
               "Default leaderboard for team #{command.team.guild_name} is#{' now' if changed} *#{command.team.default_leaderboard_s}*."
+            end
+          when 'timezone'
+            tz = nil
+            if v
+              tz = ActiveSupport::TimeZone.new(v)
+              raise DiscordStrava::Error, "TimeZone _#{v}_ is invalid, see https://github.com/rails/rails/blob/v#{ActiveSupport.gem_version}/activesupport/lib/active_support/values/time_zone.rb#L30 for a list. Timezone for team #{command.team.guild_name} is currently *#{command.team.timezone_s}*." unless tz
+            end
+            changed = tz && command.team.timezone != tz.name
+            if !command.user.guild_owner? && changed
+              logger.info "SET: #{command.team} - not admin, timezone remains set to #{command.team.timezone}"
+              "Sorry, only a Discord admin can change the timezone. Timezone for team #{command.team.guild_name} is *#{command.team.timezone_s}*."
+            else
+              command.team.update_attributes!(timezone: tz.name) if changed
+              logger.info "SET: #{command.team} - timezone set to #{command.team.timezone}"
+              "Timezone for team #{command.team.guild_name} is#{' now' if changed} *#{command.team.timezone_s}*."
             end
           when 'retention'
             begin
