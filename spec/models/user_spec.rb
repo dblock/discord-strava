@@ -6,6 +6,7 @@ describe User do
 
     before do
       Timecop.freeze
+      allow_any_instance_of(Athlete).to receive(:sync!)
     end
 
     after do
@@ -43,6 +44,12 @@ describe User do
             expect(user).to receive(:sync_strava_activities!).with({ after: activity.start_date.to_i })
             user.sync_new_strava_activities!
           end
+        end
+
+        it 'refreshes the athlete profile before syncing activities' do
+          expect(user.athlete).to receive(:sync!).and_return(user.athlete)
+          allow(user.strava_client).to receive(:athlete_activities)
+          user.send(:sync_strava_activities!, {})
         end
 
         context 'with activities in user_sync_new_strava_activities.yml across more than 5 days' do
@@ -567,10 +574,15 @@ describe User do
         end
 
         it 'fetches an activity' do
+          expect(user.athlete).to receive(:sync!) do
+            user.athlete.update_attributes!(firstname: 'Updated', lastname: 'Name')
+            user.athlete
+          end
           expect {
             user.sync_strava_activity!('1473024961')
           }.to change(user.activities, :count).by(1)
           expect(user.activities.count).to eq 1
+          expect(user.reload.athlete.name).to eq 'Updated Name'
         end
       end
     end
@@ -601,6 +613,7 @@ describe User do
         end
 
         it 'rebrags' do
+          expect(user.athlete).to receive(:sync!).and_return(user.athlete)
           expect_any_instance_of(UserActivity).not_to receive(:brag!)
           expect_any_instance_of(UserActivity).to receive(:rebrag!)
           user.rebrag_activity!(activity)

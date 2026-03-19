@@ -185,6 +185,7 @@ class User
 
   def rebrag_activity!(activity)
     with_strava_error_handler do
+      sync_athlete!
       detailed_activity = strava_client.activity(activity.strava_id)
 
       activity = UserActivity.create_from_strava!(self, detailed_activity)
@@ -215,6 +216,7 @@ class User
   end
 
   def sync_strava_activity!(strava_id)
+    sync_athlete!
     detailed_activity = strava_client.activity(strava_id)
     return if detailed_activity['private'] && !private_activities?
     raise "Activity athlete ID #{detailed_activity.athlete.id} does not match #{athlete.athlete_id}." if detailed_activity.athlete.id.to_s != athlete.athlete_id
@@ -277,6 +279,7 @@ class User
   def sync_strava_activities!(options = {})
     return unless sync_activities?
 
+    sync_athlete!
     strava_client.athlete_activities(options) do |activity|
       UserActivity.create_from_strava!(self, activity)
     end
@@ -313,5 +316,9 @@ class User
 
     activities.destroy_all
     set activities_at: Time.now.utc
+  end
+
+  def sync_athlete!
+    athlete&.sync!
   end
 end
