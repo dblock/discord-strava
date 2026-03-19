@@ -29,7 +29,7 @@ describe DiscordStrava::Commands::Connect do
   end
 
   context 'three args' do
-    let(:args) { ['foo' => 'bar'] }
+    let(:args) { [{ 'foo' => 'bar' }] }
 
     it 'fails with an error' do
       expect(response).to eq(
