@@ -9,7 +9,7 @@ module DiscordStrava
     end
 
     def self.url
-      ENV.fetch('URL') { (ENV['RACK_ENV'] == 'development' ? LOCALHOST : 'https://strada.playplay.io') }
+      ENV.fetch('URL') { ENV['RACK_ENV'] == 'development' ? LOCALHOST : 'https://strada.playplay.io' }
     end
 
     def self.start!
