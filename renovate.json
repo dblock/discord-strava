@@ -2,5 +2,28 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "bundler"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "ruby dependencies (non-major)"
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "major"
+      ],
+      "groupName": "github actions"
+    }
   ]
 }
