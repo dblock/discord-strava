@@ -13,6 +13,8 @@ module DiscordStrava
           messages = [
             "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
             "Activities are retained for *#{command.team.retention_s}*.",
+            "Max activities per user per day are *#{command.team.max_activities_per_user_per_day_s}*.",
+            "Max activities per channel per day are *#{command.team.max_activities_per_channel_per_day_s}*.",
             "Activity fields are *#{command.team.activity_fields_s}*.",
             "Maps are *#{command.team.maps_s}*.",
             "Default leaderboard is *#{command.team.default_leaderboard_s}*.",
@@ -105,6 +107,36 @@ module DiscordStrava
               end
             rescue ChronicDuration::DurationParseError => e
               e.to_s
+            end
+          when 'userlimit'
+            if v
+              raise DiscordStrava::Error, "Invalid value: #{v}. Please use a positive number or 'none'." unless v =~ /\A(none|\d+)\z/i
+
+              v = v =~ /\Anone\z/i ? nil : v.to_i
+            end
+            changed = !option[:value].nil? && command.team.max_activities_per_user_per_day != v
+            if !command.user.guild_owner? && changed
+              logger.info "SET: #{command.team} - not admin, max activities per user per day remains set to #{command.team.max_activities_per_user_per_day}"
+              "Sorry, only a Discord admin can change the max activities per user per day. Max activities per user per day for team #{command.team.guild_name} are *#{command.team.max_activities_per_user_per_day_s}*."
+            else
+              command.team.update_attributes!(max_activities_per_user_per_day: v) if changed
+              logger.info "SET: #{command.team} - max activities per user per day set to #{command.team.max_activities_per_user_per_day}"
+              "Max activities per user per day for team #{command.team.guild_name} are#{' now' if changed} *#{command.team.max_activities_per_user_per_day_s}*."
+            end
+          when 'channellimit'
+            if v
+              raise DiscordStrava::Error, "Invalid value: #{v}. Please use a positive number or 'none'." unless v =~ /\A(none|\d+)\z/i
+
+              v = v =~ /\Anone\z/i ? nil : v.to_i
+            end
+            changed = !option[:value].nil? && command.team.max_activities_per_channel_per_day != v
+            if !command.user.guild_owner? && changed
+              logger.info "SET: #{command.team} - not admin, max activities per channel per day remains set to #{command.team.max_activities_per_channel_per_day}"
+              "Sorry, only a Discord admin can change the max activities per channel per day. Max activities per channel per day for team #{command.team.guild_name} are *#{command.team.max_activities_per_channel_per_day_s}*."
+            else
+              command.team.update_attributes!(max_activities_per_channel_per_day: v) if changed
+              logger.info "SET: #{command.team} - max activities per channel per day set to #{command.team.max_activities_per_channel_per_day}"
+              "Max activities per channel per day for team #{command.team.guild_name} are#{' now' if changed} *#{command.team.max_activities_per_channel_per_day_s}*."
             end
           else
             "Invalid setting #{k}, type `help` for instructions."

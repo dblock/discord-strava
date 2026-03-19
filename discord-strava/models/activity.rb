@@ -23,6 +23,8 @@ class Activity
   field :device, type: String
   field :gear, type: String
 
+  index(team_id: 1, type: 1)
+  index(team_id: 1, updated_at: 1)
   index(team_id: 1, bragged_at: 1)
   index(distance: 1, moving_time: 1, elapsed_time: 1, total_elevation_gain: 1)
   index({ team_id: 1, strava_id: 1, user_id: 1 }, unique: true)

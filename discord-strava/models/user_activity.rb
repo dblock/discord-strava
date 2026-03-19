@@ -9,6 +9,7 @@ class UserActivity < Activity
   embeds_many :photos
 
   index(user_id: 1, start_date: 1)
+  index(user_id: 1, bragged_at: 1, start_date: 1)
   index('map._id' => 1)
 
   before_validation :validate_team
@@ -37,6 +38,19 @@ class UserActivity < Activity
       update_attributes!(bragged_at: Time.now.utc)
       nil
     else
+      if team.max_activities_per_channel_per_day
+        channel_count_today = Activity.where(
+          team_id: team.id,
+          :bragged_at.gte => team.now.beginning_of_day,
+          'channel_message.channel_id' => user.channel_id
+        ).count
+        if channel_count_today >= team.max_activities_per_channel_per_day
+          logger.info "Channel #{user.channel_id} reached the daily activity limit of #{team.max_activities_per_channel_per_day}."
+          update_attributes!(bragged_at: Time.now.utc)
+          return nil
+        end
+      end
+
       logger.info "Bragging about #{user}, #{self}."
       rc = user.inform!(to_discord)
       update_attributes!(bragged_at: Time.now.utc, channel_message: rc)
