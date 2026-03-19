@@ -15,6 +15,10 @@ module Discord
       get("guilds/#{guild_id}")
     end
 
+    def guild_member(guild_id, user_id)
+      get("guilds/#{guild_id}/members/#{user_id}")
+    end
+
     def create_dm(recipient_id)
       post(
         'users/@me/channels', {
