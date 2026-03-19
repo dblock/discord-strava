@@ -450,6 +450,35 @@ describe User do
       end
     end
 
+    context 'with a max_activities_per_user_per_day limit and team timezone' do
+      let!(:team) do
+        Fabricate(
+          :team,
+          timezone: 'Pacific Time (US & Canada)',
+          max_activities_per_user_per_day: 1
+        )
+      end
+      let!(:user) { Fabricate(:user, team:) }
+      let!(:already_bragged_activity) do
+        Fabricate(
+          :user_activity,
+          user:,
+          team:,
+          bragged_at: Time.utc(2026, 3, 18, 23, 30, 0),
+          start_date: 3.hours.ago
+        )
+      end
+      let!(:pending_activity) { Fabricate(:user_activity, user:, team:, start_date: 2.hours.ago) }
+
+      it 'uses the team timezone when applying the daily limit' do
+        Timecop.freeze(Time.utc(2026, 3, 19, 3, 0, 0)) do
+          expect_any_instance_of(UserActivity).not_to receive(:brag!)
+          expect(user.brag!).to be_nil
+          expect(pending_activity.reload.bragged_at).to be_nil
+        end
+      end
+    end
+
     describe '#inform!' do
       let(:user) { Fabricate(:user, user_id: 'U0HLFUZLJ') }
 

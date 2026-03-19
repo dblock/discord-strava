@@ -357,6 +357,30 @@ describe Team do
     end
   end
 
+  describe '#timezone' do
+    let(:team) { Fabricate(:team) }
+
+    it 'defaults to Eastern Time (US & Canada)' do
+      expect(team.timezone).to eq 'Eastern Time (US & Canada)'
+      expect(team.timezone_s).to eq '(GMT-05:00) Eastern Time (US & Canada)'
+    end
+
+    it 'requires a timezone' do
+      team.timezone = nil
+      expect(team).not_to be_valid
+      expect(team.errors[:timezone]).to include("can't be blank")
+    end
+
+    it 'returns current time in the configured timezone' do
+      team.timezone = 'Pacific Time (US & Canada)'
+
+      Timecop.freeze(Time.utc(2026, 3, 19, 12, 0, 0)) do
+        expect(team.now.zone).to eq 'PDT'
+        expect(team.now.hour).to eq 5
+      end
+    end
+  end
+
   describe '#max_activities_per_user_per_day' do
     let(:team) { Fabricate(:team) }
 
