@@ -192,7 +192,7 @@ class User
       return unless activity
       return unless activity.bragged_at
 
-      result = activity.rebrag!
+      result = activity.hidden? ? activity.unbrag! : activity.rebrag!
       return unless result
 
       result.merge(activity:)
