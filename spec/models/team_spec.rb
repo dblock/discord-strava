@@ -360,9 +360,9 @@ describe Team do
   describe '#timezone' do
     let(:team) { Fabricate(:team) }
 
-    it 'defaults to Eastern Time (US & Canada)' do
-      expect(team.timezone).to eq 'Eastern Time (US & Canada)'
-      expect(team.timezone_s).to eq '(GMT-05:00) Eastern Time (US & Canada)'
+    it 'defaults to auto' do
+      expect(team.timezone).to eq 'auto'
+      expect(team.timezone_s).to eq 'auto (Eastern Time (US & Canada))'
     end
 
     it 'requires a timezone' do
@@ -371,13 +371,46 @@ describe Team do
       expect(team.errors[:timezone]).to include("can't be blank")
     end
 
-    it 'returns current time in the configured timezone' do
+    it 'returns current time in an explicitly configured timezone' do
       team.timezone = 'Pacific Time (US & Canada)'
 
       Timecop.freeze(Time.utc(2026, 3, 19, 12, 0, 0)) do
         expect(team.now.zone).to eq 'PDT'
         expect(team.now.hour).to eq 5
       end
+    end
+
+    it 'returns current time in the auto-detected timezone' do
+      Fabricate(:user_activity, team:, timezone: '(GMT-08:00) America/Los_Angeles')
+
+      Timecop.freeze(Time.utc(2026, 3, 19, 12, 0, 0)) do
+        expect(team.now.zone).to eq 'PDT'
+        expect(team.now.hour).to eq 5
+      end
+    end
+  end
+
+  describe '#detect_timezone' do
+    let(:team) { Fabricate(:team) }
+
+    it 'returns nil with no activities' do
+      expect(team.detect_timezone).to be_nil
+    end
+
+    it 'detects timezone from activity timezone field' do
+      Fabricate(:user_activity, team:, timezone: '(GMT-05:00) America/New_York')
+      expect(team.detect_timezone.name).to eq 'Eastern Time (US & Canada)'
+    end
+
+    it 'detects Pacific timezone' do
+      Fabricate(:user_activity, team:, timezone: '(GMT-08:00) America/Los_Angeles')
+      expect(team.detect_timezone.name).to eq 'Pacific Time (US & Canada)'
+    end
+
+    it 'uses the most common timezone across multiple activities' do
+      3.times { Fabricate(:user_activity, team:, timezone: '(GMT-08:00) America/Los_Angeles') }
+      Fabricate(:user_activity, team:, timezone: '(GMT-05:00) America/New_York')
+      expect(team.detect_timezone.name).to eq 'Pacific Time (US & Canada)'
     end
   end
 

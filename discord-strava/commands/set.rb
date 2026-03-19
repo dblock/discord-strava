@@ -95,17 +95,20 @@ module DiscordStrava
               "Default leaderboard for team #{command.team.guild_name} is#{' now' if changed} *#{command.team.default_leaderboard_s}*."
             end
           when 'timezone'
-            tz = nil
-            if v
+            if v == 'auto'
+              new_timezone = 'auto'
+            elsif v
               tz = ActiveSupport::TimeZone.new(v)
               raise DiscordStrava::Error, "TimeZone _#{v}_ is invalid, see https://github.com/rails/rails/blob/v#{ActiveSupport.gem_version}/activesupport/lib/active_support/values/time_zone.rb#L30 for a list. Timezone for team #{command.team.guild_name} is currently *#{command.team.timezone_s}*." unless tz
+
+              new_timezone = tz.name
             end
-            changed = tz && command.team.timezone != tz.name
+            changed = new_timezone && command.team.timezone != new_timezone
             if !command.user.guild_owner? && changed
               logger.info "SET: #{command.team} - not admin, timezone remains set to #{command.team.timezone}"
               "Sorry, only a Discord admin can change the timezone. Timezone for team #{command.team.guild_name} is *#{command.team.timezone_s}*."
             else
-              command.team.update_attributes!(timezone: tz.name) if changed
+              command.team.update_attributes!(timezone: new_timezone) if changed
               logger.info "SET: #{command.team} - timezone set to #{command.team.timezone}"
               "Timezone for team #{command.team.guild_name} is#{' now' if changed} *#{command.team.timezone_s}*."
             end
