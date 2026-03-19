@@ -44,6 +44,21 @@ class TeamLeaderboard
     count distance moving_time elapsed_time elevation pr_count calories
   ].freeze
 
+  VIRTUAL_ACTIVITY_TYPES = {
+    'VirtualRide' => 'Ride',
+    'VirtualRun' => 'Run'
+  }.freeze
+
+  def self.normalize_type(type)
+    VIRTUAL_ACTIVITY_TYPES[type] || type
+  end
+
+  def self.type_variants(type)
+    normalized = normalize_type(type)
+    virtuals = VIRTUAL_ACTIVITY_TYPES.select { |_virtual, base| base == normalized }.keys
+    [normalized, *virtuals]
+  end
+
   attr_accessor :team, :metric, :start_date, :end_date, :channel_id
 
   def initialize(team, options = {})
@@ -57,7 +72,14 @@ class TeamLeaderboard
 
   def aggreate_options(activity_type = nil)
     aggreate_options = { team_id: team.id, _type: 'UserActivity' }
-    aggreate_options.merge!('type' => activity_type) if activity_type
+    if activity_type
+      variants = TeamLeaderboard.type_variants(activity_type)
+      if variants.size == 1
+        aggreate_options.merge!('type' => activity_type)
+      else
+        aggreate_options.merge!('type' => { '$in' => variants })
+      end
+    end
     aggreate_options.merge!('channel_message.channel_id' => channel_id) if channel_id
     if start_date && end_date
       aggreate_options.merge!('start_date' => { '$gte' => start_date, '$lte' => end_date })
@@ -78,6 +100,18 @@ class TeamLeaderboard
       UserActivity.collection.aggregate(
         [
           { '$match': aggreate_options(activity_type) },
+          {
+            '$addFields': {
+              type: {
+                '$switch': {
+                  branches: VIRTUAL_ACTIVITY_TYPES.map do |virtual_type, base_type|
+                    { case: { '$eq': ['$type', virtual_type] }, then: base_type }
+                  end,
+                  default: '$type'
+                }
+              }
+            }
+          },
           {
             '$group' => {
               _id: { user_id: '$user_id', type: '$type' },
