@@ -618,6 +618,20 @@ describe User do
           expect_any_instance_of(UserActivity).to receive(:rebrag!)
           user.rebrag_activity!(activity)
         end
+
+        it 'deletes an activity when it becomes private' do
+          user.update_attributes!(private_activities: false)
+          detailed_activity = instance_double(Strava::Models::DetailedActivity, id: activity.strava_id)
+
+          expect(user.athlete).to receive(:sync!).and_return(user.athlete)
+          expect(user.strava_client).to receive(:activity).with(activity.strava_id).and_return(detailed_activity)
+          expect(UserActivity).to receive(:create_from_strava!).with(user, detailed_activity).and_return(activity)
+          allow(activity).to receive(:hidden?).and_return(true)
+          expect(activity).not_to receive(:rebrag!)
+          expect(activity).to receive(:unbrag!).and_return(nil)
+
+          user.rebrag_activity!(activity)
+        end
       end
 
       context 'a new activity' do
