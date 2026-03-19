@@ -122,6 +122,26 @@ describe UserActivity do
       expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
+
+    context 'with a max_activities_per_channel_per_day limit' do
+      before do
+        team.update_attributes!(max_activities_per_channel_per_day: 1)
+        Fabricate(
+          :user_activity,
+          user:,
+          team:,
+          bragged_at: Time.now.utc,
+          channel_message: ChannelMessage.new(channel_id: user.channel_id, message_id: 'existing')
+        )
+      end
+
+      it 'marks the activity bragged without posting it again' do
+        expect(Discord::Bot.instance).not_to receive(:send_message)
+        expect(activity.brag!).to be_nil
+        expect(activity.reload.bragged_at).not_to be_nil
+        expect(activity.channel_message).to be_nil
+      end
+    end
   end
 
   context 'unbrag!' do

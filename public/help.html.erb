@@ -36,6 +36,8 @@
     </p>
     <p>
       Strada retains activities for 30 days. Discord server admins can change this with <b>/strada set retention 60 days</b> or <b>/strada set retention 3 months</b> to change this.
+      Limit activity floods with <b>/strada set userlimit 5</b> to cap how many activities a user can post per day, or <b>/strada set channellimit 10</b> to cap the number of activities posted in a channel per day.
+      Use <b>/strada set userlimit none</b> or <b>/strada set channellimit none</b> to remove those limits.
       Change <b>units</b> with <b>/strada set units imperial</b> (miles, feet, yards, and degrees Fahrenheit, default), <b>/strada set units metric</b> (kilometers, meters, and degrees Celsius), or <b>/strada set units both</b> to display both values.
       Change displayed fields with <b>/strada set fields</b>, eg. <b>/strada set fields default</b>, <b>/strada set fields all</b> or <b>/strada set fields none</b>.
       Available fields are <%= ActivityFields.values.and { |v| '<b>' + v + '</b>' } %>.
@@ -45,4 +47,3 @@
     <%= partial 'public/partials/_footer.html.erb' %>
   </body>
 </html>
-

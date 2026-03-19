@@ -24,6 +24,8 @@ describe DiscordStrava::Commands::Set do
         expect(response).to eq([
           "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*.",
           'Activities are retained for *1 month*.',
+          'Max activities per user per day are *unlimited*.',
+          'Max activities per channel per day are *unlimited*.',
           'Activity fields are *set to default*.',
           'Maps are *displayed in full*.',
           'Default leaderboard is *distance*.',
@@ -547,6 +549,64 @@ describe DiscordStrava::Commands::Set do
               end
             end
           end
+
+          context 'userlimit' do
+            context 'no args' do
+              let(:args) { %w[set userlimit] }
+
+              it 'shows the current value of userlimit' do
+                expect(response).to eq(
+                  "Max activities per user per day for team #{team.guild_name} are *unlimited*."
+                )
+              end
+            end
+
+            context 'change' do
+              let(:args) { ['set', { 'userlimit' => '5' }] }
+
+              it 'sets the per-user daily limit' do
+                expect(response).to eq(
+                  "Max activities per user per day for team #{team.guild_name} are now *5 per day*."
+                )
+                expect(team.reload.max_activities_per_user_per_day).to eq 5
+              end
+            end
+
+            context 'none' do
+              let(:args) { ['set', { 'userlimit' => 'none' }] }
+
+              it 'clears the per-user daily limit' do
+                team.update_attributes!(max_activities_per_user_per_day: 5)
+                expect(response).to eq(
+                  "Max activities per user per day for team #{team.guild_name} are now *unlimited*."
+                )
+                expect(team.reload.max_activities_per_user_per_day).to be_nil
+              end
+            end
+          end
+
+          context 'channellimit' do
+            context 'no args' do
+              let(:args) { %w[set channellimit] }
+
+              it 'shows the current value of channellimit' do
+                expect(response).to eq(
+                  "Max activities per channel per day for team #{team.guild_name} are *unlimited*."
+                )
+              end
+            end
+
+            context 'change' do
+              let(:args) { ['set', { 'channellimit' => '10' }] }
+
+              it 'sets the per-channel daily limit' do
+                expect(response).to eq(
+                  "Max activities per channel per day for team #{team.guild_name} are now *10 per day*."
+                )
+                expect(team.reload.max_activities_per_channel_per_day).to eq 10
+              end
+            end
+          end
         end
 
         context 'not as a team admin' do
@@ -672,6 +732,54 @@ describe DiscordStrava::Commands::Set do
                   "Sorry, only a Discord admin can change activity retention. Activities in team #{team.guild_name} are retained for *2 months*."
                 )
                 expect(team.reload.retention).to eq(60 * 24 * 60 * 60)
+              end
+            end
+          end
+
+          context 'userlimit' do
+            context 'no args' do
+              let(:args) { %w[set userlimit] }
+
+              it 'shows the current value of userlimit' do
+                expect(response).to eq(
+                  "Max activities per user per day for team #{team.guild_name} are *unlimited*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'userlimit' => '5' }] }
+
+              it 'cannot set userlimit' do
+                team.update_attributes!(max_activities_per_user_per_day: 2)
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the max activities per user per day. Max activities per user per day for team #{team.guild_name} are *2 per day*."
+                )
+                expect(team.reload.max_activities_per_user_per_day).to eq 2
+              end
+            end
+          end
+
+          context 'channellimit' do
+            context 'no args' do
+              let(:args) { %w[set channellimit] }
+
+              it 'shows the current value of channellimit' do
+                expect(response).to eq(
+                  "Max activities per channel per day for team #{team.guild_name} are *unlimited*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'channellimit' => '10' }] }
+
+              it 'cannot set channellimit' do
+                team.update_attributes!(max_activities_per_channel_per_day: 3)
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the max activities per channel per day. Max activities per channel per day for team #{team.guild_name} are *3 per day*."
+                )
+                expect(team.reload.max_activities_per_channel_per_day).to eq 3
               end
             end
           end

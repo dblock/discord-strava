@@ -77,6 +77,18 @@
             "min_length": 1,
             "max_length": 12
         }, {
+            "name": "userlimit",
+            "description": "Set the max activities posted per user per day (default is unlimited).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 8
+        }, {
+            "name": "channellimit",
+            "description": "Set the max activities posted per channel per day (default is unlimited).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 8
+        }, {
             "name": "leaderboard",
             "description": "Leaderboard metric and range (default is distance).",
             "type": 3,

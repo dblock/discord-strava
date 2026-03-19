@@ -356,4 +356,44 @@ describe Team do
       end
     end
   end
+
+  describe '#max_activities_per_user_per_day' do
+    let(:team) { Fabricate(:team) }
+
+    it 'defaults to unlimited' do
+      expect(team.max_activities_per_user_per_day).to be_nil
+      expect(team.max_activities_per_user_per_day_s).to eq 'unlimited'
+    end
+
+    it 'formats configured values' do
+      team.max_activities_per_user_per_day = 5
+      expect(team.max_activities_per_user_per_day_s).to eq '5 per day'
+    end
+
+    it 'rejects values less than 1' do
+      team.max_activities_per_user_per_day = 0
+      expect(team).not_to be_valid
+      expect(team.errors[:team]).to include('Max activities per user per day must be at least 1.')
+    end
+  end
+
+  describe '#max_activities_per_channel_per_day' do
+    let(:team) { Fabricate(:team) }
+
+    it 'defaults to unlimited' do
+      expect(team.max_activities_per_channel_per_day).to be_nil
+      expect(team.max_activities_per_channel_per_day_s).to eq 'unlimited'
+    end
+
+    it 'formats configured values' do
+      team.max_activities_per_channel_per_day = 10
+      expect(team.max_activities_per_channel_per_day_s).to eq '10 per day'
+    end
+
+    it 'rejects values less than 1' do
+      team.max_activities_per_channel_per_day = 0
+      expect(team).not_to be_valid
+      expect(team.errors[:team]).to include('Max activities per channel per day must be at least 1.')
+    end
+  end
 end

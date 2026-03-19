@@ -36,6 +36,12 @@ class Team
   field :retention, type: Integer, default: 30 * 24 * 60 * 60
   before_validation :validate_retention
 
+  field :max_activities_per_user_per_day, type: Integer
+  before_validation :validate_max_activities_per_user_per_day
+
+  field :max_activities_per_channel_per_day, type: Integer
+  before_validation :validate_max_activities_per_channel_per_day
+
   field :stripe_customer_id, type: String
   field :subscribed, type: Boolean, default: false
   field :subscribed_at, type: DateTime
@@ -393,6 +399,18 @@ class Team
     ChronicDuration.output(retention, format: :long)
   end
 
+  def max_activities_per_user_per_day_s
+    max_activities_per_user_per_day ? "#{max_activities_per_user_per_day} per day" : 'unlimited'
+  end
+
+  def max_activities_per_channel_per_day_s
+    max_activities_per_channel_per_day ? "#{max_activities_per_channel_per_day} per day" : 'unlimited'
+  end
+
+  def now
+    Time.now.utc
+  end
+
   private
 
   def validate_retention
@@ -400,6 +418,18 @@ class Team
 
     errors.add(:team, 'Retention must be at least 24 hours.') if retention < 24 * 60 * 60
     errors.add(:team, 'Retention cannot exceed 6 months.') if retention > 6 * 30 * 24 * 60 * 60
+  end
+
+  def validate_max_activities_per_user_per_day
+    return if max_activities_per_user_per_day.nil?
+
+    errors.add(:team, 'Max activities per user per day must be at least 1.') if max_activities_per_user_per_day < 1
+  end
+
+  def validate_max_activities_per_channel_per_day
+    return if max_activities_per_channel_per_day.nil?
+
+    errors.add(:team, 'Max activities per channel per day must be at least 1.') if max_activities_per_channel_per_day < 1
   end
 
   def prune_before_updated_at
