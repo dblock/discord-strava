@@ -2,6 +2,7 @@ class UserActivity < Activity
   field :start_date, type: DateTime
   field :start_date_local, type: DateTime
   field :start_date_local_utc_offset, type: Integer
+  field :timezone, type: String
 
   belongs_to :user, inverse_of: :activities
   embeds_one :map
@@ -107,6 +108,7 @@ class UserActivity < Activity
       start_date: response.start_date,
       start_date_local: response.start_date_local,
       start_date_local_utc_offset: response.start_date_local.utc_offset,
+      timezone: response.timezone,
       photos: response.photos&.primary ? [Photo.summary_attrs_from_strava(response.photos&.primary)] : []
     }
   end
@@ -129,7 +131,8 @@ class UserActivity < Activity
       visibility: response.visibility,
       start_date: response.start_date,
       start_date_local: response.start_date_local,
-      start_date_local_utc_offset: response.start_date_local.utc_offset
+      start_date_local_utc_offset: response.start_date_local.utc_offset,
+      timezone: response.timezone
     }
   end
 

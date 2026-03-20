@@ -78,7 +78,7 @@
             "max_length": 12
         }, {
             "name": "timezone",
-            "description": "Set the team timezone used for activity day boundaries.",
+            "description": "Set the team timezone used for activity day boundaries, or use auto to detect it.",
             "type": 3,
             "min_length": 1,
             "max_length": 64
