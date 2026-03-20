@@ -24,7 +24,7 @@ describe DiscordStrava::Commands::Set do
         expect(response).to eq([
           "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*.",
           'Activities are retained for *1 month*.',
-          'Timezone is *(GMT-05:00) Eastern Time (US & Canada)*.',
+          'Timezone is *auto (Eastern Time (US & Canada))*.',
           'Max activities per user per day are *unlimited*.',
           'Max activities per channel per day are *unlimited*.',
           'Activity fields are *set to default*.',
@@ -557,7 +557,7 @@ describe DiscordStrava::Commands::Set do
 
               it 'shows the current timezone' do
                 expect(response).to eq(
-                  "Timezone for team #{team.guild_name} is *(GMT-05:00) Eastern Time (US & Canada)*."
+                  "Timezone for team #{team.guild_name} is *auto (Eastern Time (US & Canada))*."
                 )
               end
             end
@@ -573,14 +573,27 @@ describe DiscordStrava::Commands::Set do
               end
             end
 
+            context 'auto' do
+              let(:args) { ['set', { 'timezone' => 'auto' }] }
+
+              it 'sets the timezone to auto' do
+                team.update_attributes!(timezone: 'Pacific Time (US & Canada)')
+
+                expect(response).to eq(
+                  "Timezone for team #{team.guild_name} is now *auto (Eastern Time (US & Canada))*."
+                )
+                expect(team.reload.timezone).to eq 'auto'
+              end
+            end
+
             context 'invalid' do
               let(:args) { ['set', { 'timezone' => 'Foo/Bar' }] }
 
               it 'displays an error for an invalid timezone value' do
                 expect(response).to eq(
-                  "TimeZone _Foo/Bar_ is invalid, see https://github.com/rails/rails/blob/v#{ActiveSupport.gem_version}/activesupport/lib/active_support/values/time_zone.rb#L30 for a list. Timezone for team #{team.guild_name} is currently *(GMT-05:00) Eastern Time (US & Canada)*."
+                  "TimeZone _Foo/Bar_ is invalid, see https://github.com/rails/rails/blob/v#{ActiveSupport.gem_version}/activesupport/lib/active_support/values/time_zone.rb#L30 for a list. Timezone for team #{team.guild_name} is currently *auto (Eastern Time (US & Canada))*."
                 )
-                expect(team.reload.timezone).to eq 'Eastern Time (US & Canada)'
+                expect(team.reload.timezone).to eq 'auto'
               end
             end
           end
@@ -777,7 +790,7 @@ describe DiscordStrava::Commands::Set do
 
               it 'shows the current timezone' do
                 expect(response).to eq(
-                  "Timezone for team #{team.guild_name} is *(GMT-05:00) Eastern Time (US & Canada)*."
+                  "Timezone for team #{team.guild_name} is *auto (Eastern Time (US & Canada))*."
                 )
               end
             end
@@ -786,6 +799,18 @@ describe DiscordStrava::Commands::Set do
               let(:args) { ['set', { 'timezone' => 'Pacific Time (US & Canada)' }] }
 
               it 'cannot set timezone' do
+                team.update_attributes!(timezone: 'Hawaii')
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the timezone. Timezone for team #{team.guild_name} is *(GMT-10:00) Hawaii*."
+                )
+                expect(team.reload.timezone).to eq 'Hawaii'
+              end
+            end
+
+            context 'auto' do
+              let(:args) { ['set', { 'timezone' => 'auto' }] }
+
+              it 'cannot set timezone to auto' do
                 team.update_attributes!(timezone: 'Hawaii')
                 expect(response).to eq(
                   "Sorry, only a Discord admin can change the timezone. Timezone for team #{team.guild_name} is *(GMT-10:00) Hawaii*."

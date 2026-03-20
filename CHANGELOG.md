@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/03/20: Added `set timezone auto` to detect a team timezone from activity data - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/20: Upgrade to Ruby 4.0.1 - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/19: Upgrade to Ruby 3.4.9 - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/19: Delete activities that become private after being posted - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

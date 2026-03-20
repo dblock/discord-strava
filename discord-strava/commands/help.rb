@@ -25,7 +25,7 @@ module DiscordStrava
         Settings
         ------------
         set retention [n] days|months|years  - set how long to retain user activities (default is 30 days)
-        set timezone [tz]                    - set timezone, default is Eastern Time (US & Canada)
+        set timezone [tz|auto]               - set timezone, default is auto-detected
         set userlimit [n]|none               - max activities posted per user per day (default is unlimited)
         set channellimit [n]|none            - max activities posted per channel per day (default is unlimited)
         set units imperial|metric|both       - use imperial vs. metric units, or display both
