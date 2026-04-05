@@ -28,7 +28,7 @@ describe DiscordStrava::Commands::Unsubscribe do
     context 'with a plan' do
       include_context 'stripe mock'
       before do
-        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 1999, name: 'Plan')
+        stripe_helper.create_plan(id: 'discord-playplay-yearly', amount: 1999, nickname: 'Plan', product: product.id)
       end
 
       context 'a customer' do
@@ -52,7 +52,7 @@ describe DiscordStrava::Commands::Unsubscribe do
 
         context 'subscription that ends at period end' do
           before do
-            active_subscription.delete(at_period_end: true)
+            Stripe::Subscription.update(active_subscription.id, cancel_at_period_end: true)
           end
 
           context 'not a guild owner' do

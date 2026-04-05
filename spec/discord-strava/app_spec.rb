@@ -41,7 +41,7 @@ describe DiscordStrava::App do
 
   context 'subscribed' do
     include_context 'stripe mock'
-    let(:plan) { stripe_helper.create_plan(id: 'strada-yearly', amount: 1999) }
+    let(:plan) { stripe_helper.create_plan(id: 'strada-yearly', amount: 1999, nickname: 'Plan', product: product.id) }
     let(:customer) { Stripe::Customer.create(source: stripe_helper.generate_card_token, plan: plan.id, email: 'foo@bar.com', metadata: { name: 'Team', guild_id: 'guild_id' }) }
     let!(:team) { Fabricate(:team, subscribed: true, stripe_customer_id: customer.id) }
 
@@ -54,14 +54,14 @@ describe DiscordStrava::App do
       it 'notifies past due subscription' do
         customer.subscriptions.data.first['status'] = 'past_due'
         expect(Stripe::Customer).to receive(:retrieve).and_return(customer)
-        expect_any_instance_of(Team).to receive(:inform_everyone!).with("Your subscription to StripeMock Default Plan ID ($19.99) is past due. #{team.update_cc_text}")
+        expect_any_instance_of(Team).to receive(:inform_everyone!).with("Your subscription to Plan ($19.99) is past due. #{team.update_cc_text}")
         subject.send(:check_subscribed_teams!)
       end
 
       it 'notifies past due subscription' do
         customer.subscriptions.data.first['status'] = 'canceled'
         expect(Stripe::Customer).to receive(:retrieve).and_return(customer)
-        expect_any_instance_of(Team).to receive(:inform_everyone!).with('Your subscription to StripeMock Default Plan ID ($19.99) was canceled and your team has been downgraded. Thank you for being a customer!')
+        expect_any_instance_of(Team).to receive(:inform_everyone!).with('Your subscription to Plan ($19.99) was canceled and your team has been downgraded. Thank you for being a customer!')
         subject.send(:check_subscribed_teams!)
         expect(team.reload.subscribed?).to be false
       end
@@ -87,7 +87,7 @@ describe DiscordStrava::App do
         end
 
         it 'cancels auto-renew for an inactive team' do
-          expect_any_instance_of(Stripe::Subscription).to receive(:delete)
+          expect(Stripe::Subscription).to receive(:update).with(anything, cancel_at_period_end: true)
           subject.send(:check_stripe_subscribers!)
         end
       end

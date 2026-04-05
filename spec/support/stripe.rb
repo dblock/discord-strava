@@ -1,7 +1,9 @@
 RSpec.shared_context 'stripe mock' do
   let(:stripe_helper) { StripeMock.create_test_helper }
+  let(:product) { stripe_helper.create_product(name: 'Default Product') }
   before do
     StripeMock.start
+    product
   end
 
   after do

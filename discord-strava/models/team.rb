@@ -314,20 +314,21 @@ class Team
     stripe_customer.subscriptions.map do |subscription|
       amount = ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)
       current_period_end = Time.at(subscription.current_period_end).strftime('%B %d, %Y')
+      plan_name = subscription.plan.nickname
       if subscription.status == 'active'
         [
-          "Subscribed to #{subscription.plan.name} (#{amount}), will#{' not' if subscription.cancel_at_period_end} auto-renew on #{current_period_end}."
+          "Subscribed to #{plan_name} (#{amount}), will#{' not' if subscription.cancel_at_period_end} auto-renew on #{current_period_end}."
         ].compact.join("\n")
       else
-        "#{subscription.status.titleize} subscription created #{Time.at(subscription.created).strftime('%B %d, %Y')} to #{subscription.plan.name} (#{amount})."
+        "#{subscription.status.titleize} subscription created #{Time.at(subscription.created).strftime('%B %d, %Y')} to #{plan_name} (#{amount})."
       end
     end
   end
 
   def stripe_customer_invoices_info
-    stripe_customer.invoices.map do |invoice|
+    Stripe::Invoice.list(customer: stripe_customer.id).map do |invoice|
       amount = ActiveSupport::NumberHelper.number_to_currency(invoice.amount_due.to_f / 100)
-      "Invoice for #{amount} on #{Time.at(invoice.date).strftime('%B %d, %Y')}, #{invoice.paid ? 'paid' : 'unpaid'}."
+      "Invoice for #{amount} on #{Time.at(invoice.created).strftime('%B %d, %Y')}, #{invoice.paid ? 'paid' : 'unpaid'}."
     end
   end
 

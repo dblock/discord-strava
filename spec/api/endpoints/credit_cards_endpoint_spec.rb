@@ -37,7 +37,7 @@ describe Api::Endpoints::CreditCardsEndpoint do
       let!(:team) { Fabricate(:team) }
 
       before do
-        stripe_helper.create_plan(id: 'strada-yearly', amount: 1999)
+        stripe_helper.create_plan(id: 'strada-yearly', amount: 1999, nickname: 'Plan', product: product.id)
         customer = Stripe::Customer.create(
           source: stripe_helper.generate_card_token,
           plan: 'strada-yearly',
