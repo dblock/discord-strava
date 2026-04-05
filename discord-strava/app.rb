@@ -242,7 +242,7 @@ module DiscordStrava
           team.update_attributes!(subscribed: false)
         else
           customer.subscriptions.each do |subscription|
-            subscription_name = "#{subscription.plan.name} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)})"
+            subscription_name = "#{subscription.plan.nickname} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)})"
             logger.info "Checking #{team} subscription to #{subscription_name}, #{subscription.status}."
             case subscription.status
             when 'past_due'
@@ -250,7 +250,7 @@ module DiscordStrava
               team.inform_everyone!("Your subscription to #{subscription_name} is past due. #{team.update_cc_text}")
             when 'canceled', 'unpaid'
               logger.warn "Subscription for #{team} is #{subscription.status}, downgrading."
-              team.inform_everyone!("Your subscription to #{subscription.plan.name} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)}) was canceled and your team has been downgraded. Thank you for being a customer!")
+              team.inform_everyone!("Your subscription to #{subscription.plan.nickname} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)}) was canceled and your team has been downgraded. Thank you for being a customer!")
               team.update_attributes!(subscribed: false)
             end
           end
@@ -281,9 +281,9 @@ module DiscordStrava
           elsif team.active_stripe_subscription
             logger.warn "Inactive team #{team} for #{metadata.name} (#{metadata.guild_id})."
             active_subscription = team.active_stripe_subscription
-            active_subscription.delete(at_period_end: true)
+            Stripe::Subscription.update(active_subscription.id, cancel_at_period_end: true)
             amount = ActiveSupport::NumberHelper.number_to_currency(active_subscription.plan.amount.to_f / 100)
-            logger.warn "Successfully canceled auto-renew for #{active_subscription.plan.name} (#{amount}) for #{team}."
+            logger.warn "Successfully canceled auto-renew for #{active_subscription.plan.nickname} (#{amount}) for #{team}."
           else
             logger.warn "Inactive team #{team} for #{metadata.name} (#{metadata.guild_id}), no active subscription."
           end
