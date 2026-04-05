@@ -39,4 +39,5 @@ Update [CHANGELOG.md](CHANGELOG.md) for any user-facing change. Add a line at th
 
 ## Commits and PRs
 
+- Never push directly to master — always work on a branch and open a PR.
 - Squash commits before merging — one logical commit per PR.
