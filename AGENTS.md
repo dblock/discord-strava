@@ -1,5 +1,15 @@
 # AI Agent Instructions
 
+## Starting Work
+
+Before creating a new branch, always sync and clean up:
+
+```
+git checkout master
+git pull
+git branch --merged master | grep -v '^\* \|^  master$' | xargs -r git branch -d
+```
+
 ## After Making Code Changes
 
 Always run the following commands before committing:
