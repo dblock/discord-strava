@@ -311,7 +311,7 @@ class Team
   end
 
   def stripe_customer_subscriptions_info
-    stripe_customer.subscriptions.map do |subscription|
+    Stripe::Subscription.list(customer: stripe_customer.id).map do |subscription|
       amount = ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)
       current_period_end = Time.at(subscription.current_period_end).strftime('%B %d, %Y')
       plan_name = subscription.plan.nickname
@@ -341,7 +341,7 @@ class Team
   def stripe_subcriptions
     return unless stripe_customer
 
-    stripe_customer.subscriptions
+    Stripe::Subscription.list(customer: stripe_customer.id)
   end
 
   def active_stripe_subscription?
@@ -351,7 +351,7 @@ class Team
   def active_stripe_subscription
     return unless stripe_customer
 
-    stripe_customer.subscriptions.detect do |subscription|
+    Stripe::Subscription.list(customer: stripe_customer.id).detect do |subscription|
       subscription.status == 'active'
     end
   end

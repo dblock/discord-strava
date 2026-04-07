@@ -60,8 +60,10 @@ describe DiscordStrava::Commands::Subscription do
 
           context 'past due subscription' do
             before do
-              customer.subscriptions.data.first['status'] = 'past_due'
+              subscription = customer.subscriptions.data.first
+              subscription['status'] = 'past_due'
               allow(Stripe::Customer).to receive(:retrieve).and_return(customer)
+              allow(Stripe::Subscription).to receive(:list).and_return([subscription])
             end
 
             it 'displays subscription info' do
