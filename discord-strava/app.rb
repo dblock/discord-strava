@@ -235,13 +235,13 @@ module DiscordStrava
     def check_subscribed_teams!
       logger.info "Checking Stripe subscriptions for #{Team.striped.count} team(s)."
       Team.striped.each do |team|
-        customer = Stripe::Customer.retrieve(team.stripe_customer_id)
-        if customer.subscriptions.none?
+        subscriptions = Stripe::Subscription.list(customer: team.stripe_customer_id)
+        if subscriptions.none?
           logger.info "No active subscriptions for #{team} (#{team.stripe_customer_id}), downgrading."
           team.inform_everyone!('Your subscription was canceled and your team has been downgraded. Thank you for being a customer!')
           team.update_attributes!(subscribed: false)
         else
-          customer.subscriptions.each do |subscription|
+          subscriptions.each do |subscription|
             subscription_name = "#{subscription.plan.nickname} (#{ActiveSupport::NumberHelper.number_to_currency(subscription.plan.amount.to_f / 100)})"
             logger.info "Checking #{team} subscription to #{subscription_name}, #{subscription.status}."
             case subscription.status
