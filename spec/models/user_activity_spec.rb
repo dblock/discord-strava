@@ -142,6 +142,50 @@ describe UserActivity do
         expect(activity.channel_message).to be_nil
       end
     end
+
+    context 'with a channel activity type filter' do
+      before do
+        team.set_channel!(user.channel_id, 'channel-name', activity_types: ['Run'])
+      end
+
+      context 'activity type matches' do
+        let!(:activity) { Fabricate(:user_activity, user:, type: 'Run') }
+
+        it 'sends a message' do
+          expect(Discord::Bot.instance).to receive(:send_message).and_return('id' => '1', 'channel_id' => '2')
+          expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
+        end
+      end
+
+      context 'activity type does not match' do
+        let!(:activity) { Fabricate(:user_activity, user:, type: 'Ride') }
+
+        it 'marks the activity bragged without posting it' do
+          expect(Discord::Bot.instance).not_to receive(:send_message)
+          expect(activity.brag!).to be_nil
+          expect(activity.reload.bragged_at).not_to be_nil
+          expect(activity.channel_message).to be_nil
+        end
+      end
+    end
+
+    context 'with a per-channel max_activities_per_user_per_day limit' do
+      before do
+        team.set_channel!(user.channel_id, 'channel-name', max_activities_per_user_per_day: 1)
+        Fabricate(
+          :user_activity,
+          user:,
+          team:,
+          bragged_at: Time.now.utc,
+          channel_message: ChannelMessage.new(channel_id: user.channel_id, message_id: 'existing')
+        )
+      end
+
+      it 'skips posting when per-channel user limit is reached' do
+        expect(Discord::Bot.instance).not_to receive(:send_message)
+        expect(activity.brag!).to be_nil
+      end
+    end
   end
 
   context 'unbrag!' do

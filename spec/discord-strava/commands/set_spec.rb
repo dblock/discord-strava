@@ -655,6 +655,60 @@ describe DiscordStrava::Commands::Set do
               end
             end
           end
+
+          context 'activities' do
+            context 'no args' do
+              let(:args) { %w[set activities] }
+
+              it 'shows all activity types' do
+                expect(response).to eq(
+                  "Activity types for channel <##{user.channel_id}> are *all*."
+                )
+              end
+            end
+
+            context 'set to run' do
+              let(:args) { ['set', { 'activities' => 'Run' }] }
+
+              it 'sets activity types for the channel' do
+                expect(response).to eq(
+                  "Activity types for channel <##{user.channel_id}> are now *Run*."
+                )
+                expect(team.channel_activity_types_for(user.channel_id)).to eq ['Run']
+              end
+            end
+
+            context 'set to multiple types' do
+              let(:args) { ['set', { 'activities' => 'Run,Ride' }] }
+
+              it 'sets multiple activity types for the channel' do
+                expect(response).to eq(
+                  "Activity types for channel <##{user.channel_id}> are now *Run, Ride*."
+                )
+                expect(team.channel_activity_types_for(user.channel_id)).to eq %w[Run Ride]
+              end
+            end
+
+            context 'set to all' do
+              let(:args) { ['set', { 'activities' => 'all' }] }
+
+              it 'resets activity types for the channel' do
+                team.set_channel!(user.channel_id, 'channel-name', activity_types: ['Run'])
+                expect(response).to eq(
+                  "Activity types for channel <##{user.channel_id}> are now *all*."
+                )
+                expect(team.channel_activity_types_for(user.channel_id)).to eq []
+              end
+            end
+
+            context 'set to invalid type' do
+              let(:args) { ['set', { 'activities' => 'InvalidType' }] }
+
+              it 'returns an error' do
+                expect(response).to include('Invalid activity type: InvalidType')
+              end
+            end
+          end
         end
 
         context 'not as a team admin' do
@@ -864,6 +918,30 @@ describe DiscordStrava::Commands::Set do
                   "Sorry, only a Discord admin can change the max activities per channel per day. Max activities per channel per day for team #{team.guild_name} are *3 per day*."
                 )
                 expect(team.reload.max_activities_per_channel_per_day).to eq 3
+              end
+            end
+          end
+
+          context 'activities' do
+            context 'no args' do
+              let(:args) { %w[set activities] }
+
+              it 'shows current activity types' do
+                expect(response).to eq(
+                  "Activity types for channel <##{user.channel_id}> are *all*."
+                )
+              end
+            end
+
+            context 'value' do
+              let(:args) { ['set', { 'activities' => 'Run' }] }
+
+              it 'cannot set activity types' do
+                team.set_channel!(user.channel_id, 'channel-name', activity_types: ['Ride'])
+                expect(response).to eq(
+                  "Sorry, only a Discord admin can change the activity types for a channel. Activity types for channel <##{user.channel_id}> are *Ride*."
+                )
+                expect(team.channel_activity_types_for(user.channel_id)).to eq ['Ride']
               end
             end
           end

@@ -52,9 +52,9 @@ class Activity
     "https://www.strava.com/activities/#{strava_id}"
   end
 
-  def to_discord
+  def to_discord(channel_id = nil)
     {
-      embeds: to_discord_embeds
+      embeds: to_discord_embeds(channel_id)
     }
   end
 
