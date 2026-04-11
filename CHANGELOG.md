@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/04/11: Port per-channel settings from slack-strava — add `Channel` model, `set activities` command to filter activity types per channel, and per-channel maps/units/fields/userlimit - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/11: Upgrade to Ruby 4.0.2 - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/07: Fixed `Stripe::StripeObject#method_missing` error by replacing `customer.subscriptions` with `Stripe::Subscription.list` - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/03/20: Added `set timezone auto` to detect a team timezone from activity data - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

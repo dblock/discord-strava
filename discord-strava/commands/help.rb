@@ -28,6 +28,7 @@ module DiscordStrava
         set timezone [tz|auto]               - set timezone, default is auto-detected
         set userlimit [n]|none               - max activities posted per user per day (default is unlimited)
         set channellimit [n]|none            - max activities posted per channel per day (default is unlimited)
+        set activities [type,...]|all        - activity types to post in this channel (default is all)
         set units imperial|metric|both       - use imperial vs. metric units, or display both
         set fields all|none|...              - display all, none or certain activity fields
         set maps off|full|thumb              - change the way maps are displayed

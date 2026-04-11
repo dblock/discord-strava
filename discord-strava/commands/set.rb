@@ -160,6 +160,32 @@ module DiscordStrava
               logger.info "SET: #{command.team} - max activities per channel per day set to #{command.team.max_activities_per_channel_per_day}"
               "Max activities per channel per day for team #{command.team.guild_name} are#{' now' if changed} *#{command.team.max_activities_per_channel_per_day_s}*."
             end
+          when 'activities'
+            if v
+              if v.casecmp('all').zero?
+                v = []
+              else
+                parsed_types = v.split(/[\s,]+/).map do |t|
+                  match = ActivityMethods::ACTIVITY_TYPES.find { |at| at.casecmp(t).zero? }
+                  raise DiscordStrava::Error, "Invalid activity type: #{t}. Valid types are: #{ActivityMethods::ACTIVITY_TYPES.join(', ')}." unless match
+
+                  match
+                end
+                v = parsed_types
+              end
+            end
+            if command.user.guild_owner?
+              if v
+                command.team.set_channel!(command.channel_id, command.channel_id, activity_types: v)
+                logger.info "SET: #{command.team} - activity types for channel #{command.channel_id} set to #{command.team.channel_activity_types_s(command.channel_id)}"
+              end
+              "Activity types for channel <##{command.channel_id}> are#{' now' if v} *#{command.team.channel_activity_types_s(command.channel_id)}*."
+            elsif v
+              logger.info "SET: #{command.team} - not admin, activities for channel #{command.channel_id} unchanged"
+              "Sorry, only a Discord admin can change the activity types for a channel. Activity types for channel <##{command.channel_id}> are *#{command.team.channel_activity_types_s(command.channel_id)}*."
+            else
+              "Activity types for channel <##{command.channel_id}> are *#{command.team.channel_activity_types_s(command.channel_id)}*."
+            end
           else
             "Invalid setting #{k}, type `help` for instructions."
           end

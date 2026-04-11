@@ -100,6 +100,12 @@
             "type": 3,
             "min_length": 1,
             "max_length": 64
+        }, {
+            "name": "activities",
+            "description": "Activity types to post in this channel, comma-separated, or 'all' to reset (admin only).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 256
         }]
     }, {
         "name": "leaderboard",

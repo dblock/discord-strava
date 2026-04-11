@@ -3,6 +3,14 @@ module ActivityMethods
 
   UNIT_SEPARATOR = ' '.freeze
 
+  ACTIVITY_TYPES = %w[
+    AlpineSki BackcountrySki Canoeing Crossfit EBikeRide Elliptical Hike
+    IceSkate InlineSkate Kayaking Kitesurf NordicSki Ride RockClimbing
+    RollerSki Rowing Run Snowboard Snowshoe StairStepper StandUpPaddling
+    Surfing Swim VirtualRide VirtualRun Walk WeightTraining Wheelchair
+    Windsurf Workout Yoga
+  ].freeze
+
   #   field :name, type: String
   #   field :distance, type: Float
   #   field :moving_time, type: Float
@@ -52,15 +60,16 @@ module ActivityMethods
     format('%gkm', format('%.2f', distance_in_kilometers))
   end
 
-  def distance_s
+  def distance_s(units = nil)
+    units ||= team.units
     if type == 'Swim'
-      case team.units
+      case units
       when 'km' then distance_in_meters_s
       when 'mi' then distance_in_yards_s
       when 'both' then [distance_in_yards_s, distance_in_meters_s].join(UNIT_SEPARATOR)
       end
     else
-      case team.units
+      case units
       when 'km' then distance_in_kilometers_s
       when 'mi' then distance_in_miles_s
       when 'both' then [distance_in_miles_s, distance_in_kilometers_s].join(UNIT_SEPARATOR)
@@ -136,24 +145,26 @@ module ActivityMethods
     format('%gft', format('%.1f', total_elevation_gain_in_feet))
   end
 
-  def total_elevation_gain_s
-    case team.units
+  def total_elevation_gain_s(units = nil)
+    units ||= team.units
+    case units
     when 'km' then total_elevation_gain_in_meters_s
     when 'mi' then total_elevation_gain_in_feet_s
     when 'both' then [total_elevation_gain_in_feet_s, total_elevation_gain_in_meters_s].join(UNIT_SEPARATOR)
     end
   end
 
-  def pace_s
+  def pace_s(units = nil)
+    units ||= team.units
     case type
     when 'Swim'
-      case team.units
+      case units
       when 'km' then pace_per_100_meters_s
       when 'mi' then pace_per_100_yards_s
       when 'both' then [pace_per_100_yards_s, pace_per_100_meters_s].join(UNIT_SEPARATOR)
       end
     else
-      case team.units
+      case units
       when 'km' then pace_per_kilometer_s
       when 'mi' then pace_per_mile_s
       when 'both' then [pace_per_mile_s, pace_per_kilometer_s].join(UNIT_SEPARATOR)
@@ -161,16 +172,18 @@ module ActivityMethods
     end
   end
 
-  def speed_s
-    case team.units
+  def speed_s(units = nil)
+    units ||= team.units
+    case units
     when 'km' then kilometer_per_hour_s
     when 'mi' then miles_per_hour_s
     when 'both' then [miles_per_hour_s, kilometer_per_hour_s].join(UNIT_SEPARATOR)
     end
   end
 
-  def max_speed_s
-    case team.units
+  def max_speed_s(units = nil)
+    units ||= team.units
+    case units
     when 'km' then max_kilometer_per_hour_s
     when 'mi' then max_miles_per_hour_s
     when 'both' then [max_miles_per_hour_s, max_kilometer_per_hour_s].join(UNIT_SEPARATOR)
@@ -260,8 +273,8 @@ module ActivityMethods
     ].compact.join
   end
 
-  def display_field?(name)
-    activity_fields = team.activity_fields
+  def display_field?(name, channel_id = nil)
+    activity_fields = team.channel_activity_fields_for(channel_id)
 
     case activity_fields
     when ['All']
@@ -275,8 +288,9 @@ module ActivityMethods
     end
   end
 
-  def discord_fields
-    activity_fields = team.activity_fields
+  def discord_fields(channel_id = nil)
+    units = team.channel_units_for(channel_id)
+    activity_fields = team.channel_activity_fields_for(channel_id)
 
     case activity_fields
     when ['All']
@@ -293,7 +307,7 @@ module ActivityMethods
       when 'Type'
         fields << { inline: true, name: 'Type', value: type_with_emoji }
       when 'Distance'
-        fields << { inline: true, name: 'Distance', value: distance_s } if distance&.positive?
+        fields << { inline: true, name: 'Distance', value: distance_s(units) } if distance&.positive?
       when 'Time'
         if elapsed_time&.positive? && moving_time&.positive?
           fields << { inline: true, name: 'Time', value: moving_time_in_hours_s } if elapsed_time == moving_time
@@ -307,13 +321,13 @@ module ActivityMethods
       when 'Elapsed Time'
         fields << { inline: true, name: 'Elapsed Time', value: elapsed_time_in_hours_s } if elapsed_time&.positive? && moving_time&.positive? && elapsed_time != moving_time
       when 'Pace'
-        fields << { inline: true, name: 'Pace', value: pace_s } if average_speed&.positive?
+        fields << { inline: true, name: 'Pace', value: pace_s(units) } if average_speed&.positive?
       when 'Speed'
-        fields << { inline: true, name: 'Speed', value: speed_s } if average_speed&.positive?
+        fields << { inline: true, name: 'Speed', value: speed_s(units) } if average_speed&.positive?
       when 'Max Speed'
-        fields << { inline: true, name: 'Max Speed', value: max_speed_s } if max_speed&.positive?
+        fields << { inline: true, name: 'Max Speed', value: max_speed_s(units) } if max_speed&.positive?
       when 'Elevation'
-        fields << { inline: true, name: 'Elevation', value: total_elevation_gain_s } if total_elevation_gain&.positive?
+        fields << { inline: true, name: 'Elevation', value: total_elevation_gain_s(units) } if total_elevation_gain&.positive?
       when 'Heart Rate'
         fields << { inline: true, name: 'Heart Rate', value: average_heartrate_s } if average_heartrate&.positive?
       when 'Max Heart Rate'
@@ -323,7 +337,7 @@ module ActivityMethods
       when 'Calories'
         fields << { inline: true, name: 'Calories', value: calories_s } if calories&.positive?
       when 'Weather'
-        fields << { inline: true, name: 'Weather', value: weather_s } if respond_to?(:weather) && weather.present?
+        fields << { inline: true, name: 'Weather', value: weather_s(channel_id) } if respond_to?(:weather) && weather.present?
       when 'Device'
         fields << { inline: true, name: 'Device', value: device } if device
       when 'Gear'

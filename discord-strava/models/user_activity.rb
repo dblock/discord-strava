@@ -39,21 +39,44 @@ class UserActivity < Activity
       update_attributes!(bragged_at: Time.now.utc)
       nil
     else
+      channel_id = user.channel_id
+
+      allowed_types = team.channel_activity_types_for(channel_id)
+      unless allowed_types.empty? || allowed_types.any? { |t| t.casecmp(type.to_s).zero? }
+        logger.info "Skipping #{user} in #{channel_id}, activity type #{type} not in #{allowed_types}."
+        update_attributes!(bragged_at: Time.now.utc)
+        return nil
+      end
+
+      channel_user_limit = team.channel_max_activities_per_user_per_day_for(channel_id)
+      if channel_user_limit
+        user_count_today = Activity.where(
+          team_id: team.id,
+          user_id: user.id,
+          :bragged_at.gte => team.now.beginning_of_day,
+          'channel_message.channel_id' => channel_id
+        ).count
+        if user_count_today >= channel_user_limit
+          logger.info "#{user} reached the per-channel daily activity limit of #{channel_user_limit} in #{channel_id}."
+          return nil
+        end
+      end
+
       if team.max_activities_per_channel_per_day
         channel_count_today = Activity.where(
           team_id: team.id,
           :bragged_at.gte => team.now.beginning_of_day,
-          'channel_message.channel_id' => user.channel_id
+          'channel_message.channel_id' => channel_id
         ).count
         if channel_count_today >= team.max_activities_per_channel_per_day
-          logger.info "Channel #{user.channel_id} reached the daily activity limit of #{team.max_activities_per_channel_per_day}."
+          logger.info "Channel #{channel_id} reached the daily activity limit of #{team.max_activities_per_channel_per_day}."
           update_attributes!(bragged_at: Time.now.utc)
           return nil
         end
       end
 
       logger.info "Bragging about #{user}, #{self}."
-      rc = user.inform!(to_discord)
+      rc = user.inform!(to_discord(channel_id))
       update_attributes!(bragged_at: Time.now.utc, channel_message: rc)
       rc
     end
@@ -71,7 +94,7 @@ class UserActivity < Activity
     return unless channel_message
 
     logger.info "Rebragging about #{user}, #{self}."
-    rc = user.update!(to_discord, channel_message)
+    rc = user.update!(to_discord(channel_message.channel_id), channel_message)
     update_attributes!(channel_message: rc)
     rc
   end
@@ -166,54 +189,55 @@ class UserActivity < Activity
     activity
   end
 
-  def to_discord_embed
+  def to_discord_embed(channel_id = nil)
     result = {}
 
-    if display_field?(ActivityFields::TITLE) && display_field?(ActivityFields::URL)
+    if display_field?(ActivityFields::TITLE, channel_id) && display_field?(ActivityFields::URL, channel_id)
       result[:title] = name || strava_id
       result[:url] = strava_url
-    elsif display_field?(ActivityFields::TITLE)
+    elsif display_field?(ActivityFields::TITLE, channel_id)
       result[:title] = name || strava_id
-    elsif display_field?(ActivityFields::URL)
+    elsif display_field?(ActivityFields::URL, channel_id)
       result[:title] = strava_id
       result[:url] = strava_url
     end
 
     result_description = [
-      if display_field?(ActivityFields::USER) || display_field?(ActivityFields::DATE)
+      if display_field?(ActivityFields::USER, channel_id) || display_field?(ActivityFields::DATE, channel_id)
         [
-          if display_field?(ActivityFields::USER)
-            [user.discord_mention, display_field?(ActivityFields::MEDAL) ? user.medal_s(type) : nil].compact.join(' ')
+          if display_field?(ActivityFields::USER, channel_id)
+            [user.discord_mention, display_field?(ActivityFields::MEDAL, channel_id) ? user.medal_s(type) : nil].compact.join(' ')
           end,
-          display_field?(ActivityFields::DATE) ? start_date_local_s : nil
+          display_field?(ActivityFields::DATE, channel_id) ? start_date_local_s : nil
         ].compact.join(' on ')
       end,
-      display_field?(ActivityFields::DESCRIPTION) && description && !description.blank? ? description : nil
+      display_field?(ActivityFields::DESCRIPTION, channel_id) && description && !description.blank? ? description : nil
     ].compact
 
     result[:description] = result_description.join("\n\n") unless result_description.none?
 
     if map&.has_image?
-      if team.maps == 'full'
+      maps = team.channel_maps_for(channel_id)
+      if maps == 'full'
         result[:image] = { url: map.proxy_image_url }
-      elsif team.maps == 'thumb'
+      elsif maps == 'thumb'
         result[:thumbnail] = { url: map.proxy_image_url }
       end
-    elsif display_field?(ActivityFields::PHOTOS) && photos.any? && photos.first.has_image?
+    elsif display_field?(ActivityFields::PHOTOS, channel_id) && photos.any? && photos.first.has_image?
       result[:image] = { url: photos.first.image_url }
     end
 
-    result_fields = discord_fields
+    result_fields = discord_fields(channel_id)
     result[:fields] = result_fields if result_fields&.any?
     result[:timestamp] = Time.now.utc.iso8601
-    result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE)
+    result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE, channel_id)
     result
   end
 
-  def to_discord_embeds
-    embeds = [to_discord_embed]
+  def to_discord_embeds(channel_id = nil)
+    embeds = [to_discord_embed(channel_id)]
     # photo may be displayed instead of the map already
-    embeds.concat(photos.map(&:to_discord_embed)) if display_field?(ActivityFields::PHOTOS) && photos.any? && map&.has_image?
+    embeds.concat(photos.map(&:to_discord_embed)) if display_field?(ActivityFields::PHOTOS, channel_id) && photos.any? && map&.has_image?
     embeds
   end
 
@@ -267,7 +291,7 @@ class UserActivity < Activity
     NewRelic::Agent.notice_error(e, custom_params: { activity: to_s, user: user.to_s })
   end
 
-  def weather_s
+  def weather_s(channel_id = nil)
     return unless weather.present?
 
     current_weather = OpenWeather::Models::OneCall::CurrentWeather.new(
@@ -276,7 +300,7 @@ class UserActivity < Activity
 
     main = current_weather.weather&.first&.main
 
-    case team.units
+    case team.channel_units_for(channel_id)
     when 'km'
       ["#{current_weather.temp_c.to_i}°C", main].compact.join(' ')
     when 'mi'

@@ -58,6 +58,7 @@ class Team
 
   has_many :users, dependent: :destroy
   has_many :activities
+  has_many :channels, dependent: :destroy
 
   validates_uniqueness_of :token, message: 'has already been used'
   validates_presence_of :token
@@ -425,6 +426,73 @@ class Team
 
   def max_activities_per_channel_per_day_s
     max_activities_per_channel_per_day ? "#{max_activities_per_channel_per_day} per day" : 'unlimited'
+  end
+
+  def set_channel!(channel_id, channel_name, attrs = {})
+    c = channels.find_or_initialize_by(channel_id: channel_id)
+    c.assign_attributes(attrs.merge(channel_name: channel_name))
+    c.save!
+    c
+  end
+
+  def channel_activity_types_for(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    return [] if c.nil? || c.activity_types.blank?
+
+    c.activity_types
+  end
+
+  def channel_activity_types_s(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    c&.activity_types_s || 'all'
+  end
+
+  def channel_maps_for(channel_id)
+    return maps unless channel_id
+
+    c = channels.find_by(channel_id: channel_id)
+    c&.maps || maps
+  end
+
+  def channel_maps_s(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    c&.maps_s || maps_s
+  end
+
+  def channel_units_for(channel_id)
+    return units unless channel_id
+
+    c = channels.find_by(channel_id: channel_id)
+    c&.units || units
+  end
+
+  def channel_units_s(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    c&.units_s || units_s
+  end
+
+  def channel_activity_fields_for(channel_id)
+    return activity_fields unless channel_id
+
+    c = channels.find_by(channel_id: channel_id)
+    c&.activity_fields || activity_fields
+  end
+
+  def channel_activity_fields_s(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    c&.activity_fields_s || activity_fields_s
+  end
+
+  def channel_max_activities_per_user_per_day_for(channel_id)
+    return max_activities_per_user_per_day unless channel_id
+
+    c = channels.find_by(channel_id: channel_id)
+    c&.max_activities_per_user_per_day || max_activities_per_user_per_day
+  end
+
+  def channel_max_activities_per_user_per_day_s(channel_id)
+    c = channels.find_by(channel_id: channel_id)
+    c&.max_activities_per_user_per_day_s || max_activities_per_user_per_day_s
   end
 
   def now
