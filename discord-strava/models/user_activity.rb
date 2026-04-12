@@ -300,10 +300,10 @@ class UserActivity < Activity
 
     main = current_weather.weather&.first&.main
 
-    case team.channel_units_for(channel_id)
-    when 'km'
+    case team.channel_temperature_for(channel_id)
+    when 'c'
       ["#{current_weather.temp_c.to_i}°C", main].compact.join(' ')
-    when 'mi'
+    when 'f'
       ["#{current_weather.temp_f.to_i}°F", main].compact.join(' ')
     when 'both'
       [

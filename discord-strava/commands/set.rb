@@ -12,6 +12,7 @@ module DiscordStrava
         if first_selection.empty? || options.first[:name] != 'set'
           messages = [
             "Activities for team #{command.team.guild_name} display *#{command.team.units_s}*.",
+            "Activities for team #{command.team.guild_name} display *#{command.team.temperature_s}*.",
             "Activities are retained for *#{command.team.retention_s}*.",
             "Timezone is *#{command.team.timezone_s}*.",
             "Max activities per user per day are *#{command.team.max_activities_per_user_per_day_s}*.",
@@ -60,6 +61,22 @@ module DiscordStrava
               command.team.update_attributes!(units: v) unless v.nil?
               logger.info "SET: #{command.team} - units set to #{command.team.units}"
               "Activities for team #{command.team.guild_name}#{' now' if changed} display *#{command.team.units_s}*."
+            end
+          when 'temperature'
+            case v
+            when 'celsius'
+              v = 'c'
+            when 'fahrenheit'
+              v = 'f'
+            end
+            changed = v && command.team.temperature != v
+            if !command.user.guild_owner? && changed
+              logger.info "SET: #{command.team} - not admin, temperature remains set to #{command.team.temperature}"
+              "Sorry, only a Discord admin can change temperature. Activities for team #{command.team.guild_name} display *#{command.team.temperature_s}*."
+            else
+              command.team.update_attributes!(temperature: v) unless v.nil?
+              logger.info "SET: #{command.team} - temperature set to #{command.team.temperature}"
+              "Activities for team #{command.team.guild_name}#{' now' if changed} display *#{command.team.temperature_s}*."
             end
           when 'fields'
             parsed_fields = ActivityFields.parse_s(v) if v
