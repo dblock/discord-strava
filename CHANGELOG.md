@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/04/12: Added `set temperature f|c|both` to control temperature units independently from distance units - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/12: Return a 1x1 transparent pixel instead of a 404/403 error when activity maps are not found or have expired - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/11: Port per-channel settings from slack-strava — add `Channel` model, `set activities` command to filter activity types per channel, and per-channel maps/units/fields/userlimit - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/11: Upgrade to Ruby 4.0.2 - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

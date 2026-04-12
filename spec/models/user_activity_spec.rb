@@ -621,7 +621,7 @@ describe UserActivity do
     end
 
     context 'km' do
-      let(:team) { Fabricate(:team, units: 'km') }
+      let(:team) { Fabricate(:team, units: 'km', temperature: 'c') }
       let(:user) { Fabricate(:user, team:) }
       let(:activity) { Fabricate(:user_activity, user:) }
 
@@ -660,7 +660,7 @@ describe UserActivity do
     end
 
     context 'both' do
-      let(:team) { Fabricate(:team, units: 'both') }
+      let(:team) { Fabricate(:team, units: 'both', temperature: 'both') }
       let(:user) { Fabricate(:user, team:) }
       let(:activity) { Fabricate(:user_activity, user:) }
 

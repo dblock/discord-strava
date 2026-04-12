@@ -22,7 +22,8 @@ describe DiscordStrava::Commands::Set do
 
       it 'shows current settings' do
         expect(response).to eq([
-          "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*.",
+          "Activities for team #{team.guild_name} display *miles, feet, and yards*.",
+          "Activities for team #{team.guild_name} display *degrees Fahrenheit*.",
           'Activities are retained for *1 month*.',
           'Timezone is *auto (Eastern Time (US & Canada))*.',
           'Max activities per user per day are *unlimited*.',
@@ -199,14 +200,14 @@ describe DiscordStrava::Commands::Set do
 
             it 'shows current value of units' do
               expect(response).to eq(
-                "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*."
+                "Activities for team #{team.guild_name} display *miles, feet, and yards*."
               )
             end
 
             it 'shows current value of units set to km' do
               team.update_attributes!(units: 'km')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celsius*."
+                "Activities for team #{team.guild_name} display *kilometers and meters*."
               )
             end
 
@@ -224,7 +225,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to mi' do
               team.update_attributes!(units: 'km')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *miles, feet, yards, and degrees Fahrenheit*."
+                "Activities for team #{team.guild_name} now display *miles, feet, and yards*."
               )
               expect(command.team.units).to eq 'mi'
               expect(team.reload.units).to eq 'mi'
@@ -237,7 +238,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to km' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
+                "Activities for team #{team.guild_name} now display *kilometers and meters*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -250,7 +251,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to metric' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
+                "Activities for team #{team.guild_name} now display *kilometers and meters*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -263,7 +264,7 @@ describe DiscordStrava::Commands::Set do
             it 'sets units to imperial' do
               team.update_attributes!(units: 'km')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *miles, feet, yards, and degrees Fahrenheit*."
+                "Activities for team #{team.guild_name} now display *miles, feet, and yards*."
               )
               expect(command.team.units).to eq 'mi'
               expect(team.reload.units).to eq 'mi'
@@ -276,7 +277,7 @@ describe DiscordStrava::Commands::Set do
             it 'changes units' do
               team.update_attributes!(units: 'mi')
               expect(response).to eq(
-                "Activities for team #{team.guild_name} now display *kilometers, meters, and degrees Celsius*."
+                "Activities for team #{team.guild_name} now display *kilometers and meters*."
               )
               expect(command.team.units).to eq 'km'
               expect(team.reload.units).to eq 'km'
@@ -293,6 +294,86 @@ describe DiscordStrava::Commands::Set do
               )
               expect(command.team.units).to eq 'both'
               expect(team.reload.units).to eq 'both'
+            end
+          end
+        end
+
+        context 'temperature' do
+          context 'no args' do
+            let(:args) { %w[set temperature] }
+
+            it 'shows current value of temperature' do
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} display *degrees Fahrenheit*."
+              )
+            end
+          end
+
+          context 'f' do
+            let(:args) { ['set', { 'temperature' => 'f' }] }
+
+            it 'sets temperature to f' do
+              team.update_attributes!(temperature: 'c')
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} now display *degrees Fahrenheit*."
+              )
+              expect(team.reload.temperature).to eq 'f'
+            end
+          end
+
+          context 'c' do
+            let(:args) { ['set', { 'temperature' => 'c' }] }
+
+            it 'sets temperature to c' do
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} now display *degrees Celsius*."
+              )
+              expect(team.reload.temperature).to eq 'c'
+            end
+          end
+
+          context 'fahrenheit' do
+            let(:args) { ['set', { 'temperature' => 'fahrenheit' }] }
+
+            it 'sets temperature to fahrenheit' do
+              team.update_attributes!(temperature: 'c')
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} now display *degrees Fahrenheit*."
+              )
+              expect(team.reload.temperature).to eq 'f'
+            end
+          end
+
+          context 'celsius' do
+            let(:args) { ['set', { 'temperature' => 'celsius' }] }
+
+            it 'sets temperature to celsius' do
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} now display *degrees Celsius*."
+              )
+              expect(team.reload.temperature).to eq 'c'
+            end
+          end
+
+          context 'both' do
+            let(:args) { ['set', { 'temperature' => 'both' }] }
+
+            it 'sets temperature to both' do
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} now display *degrees Fahrenheit and Celsius*."
+              )
+              expect(team.reload.temperature).to eq 'both'
+            end
+          end
+
+          context 'temperature can differ from units' do
+            let(:args) { %w[set temperature] }
+
+            it 'shows temperature independently of units' do
+              team.update_attributes!(units: 'km', temperature: 'f')
+              expect(response).to eq(
+                "Activities for team #{team.guild_name} display *degrees Fahrenheit*."
+              )
             end
           end
         end
@@ -722,7 +803,7 @@ describe DiscordStrava::Commands::Set do
 
               it 'shows current value of units' do
                 expect(response).to eq(
-                  "Activities for team #{team.guild_name} display *miles, feet, yards, and degrees Fahrenheit*."
+                  "Activities for team #{team.guild_name} display *miles, feet, and yards*."
                 )
               end
             end
@@ -733,7 +814,7 @@ describe DiscordStrava::Commands::Set do
               it 'cannot set units' do
                 team.update_attributes!(units: 'km')
                 expect(response).to eq(
-                  "Sorry, only a Discord admin can change units. Activities for team #{team.guild_name} display *kilometers, meters, and degrees Celsius*."
+                  "Sorry, only a Discord admin can change units. Activities for team #{team.guild_name} display *kilometers and meters*."
                 )
                 expect(team.reload.units).to eq 'km'
               end

@@ -30,6 +30,7 @@ module DiscordStrava
         set channellimit [n]|none            - max activities posted per channel per day (default is unlimited)
         set activities [type,...]|all        - activity types to post in this channel (default is all)
         set units imperial|metric|both       - use imperial vs. metric units, or display both
+        set temperature f|c|both             - temperature units, independent of distance units
         set fields all|none|...              - display all, none or certain activity fields
         set maps off|full|thumb              - change the way maps are displayed
         set sync true|false                  - sync activities (default is true)
