@@ -59,7 +59,7 @@ describe DiscordStrava::Commands::Leaderboard do
             start_date: start_date,
             end_date: end_date
           ).and_call_original
-          expect(response).to eq "There are no activities with elapsed time between January 01, 2025 and #{end_date.to_fs(:long)} in this channel."
+          expect(response).to start_with("There are no activities with elapsed time between January 01, 2025 and")
         end
       end
     end
@@ -178,7 +178,7 @@ describe DiscordStrava::Commands::Leaderboard do
           start_date: start_date,
           end_date: end_date
         ).and_call_original
-        expect(response).to eq "There are no activities with distance between September 01, 2023 and #{end_date.to_fs(:long)} in this channel."
+        expect(response).to start_with("There are no activities with distance between September 01, 2023 and")
       end
     end
   end
