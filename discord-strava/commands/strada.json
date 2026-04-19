@@ -153,8 +153,15 @@
         }]
     }, {
         "name": "stats",
-        "description": "Display stats for the past 30 days.",
-        "type": 1
+        "description": "Display team stats.",
+        "type": 1,
+        "options": [{
+            "name": "range",
+            "description": "Date range (weekly, monthly, yearly, since, between, etc.).",
+            "type": 3,
+            "min_length": 1,
+            "max_length": 64
+        }]
     }, {
         "name": "subscription",
         "description": "Show subscription info and a link to update the payment method.",

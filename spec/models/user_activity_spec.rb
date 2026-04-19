@@ -250,7 +250,6 @@ describe UserActivity do
                   { inline: true, name: 'Moving Time', value: '2h6m26s' },
                   { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
                   { inline: true, name: 'Pace', value: '9m02s/mi' },
-                  { inline: true, name: 'Speed', value: '6.6mph' },
                   { inline: true, name: 'Elevation', value: '475.4ft' },
                   { inline: true, name: 'Weather', value: '70°F Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
@@ -569,7 +568,6 @@ describe UserActivity do
                     { inline: true, name: 'Moving Time', value: '2h6m26s' },
                     { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
                     { inline: true, name: 'Pace', value: '9m02s/mi' },
-                    { inline: true, name: 'Speed', value: '6.6mph' },
                     { inline: true, name: 'Elevation', value: '475.4ft' },
                     { inline: true, name: 'Weather', value: '70°F Rain' },
                     { inline: true, name: 'Device', value: 'Garmin' }
@@ -642,7 +640,6 @@ describe UserActivity do
                   { inline: true, name: 'Moving Time', value: '2h6m26s' },
                   { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
                   { inline: true, name: 'Pace', value: '5m37s/km' },
-                  { inline: true, name: 'Speed', value: '10.7km/h' },
                   { inline: true, name: 'Elevation', value: '144.9m' },
                   { inline: true, name: 'Weather', value: '21°C Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
@@ -681,7 +678,6 @@ describe UserActivity do
                   { inline: true, name: 'Moving Time', value: '2h6m26s' },
                   { inline: true, name: 'Elapsed Time', value: '2h8m6s' },
                   { inline: true, name: 'Pace', value: '9m02s/mi 5m37s/km' },
-                  { inline: true, name: 'Speed', value: '6.6mph 10.7km/h' },
                   { inline: true, name: 'Elevation', value: '475.4ft 144.9m' },
                   { inline: true, name: 'Weather', value: '70°F 21°C Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
@@ -716,7 +712,6 @@ describe UserActivity do
                   { inline: true, name: 'Distance', value: '2050yd' },
                   { inline: true, name: 'Time', value: '37m' },
                   { inline: true, name: 'Pace', value: '1m48s/100yd' },
-                  { inline: true, name: 'Speed', value: '1.9mph' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
                 timestamp: tt.utc.iso8601,
@@ -749,7 +744,6 @@ describe UserActivity do
                   { inline: true, name: 'Distance', value: '1874m' },
                   { inline: true, name: 'Time', value: '37m' },
                   { inline: true, name: 'Pace', value: '1m58s/100m' },
-                  { inline: true, name: 'Speed', value: '3.0km/h' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
                 timestamp: tt.utc.iso8601,
@@ -782,7 +776,6 @@ describe UserActivity do
                   { inline: true, name: 'Distance', value: '2050yd 1874m' },
                   { inline: true, name: 'Time', value: '37m' },
                   { inline: true, name: 'Pace', value: '1m48s/100yd 1m58s/100m' },
-                  { inline: true, name: 'Speed', value: '1.9mph 3.0km/h' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
                 timestamp: tt.utc.iso8601,
@@ -815,7 +808,6 @@ describe UserActivity do
                   { inline: true, name: 'Distance', value: '28.1km' },
                   { inline: true, name: 'Moving Time', value: '1h10m7s' },
                   { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-                  { inline: true, name: 'Pace', value: '2m30s/km' },
                   { inline: true, name: 'Speed', value: '24.0km/h' }
                 ],
                 timestamp: tt.utc.iso8601,
@@ -848,7 +840,6 @@ describe UserActivity do
                   { inline: true, name: 'Distance', value: '17.46mi 28.1km' },
                   { inline: true, name: 'Moving Time', value: '1h10m7s' },
                   { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-                  { inline: true, name: 'Pace', value: '4m01s/mi 2m30s/km' },
                   { inline: true, name: 'Speed', value: '14.9mph 24.0km/h' }
                 ],
                 timestamp: tt.utc.iso8601,
@@ -1092,7 +1083,6 @@ describe UserActivity do
               { inline: true, name: 'Distance', value: '17.46mi' },
               { inline: true, name: 'Moving Time', value: '1h10m7s' },
               { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-              { inline: true, name: 'Pace', value: '4m01s/mi' },
               { inline: true, name: 'Speed', value: '14.9mph' },
               { inline: true, name: 'Elevation', value: '1692.9ft' },
               { inline: true, name: 'Device', value: 'Garmin Edge 1030' }
@@ -1132,7 +1122,6 @@ describe UserActivity do
                 { inline: true, name: 'Distance', value: '17.46mi' },
                 { inline: true, name: 'Moving Time', value: '1h10m7s' },
                 { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
-                { inline: true, name: 'Pace', value: '4m01s/mi' },
                 { inline: true, name: 'Speed', value: '14.9mph' },
                 { inline: true, name: 'Elevation', value: '1692.9ft' },
                 { inline: true, name: 'Device', value: 'Garmin Edge 1030' }

@@ -1,5 +1,8 @@
 ### Changelog
 
+* 2026/04/19: Extended `stats` command to accept date expressions (`weekly`, `monthly`, `yearly`, `quarterly`, `since`, `between`, etc.) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
+* 2026/04/19: Format dates without time in stats and leaderboard messages when the time component is midnight; use team timezone when parsing date expressions - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
+* 2026/04/19: Automatically display pace for run/walk/swim/hike activities and speed for ride/bike activities when using default fields - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/12: Added `set temperature f|c|both` to control temperature units independently from distance units - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/12: Return a 1x1 transparent pixel instead of a 404/403 error when activity maps are not found or have expired - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/11: Port per-channel settings from slack-strava — add `Channel` model, `set activities` command to filter activity types per channel, and per-channel maps/units/fields/userlimit - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

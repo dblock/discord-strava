@@ -1,4 +1,5 @@
 require 'discord-strava/models/error'
+require 'discord-strava/models/date_helper'
 require 'discord-strava/models/brag'
 require 'discord-strava/models/strava_tokens'
 require 'discord-strava/models/array_validator'

@@ -11,6 +11,12 @@ module ActivityMethods
     Windsurf Workout Yoga
   ].freeze
 
+  # Activity types where speed (km/h, mph) is more meaningful than pace (min/km, min/mi).
+  SPEED_ACTIVITY_TYPES = %w[
+    Canoeing EBikeRide InlineSkate Kayaking Kitesurf Ride RollerSki Rowing
+    StandUpPaddling Surfing VirtualRide Windsurf
+  ].freeze
+
   #   field :name, type: String
   #   field :distance, type: Float
   #   field :moving_time, type: Float
@@ -288,9 +294,14 @@ module ActivityMethods
     end
   end
 
+  def speed_activity?
+    SPEED_ACTIVITY_TYPES.include?(type)
+  end
+
   def discord_fields(channel_id = nil)
     units = team.channel_units_for(channel_id)
     activity_fields = team.channel_activity_fields_for(channel_id)
+    default_fields = activity_fields == ['Default']
 
     case activity_fields
     when ['All']
@@ -321,8 +332,12 @@ module ActivityMethods
       when 'Elapsed Time'
         fields << { inline: true, name: 'Elapsed Time', value: elapsed_time_in_hours_s } if elapsed_time&.positive? && moving_time&.positive? && elapsed_time != moving_time
       when 'Pace'
+        next if default_fields && speed_activity?
+
         fields << { inline: true, name: 'Pace', value: pace_s(units) } if average_speed&.positive?
       when 'Speed'
+        next if default_fields && !speed_activity?
+
         fields << { inline: true, name: 'Speed', value: speed_s(units) } if average_speed&.positive?
       when 'Max Speed'
         fields << { inline: true, name: 'Max Speed', value: max_speed_s(units) } if max_speed&.positive?

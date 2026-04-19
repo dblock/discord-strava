@@ -59,7 +59,7 @@ describe DiscordStrava::Commands::Leaderboard do
             start_date: start_date,
             end_date: end_date
           ).and_call_original
-          expect(response).to eq "There are no activities with elapsed time between #{start_date.to_fs(:long)} and #{end_date.to_fs(:long)} in this channel."
+          expect(response).to eq "There are no activities with elapsed time between January 01, 2025 and #{end_date.to_fs(:long)} in this channel."
         end
       end
     end
@@ -73,7 +73,7 @@ describe DiscordStrava::Commands::Leaderboard do
 
       it 'returns leaderboard' do
         dt = Time.now - 2.days
-        allow(Chronic).to receive(:parse).with('two days ago', context: :past, guess: false).and_return(dt)
+        allow(Chronic).to receive(:parse).with('two days ago', context: :past, guess: false, now: anything).and_return(dt)
         expect_any_instance_of(Team).to receive(:leaderboard).with(
           channel_id: user.channel_id,
           metric: 'distance',
@@ -93,7 +93,7 @@ describe DiscordStrava::Commands::Leaderboard do
 
     it 'returns leaderboard' do
       dt = Time.now - 2.days
-      allow(Chronic).to receive(:parse).with('two days ago', context: :past, guess: false).and_return(dt)
+      allow(Chronic).to receive(:parse).with('two days ago', context: :past, guess: false, now: anything).and_return(dt)
       expect_any_instance_of(Team).to receive(:leaderboard).with(
         channel_id: user.channel_id,
         metric: 'distance',
@@ -117,7 +117,7 @@ describe DiscordStrava::Commands::Leaderboard do
         start_date: Time.new(2023, 1, 1),
         end_date: Time.new(2023, 1, 1).end_of_year
       ).and_call_original
-      expect(response).to eq 'There are no activities with distance between January 01, 2023 00:00 and December 31, 2023 23:59 in this channel.'
+      expect(response).to eq 'There are no activities with distance between January 01, 2023 and December 31, 2023 23:59 in this channel.'
     end
   end
 
@@ -137,7 +137,7 @@ describe DiscordStrava::Commands::Leaderboard do
         start_date: start_date,
         end_date: end_date
       ).and_call_original
-      expect(response).to eq 'There are no activities with distance between September 01, 2023 00:00 and October 01, 2023 00:00 in this channel.'
+      expect(response).to eq 'There are no activities with distance between September 01, 2023 and October 01, 2023 in this channel.'
     end
   end
 
@@ -157,7 +157,7 @@ describe DiscordStrava::Commands::Leaderboard do
         start_date: start_date,
         end_date: end_date
       ).and_call_original
-      expect(response).to eq 'There are no activities with moving time between March 01, 2023 00:00 and March 02, 2023 00:00 in this channel.'
+      expect(response).to eq 'There are no activities with moving time between March 01, 2023 and March 02, 2023 in this channel.'
     end
   end
 
@@ -178,7 +178,7 @@ describe DiscordStrava::Commands::Leaderboard do
           start_date: start_date,
           end_date: end_date
         ).and_call_original
-        expect(response).to eq "There are no activities with distance between #{start_date.to_fs(:long)} and #{end_date.to_fs(:long)} in this channel."
+        expect(response).to eq "There are no activities with distance between September 01, 2023 and #{end_date.to_fs(:long)} in this channel."
       end
     end
   end
@@ -199,7 +199,7 @@ describe DiscordStrava::Commands::Leaderboard do
         start_date: start_date,
         end_date: end_date
       ).and_call_original
-      expect(response).to eq 'There are no activities with distance between September 01, 2023 00:00 and September 01, 2024 00:00 in this channel.'
+      expect(response).to eq 'There are no activities with distance between September 01, 2023 and September 01, 2024 in this channel.'
     end
   end
 end
