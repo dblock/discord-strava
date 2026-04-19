@@ -88,6 +88,22 @@ describe TeamStats do
       it 'includes all activities' do
         expect(stats.to_discord[:embeds].count).to eq(3)
       end
+
+      context 'with a start date' do
+        let(:stats) { team.stats(start_date: Time.new(2018, 1, 1)) }
+
+        it 'includes a period label' do
+          expect(stats.to_discord[:content]).to include('after')
+        end
+      end
+
+      context 'with a start and end date' do
+        let(:stats) { team.stats(start_date: Time.new(2018, 1, 1), end_date: Time.new(2019, 1, 1)) }
+
+        it 'includes a period label' do
+          expect(stats.to_discord[:content]).to include('between')
+        end
+      end
     end
   end
 

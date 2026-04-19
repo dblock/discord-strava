@@ -1,5 +1,6 @@
 class TeamStats
   extend Forwardable
+  include DateHelper
 
   attr_reader :team, :stats, :options
 
@@ -11,13 +12,32 @@ class TeamStats
 
   def_delegators :@stats, :each, :[], :count, :size, :keys, :values, :any?, :map
 
+  def start_date
+    options[:start_date]
+  end
+
+  def end_date
+    options[:end_date]
+  end
+
+  def period_s
+    if start_date && end_date
+      "between #{format_date(start_date)} and #{format_date(end_date)}"
+    elsif start_date
+      "after #{format_date(start_date)}"
+    elsif end_date
+      "before #{format_date(end_date)}"
+    end
+  end
+
   def to_discord
     if any?
-      {
-        embeds: values.map(&:to_discord_embed)
-      }
+      result = { embeds: values.map(&:to_discord_embed) }
+      result[:content] = "Activities #{period_s}." if period_s
+      result
     else
-      'There are no activities in this channel.'
+      period_label = period_s ? " #{period_s}" : ''
+      "There are no activities#{period_label} in this channel."
     end
   end
 
@@ -26,6 +46,13 @@ class TeamStats
   def aggreate_options
     aggreate_options = { team_id: team.id }
     aggreate_options.merge!('channel_message.channel_id' => options[:channel_id]) if options.key?(:channel_id)
+    if start_date && end_date
+      aggreate_options.merge!('start_date' => { '$gte' => start_date, '$lte' => end_date })
+    elsif start_date
+      aggreate_options.merge!('start_date' => { '$gte' => start_date })
+    elsif end_date
+      aggreate_options.merge!('start_date' => { '$lte' => end_date })
+    end
     aggreate_options
   end
 
