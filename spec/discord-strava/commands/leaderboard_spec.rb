@@ -50,7 +50,7 @@ describe DiscordStrava::Commands::Leaderboard do
       let(:team) { Fabricate(:team, subscribed: true, default_leaderboard: 'elapsed time since 2025') }
 
       it 'returns leaderboard' do
-        Timecop.freeze do
+        Timecop.freeze(Time.utc(2025, 1, 15, 17, 0, 0)) do
           start_date = Time.new(2025, 1, 1)
           end_date = Time.now
           expect_any_instance_of(Team).to receive(:leaderboard).with(
@@ -59,7 +59,7 @@ describe DiscordStrava::Commands::Leaderboard do
             start_date: start_date,
             end_date: end_date
           ).and_call_original
-          expect(response).to start_with("There are no activities with elapsed time between January 01, 2025 and")
+          expect(response).to eq 'There are no activities with elapsed time between January 01, 2025 and January 15, 2025 12:00 in this channel.'
         end
       end
     end
@@ -169,7 +169,7 @@ describe DiscordStrava::Commands::Leaderboard do
     let(:team) { Fabricate(:team, subscribed: true) }
 
     it 'returns leaderboard' do
-      Timecop.freeze do
+      Timecop.freeze(Time.utc(2023, 11, 15, 17, 0, 0)) do
         start_date = Time.new(2023, 9, 1, 0, 0, 0)
         end_date = Time.now
         expect_any_instance_of(Team).to receive(:leaderboard).with(
@@ -178,7 +178,7 @@ describe DiscordStrava::Commands::Leaderboard do
           start_date: start_date,
           end_date: end_date
         ).and_call_original
-        expect(response).to start_with("There are no activities with distance between September 01, 2023 and")
+        expect(response).to eq 'There are no activities with distance between September 01, 2023 and November 15, 2023 12:00 in this channel.'
       end
     end
   end
