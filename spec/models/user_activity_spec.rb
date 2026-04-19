@@ -108,7 +108,7 @@ describe UserActivity do
     it 'sends a message to the subscribed channel' do
       expect(Discord::Bot.instance).to receive(:send_message).with(
         user.channel_id,
-        activity.to_discord
+        activity.to_discord(user.channel_id)
       ).and_return('id' => '1', 'channel_id' => '2')
       expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
     end
