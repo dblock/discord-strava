@@ -575,6 +575,7 @@ class Team
   def activated!
     return unless active? && (active_changed? || saved_change_to_active?)
 
+    users.connected_to_strava.where(sync_activities: false).update_all(sync_activities: true)
     inform_activated!
     update_info!
   end

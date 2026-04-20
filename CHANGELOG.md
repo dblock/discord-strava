@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/04/20: Re-enable sync for Strava-connected users when a team is reactivated after bot reinstall - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/20: Fixed Discord access errors (Missing Access, Missing Permissions, Unknown Channel) not disabling user sync, and Unknown Message errors in rebrag not clearing the stored channel message - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/19: Extended `stats` command to accept date expressions (`weekly`, `monthly`, `yearly`, `quarterly`, `since`, `between`, etc.) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/19: Format dates without time in stats and leaderboard messages when the time component is midnight; use team timezone when parsing date expressions - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

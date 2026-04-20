@@ -202,6 +202,27 @@ describe Team do
     end
   end
 
+  describe '#activated!' do
+    let!(:team) { Fabricate(:team, active: false) }
+    let!(:user) { Fabricate(:user, team:, sync_activities: false) }
+
+    before do
+      allow_any_instance_of(described_class).to receive(:inform_activated!)
+      allow_any_instance_of(described_class).to receive(:update_info!)
+    end
+
+    it 're-enables sync for connected users with strava when team is reactivated' do
+      user.update_attributes!(access_token: 'token')
+      team.update_attributes!(active: true)
+      expect(user.reload.sync_activities).to be true
+    end
+
+    it 'does not re-enable sync for users not connected to strava' do
+      team.update_attributes!(active: true)
+      expect(user.reload.sync_activities).to be false
+    end
+  end
+
   describe '#check_access' do
     let(:team) { Fabricate(:team) }
 
