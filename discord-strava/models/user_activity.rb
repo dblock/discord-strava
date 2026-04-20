@@ -80,7 +80,9 @@ class UserActivity < Activity
       update_attributes!(bragged_at: Time.now.utc, channel_message: rc)
       rc
     end
-  rescue Faraday::ForbiddenError => e
+  rescue DiscordStrava::Error => e
+    raise unless User::DISABLE_SYNC_ERRORS.include?(e.message)
+
     logger.warn "Bragging to #{user} failed, #{e.message}, disabling user sync."
     update_attributes!(bragged_at: Time.now.utc)
     user.update_attributes!(sync_activities: false)
@@ -97,6 +99,12 @@ class UserActivity < Activity
     rc = user.update!(to_discord(channel_message.channel_id), channel_message)
     update_attributes!(channel_message: rc)
     rc
+  rescue DiscordStrava::Error => e
+    raise unless e.message == User::UNKNOWN_MESSAGE_ERROR
+
+    logger.warn "Rebragging to #{user} failed, #{e.message}, clearing channel message."
+    update_attributes!(channel_message: nil)
+    nil
   end
 
   def unbrag!

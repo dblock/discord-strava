@@ -113,12 +113,32 @@ describe UserActivity do
       expect(activity.brag!).to eq(message_id: '1', channel_id: '2')
     end
 
-    it 'disables user sync on access error' do
+    it 'disables user sync on missing access error' do
       expect(Discord::Bot.instance).to receive(:send_message).with(
         user.channel_id,
-        activity.to_discord
-      ).and_raise(Faraday::ForbiddenError.new('forbidden'))
-      expect { activity.brag! }.to raise_error(Faraday::ForbiddenError)
+        activity.to_discord(user.channel_id)
+      ).and_raise(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+      expect(activity.bragged_at).not_to be_nil
+      expect(user.reload.sync_activities).to be false
+    end
+
+    it 'disables user sync on missing permissions error' do
+      expect(Discord::Bot.instance).to receive(:send_message).with(
+        user.channel_id,
+        activity.to_discord(user.channel_id)
+      ).and_raise(DiscordStrava::Error, User::MISSING_PERMISSIONS_ERROR)
+      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::MISSING_PERMISSIONS_ERROR)
+      expect(activity.bragged_at).not_to be_nil
+      expect(user.reload.sync_activities).to be false
+    end
+
+    it 'disables user sync on unknown channel error' do
+      expect(Discord::Bot.instance).to receive(:send_message).with(
+        user.channel_id,
+        activity.to_discord(user.channel_id)
+      ).and_raise(DiscordStrava::Error, User::UNKNOWN_CHANNEL_ERROR)
+      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::UNKNOWN_CHANNEL_ERROR)
       expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
@@ -185,6 +205,18 @@ describe UserActivity do
         expect(Discord::Bot.instance).not_to receive(:send_message)
         expect(activity.brag!).to be_nil
       end
+    end
+  end
+
+  context 'rebrag!' do
+    let(:team) { Fabricate(:team) }
+    let(:user) { Fabricate(:user, team:) }
+    let!(:activity) { Fabricate(:user_activity, user:, channel_message: Fabricate(:channel_message)) }
+
+    it 'clears channel message on unknown message error' do
+      expect(Discord::Bot.instance).to receive(:update_message).and_raise(DiscordStrava::Error, User::UNKNOWN_MESSAGE_ERROR)
+      expect(activity.rebrag!).to be_nil
+      expect(activity.reload.channel_message).to be_nil
     end
   end
 
