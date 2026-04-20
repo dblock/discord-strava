@@ -6,6 +6,11 @@ class User
   include Brag
 
   UNKNOWN_MEMBER_ERROR = 'Unknown Member (10007, 404)'.freeze
+  UNKNOWN_CHANNEL_ERROR = 'Unknown Channel (10003, 404)'.freeze
+  UNKNOWN_MESSAGE_ERROR = 'Unknown Message (10008, 404)'.freeze
+  MISSING_ACCESS_ERROR = 'Missing Access (50001, 403)'.freeze
+  MISSING_PERMISSIONS_ERROR = 'Missing Permissions (50013, 403)'.freeze
+  DISABLE_SYNC_ERRORS = [MISSING_ACCESS_ERROR, MISSING_PERMISSIONS_ERROR, UNKNOWN_CHANNEL_ERROR].freeze
 
   field :channel_id, type: String
   field :user_id, type: String
