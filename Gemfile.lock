@@ -90,7 +90,7 @@ GEM
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
     ed25519 (1.4.0)
-    erb (6.0.2)
+    erb (6.0.4)
     event_emitter (0.2.6)
     fabrication (3.0.0)
     faker (3.7.1)
