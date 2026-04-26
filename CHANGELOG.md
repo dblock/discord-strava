@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/04/26: Fixed `inform_system!` and `inform_guild_owner!` re-raising Discord errors (e.g. Missing Access) during subscription expiry notifications, causing spurious NewRelic error reports - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/26: Fixed `brag!` re-raising Discord access errors (Missing Access, Missing Permissions, Unknown Channel) after disabling user sync, causing spurious NewRelic error reports - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/20: Fixed Discord access errors (Missing Access, Missing Permissions, Unknown Channel) not disabling user sync, and Unknown Message errors in rebrag not clearing the stored channel message - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/19: Extended `stats` command to accept date expressions (`weekly`, `monthly`, `yearly`, `quarterly`, `since`, `between`, etc.) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

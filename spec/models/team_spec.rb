@@ -271,6 +271,53 @@ describe Team do
         expect(team.inform_guild_owner!('message')).to be_nil
       end
     end
+
+    context 'on a Discord error' do
+      let(:team) { Fabricate(:team, guild_owner_id: 'guild_owner_id', bot_owner_id: 'bot_owner_id') }
+
+      it 'skips the failed owner and still informs the others' do
+        allow(Discord::Bot.instance).to receive(:send_dm)
+          .with('guild_owner_id', 'message')
+          .and_raise(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+        allow(Discord::Bot.instance).to receive(:send_dm)
+          .with('bot_owner_id', 'message')
+          .and_return('id' => 'm2', 'channel_id' => 'c2')
+        expect(team.inform_guild_owner!('message')).to eq [{ message_id: 'm2', channel_id: 'c2' }]
+      end
+
+      it 'returns an empty array when all owners fail' do
+        allow(Discord::Bot.instance).to receive(:send_dm)
+          .and_raise(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+        expect(team.inform_guild_owner!('message')).to eq []
+      end
+    end
+  end
+
+  describe '#inform_system!' do
+    let(:team) { Fabricate(:team) }
+
+    before do
+      allow_any_instance_of(described_class).to receive(:update_info!)
+      allow(team).to receive(:guild_info).and_return({ system_channel_id: 'system_channel_id' })
+    end
+
+    it 'sends a message to the system channel' do
+      allow(Discord::Bot.instance).to receive(:send_message)
+        .with('system_channel_id', 'message')
+        .and_return('id' => 'm1', 'channel_id' => 'system_channel_id')
+      expect(team.inform_system!('message')).to eq(message_id: 'm1', channel_id: 'system_channel_id')
+    end
+
+    it 'returns nil when there is no system channel' do
+      allow(team).to receive(:guild_info).and_return({})
+      expect(team.inform_system!('message')).to be_nil
+    end
+
+    it 'logs a warning and returns nil on a Discord error' do
+      allow(Discord::Bot.instance).to receive(:send_message)
+        .and_raise(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+      expect(team.inform_system!('message')).to be_nil
+    end
   end
 
   describe '#prune_activities!' do

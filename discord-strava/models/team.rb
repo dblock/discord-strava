@@ -196,14 +196,19 @@ class Team
   def inform_guild_owner!(message)
     return unless guild_owner_id || bot_owner_id
 
-    guild_owners.map do |id|
-      rc = Discord::Bot.instance.send_dm(id, message)
+    guild_owners.map { |id|
+      begin
+        rc = Discord::Bot.instance.send_dm(id, message)
 
-      {
-        message_id: rc['id'],
-        channel_id: rc['channel_id']
-      }
-    end
+        {
+          message_id: rc['id'],
+          channel_id: rc['channel_id']
+        }
+      rescue DiscordStrava::Error => e
+        logger.warn "Error DMing guild owner #{id} for #{self}: #{e.message}"
+        nil
+      end
+    }.compact
   end
 
   def inform_system!(message)
@@ -216,6 +221,9 @@ class Team
       message_id: rc['id'],
       channel_id: rc['channel_id']
     }
+  rescue DiscordStrava::Error => e
+    logger.warn "Error posting to system channel for #{self}: #{e.message}"
+    nil
   end
 
   def inform_everyone!(message)
