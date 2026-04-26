@@ -86,7 +86,7 @@ class UserActivity < Activity
     logger.warn "Bragging to #{user} failed, #{e.message}, disabling user sync."
     update_attributes!(bragged_at: Time.now.utc)
     user.update_attributes!(sync_activities: false)
-    raise e
+    nil
   rescue StandardError => e
     logger.warn "Bragging to #{user} failed, #{e.message}."
     raise e

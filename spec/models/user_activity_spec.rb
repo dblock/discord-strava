@@ -118,7 +118,7 @@ describe UserActivity do
         user.channel_id,
         activity.to_discord(user.channel_id)
       ).and_raise(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
-      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::MISSING_ACCESS_ERROR)
+      expect(activity.brag!).to be_nil
       expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
@@ -128,7 +128,7 @@ describe UserActivity do
         user.channel_id,
         activity.to_discord(user.channel_id)
       ).and_raise(DiscordStrava::Error, User::MISSING_PERMISSIONS_ERROR)
-      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::MISSING_PERMISSIONS_ERROR)
+      expect(activity.brag!).to be_nil
       expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
@@ -138,7 +138,7 @@ describe UserActivity do
         user.channel_id,
         activity.to_discord(user.channel_id)
       ).and_raise(DiscordStrava::Error, User::UNKNOWN_CHANNEL_ERROR)
-      expect { activity.brag! }.to raise_error(DiscordStrava::Error, User::UNKNOWN_CHANNEL_ERROR)
+      expect(activity.brag!).to be_nil
       expect(activity.bragged_at).not_to be_nil
       expect(user.reload.sync_activities).to be false
     end
