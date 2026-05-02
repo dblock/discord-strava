@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/05/02: Allow teams with an expired subscription to re-subscribe - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/05/02: Fixed `Team#subscription_info` failing with `NoMethodError: undefined method 'sources'` on `Stripe::Customer` in stripe 13.5.1 by using `Stripe::Customer.list_sources` - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/26: Fixed `inform_system!` and `inform_guild_owner!` re-raising Discord errors (e.g. Missing Access) during subscription expiry notifications, causing spurious NewRelic error reports - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/04/26: Fixed `brag!` re-raising Discord access errors (Missing Access, Missing Permissions, Unknown Channel) after disabling user sync, causing spurious NewRelic error reports - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).

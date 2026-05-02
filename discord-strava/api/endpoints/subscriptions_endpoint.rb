@@ -15,7 +15,7 @@ module Api
           team = Team.where(guild_id: params[:guild_id]).first || error!('Team Not Found', 404)
           Api::Middleware.logger.info "Creating a subscription for team #{team}."
           error!('Already Subscribed', 400) if team.subscribed?
-          error!('Customer Already Registered', 400) if team.stripe_customer_id
+          error!('Customer Already Registered', 400) if team.stripe_customer_id && !team.subscription_expired_at
           customer = Stripe::Customer.create(
             source: params[:stripe_token],
             plan: 'strada-yearly',

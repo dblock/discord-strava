@@ -48,6 +48,34 @@ describe Api::Endpoints::SubscriptionsEndpoint do
       end
     end
 
+    context 'team with an expired subscription' do
+      let!(:team) { Fabricate(:team, stripe_customer_id: 'old_customer_id', subscription_expired_at: Time.now.utc) }
+
+      it 'creates a subscription' do
+        expect(Stripe::Customer).to receive(:create).with(
+          source: 'token',
+          plan: 'strada-yearly',
+          email: 'foo@bar.com',
+          metadata: {
+            id: team._id,
+            guild_id: team.guild_id,
+            name: team.guild_name
+          }
+        ).and_return('id' => 'new_customer_id')
+        expect_any_instance_of(Team).to receive(:subscribed!).once
+        client.subscriptions._post(
+          guild_id: team.guild_id,
+          stripe_token: 'token',
+          stripe_token_type: 'card',
+          stripe_email: 'foo@bar.com'
+        )
+        team.reload
+        expect(team.subscribed).to be true
+        expect(team.subscribed_at).not_to be_nil
+        expect(team.stripe_customer_id).to eq 'new_customer_id'
+      end
+    end
+
     context 'existing team' do
       let!(:team) { Fabricate(:team) }
 
