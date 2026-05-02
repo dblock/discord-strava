@@ -47,7 +47,7 @@ describe DiscordStrava::Commands::Subscription do
           end
 
           it 'displays subscription info' do
-            card = customer.sources.first
+            card = Stripe::Customer.list_sources(customer.id).first
             current_period_end = Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
             customer_info = [
               "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
@@ -67,7 +67,7 @@ describe DiscordStrava::Commands::Subscription do
             end
 
             it 'displays subscription info' do
-              card = customer.sources.first
+              card = Stripe::Customer.list_sources(customer.id).first
               Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
               customer_info = [
                 "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
@@ -86,7 +86,6 @@ describe DiscordStrava::Commands::Subscription do
           end
 
           it 'displays subscription info' do
-            customer.sources.first
             current_period_end = Time.at(customer.subscriptions.first.current_period_end).strftime('%B %d, %Y')
             customer_info = [
               "Customer since #{Time.at(customer.created).strftime('%B %d, %Y')}.",
