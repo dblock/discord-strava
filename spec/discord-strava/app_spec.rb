@@ -57,15 +57,36 @@ describe DiscordStrava::App do
         allow(Stripe::Subscription).to receive(:list).and_return([subscription])
         expect_any_instance_of(Team).to receive(:inform_everyone!).with("Your subscription to Plan ($19.99) is past due. #{team.update_cc_text}")
         subject.send(:check_subscribed_teams!)
+        expect(team.reload.past_due_informed_at).not_to be_nil
+      end
+
+      it 'does not re-notify past due subscription within 72 hours' do
+        team.update_attributes!(past_due_informed_at: 1.hour.ago)
+        subscription = customer.subscriptions.data.first
+        subscription['status'] = 'past_due'
+        allow(Stripe::Subscription).to receive(:list).and_return([subscription])
+        expect_any_instance_of(Team).not_to receive(:inform_everyone!)
+        subject.send(:check_subscribed_teams!)
+      end
+
+      it 'notifies past due subscription again after 72 hours' do
+        team.update_attributes!(past_due_informed_at: 73.hours.ago)
+        subscription = customer.subscriptions.data.first
+        subscription['status'] = 'past_due'
+        allow(Stripe::Subscription).to receive(:list).and_return([subscription])
+        expect_any_instance_of(Team).to receive(:inform_everyone!).with("Your subscription to Plan ($19.99) is past due. #{team.update_cc_text}")
+        subject.send(:check_subscribed_teams!)
       end
 
       it 'notifies canceled subscription' do
         subscription = customer.subscriptions.data.first
         subscription['status'] = 'canceled'
+        team.update_attributes!(past_due_informed_at: 1.hour.ago)
         allow(Stripe::Subscription).to receive(:list).and_return([subscription])
         expect_any_instance_of(Team).to receive(:inform_everyone!).with('Your subscription to Plan ($19.99) was canceled and your team has been downgraded. Thank you for being a customer!')
         subject.send(:check_subscribed_teams!)
         expect(team.reload.subscribed?).to be false
+        expect(team.reload.past_due_informed_at).to be_nil
       end
 
       it 'notifies no active subscriptions' do
