@@ -218,6 +218,13 @@ describe UserActivity do
       expect(activity.rebrag!).to be_nil
       expect(activity.reload.channel_message).to be_nil
     end
+
+    it 'clears unbragged_at' do
+      activity.update_attributes!(unbragged_at: Time.now.utc)
+      allow(Discord::Bot.instance).to receive(:update_message).and_return({ 'id' => '1', 'channel_id' => '2' })
+      activity.rebrag!
+      expect(activity.reload.unbragged_at).to be_nil
+    end
   end
 
   context 'unbrag!' do
@@ -234,6 +241,7 @@ describe UserActivity do
         ).and_return('id' => '1', 'channel_id' => '2')
         expect(activity.unbrag!).to be_nil
         expect(activity.channel_message).to be_nil
+        expect(activity.reload.unbragged_at).not_to be_nil
       end
 
       it 'ignores a previously delete message' do

@@ -16,6 +16,7 @@ class Activity
   field :pr_count, type: Integer
   field :calories, type: Float
   field :bragged_at, type: DateTime
+  field :unbragged_at, type: DateTime
   field :total_elevation_gain, type: Float
   field :private, type: Boolean
   field :visibility, type: String
@@ -31,7 +32,7 @@ class Activity
 
   embeds_one :channel_message, inverse_of: nil
 
-  scope :unbragged, -> { where(bragged_at: nil) }
+  scope :not_bragged, -> { where(bragged_at: nil) }
   scope :bragged, -> { where(:bragged_at.ne => nil) }
 
   belongs_to :team, inverse_of: :activities

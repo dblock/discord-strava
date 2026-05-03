@@ -77,7 +77,7 @@ class UserActivity < Activity
 
       logger.info "Bragging about #{user}, #{self}."
       rc = user.inform!(to_discord(channel_id))
-      update_attributes!(bragged_at: Time.now.utc, channel_message: rc)
+      update_attributes!(bragged_at: Time.now.utc, unbragged_at: nil, channel_message: rc)
       rc
     end
   rescue DiscordStrava::Error => e
@@ -97,7 +97,7 @@ class UserActivity < Activity
 
     logger.info "Rebragging about #{user}, #{self}."
     rc = user.update!(to_discord(channel_message.channel_id), channel_message)
-    update_attributes!(channel_message: rc)
+    update_attributes!(channel_message: rc, unbragged_at: nil)
     rc
   rescue DiscordStrava::Error => e
     raise unless e.message == User::UNKNOWN_MESSAGE_ERROR
@@ -112,7 +112,7 @@ class UserActivity < Activity
 
     logger.info "Unbragging about #{user}, #{self}."
     user.delete!(channel_message)
-    update_attributes!(channel_message: nil)
+    update_attributes!(channel_message: nil, unbragged_at: Time.now.utc)
     nil
   end
 
