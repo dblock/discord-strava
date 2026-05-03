@@ -162,7 +162,7 @@ class User
   end
 
   def brag_new_activities!
-    activity = activities.unbragged.asc(:start_date).first
+    activity = activities.not_bragged.asc(:start_date).first
     return unless activity
 
     if team.max_activities_per_user_per_day
@@ -274,7 +274,7 @@ class User
   end
 
   def latest_bragged_activity(dt = 12.hours)
-    activities.bragged.where(:start_date.gt => Time.now - dt).desc(:start_date).first
+    activities.bragged.where(unbragged_at: nil, :start_date.gt => Time.now - dt).desc(:start_date).first
   end
 
   def latest_activity_start_date
