@@ -237,7 +237,7 @@ class UserActivity < Activity
 
     result_fields = discord_fields(channel_id)
     result[:fields] = result_fields if result_fields&.any?
-    result[:timestamp] = Time.now.utc.iso8601
+    result[:timestamp] = start_date&.utc&.iso8601
     result.merge!(user.athlete.to_discord) if user.athlete && display_field?(ActivityFields::ATHLETE, channel_id)
     result
   end

@@ -262,12 +262,6 @@ describe UserActivity do
   end
 
   context 'in time' do
-    let!(:tt) { Time.now }
-
-    before do
-      Timecop.freeze(tt)
-    end
-
     context 'miles' do
       let(:team) { Fabricate(:team, units: 'mi') }
       let(:user) { Fabricate(:user, team:) }
@@ -294,7 +288,7 @@ describe UserActivity do
                   { inline: true, name: 'Weather', value: '70°F Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -337,7 +331,7 @@ describe UserActivity do
                   { inline: true, name: 'Device', value: 'Garmin' },
                   { inline: true, name: 'Gear', value: 'Adidas Solarglide' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -363,7 +357,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -389,7 +383,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -415,7 +409,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -442,7 +436,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -468,7 +462,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601
+                timestamp: activity.start_date.utc.iso8601
               }
             ]
           )
@@ -490,7 +484,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601
+                timestamp: activity.start_date.utc.iso8601
               }
             ]
           )
@@ -512,7 +506,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601
+                timestamp: activity.start_date.utc.iso8601
               }
             ]
           )
@@ -534,7 +528,7 @@ describe UserActivity do
                 image: {
                   url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                 },
-                timestamp: tt.utc.iso8601
+                timestamp: activity.start_date.utc.iso8601
               }
             ]
           )
@@ -555,7 +549,7 @@ describe UserActivity do
                   image: {
                     url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                   },
-                  timestamp: tt.utc.iso8601
+                  timestamp: activity.start_date.utc.iso8601
                 }
               ]
             }
@@ -578,7 +572,7 @@ describe UserActivity do
                   image: {
                     url: "https://strada.playplay.io/api/maps/#{activity.map.id}.png"
                   },
-                  timestamp: tt.utc.iso8601
+                  timestamp: activity.start_date.utc.iso8601
                 }
               ]
             }
@@ -612,7 +606,7 @@ describe UserActivity do
                     { inline: true, name: 'Weather', value: '70°F Rain' },
                     { inline: true, name: 'Device', value: 'Garmin' }
                   ],
-                  timestamp: tt.utc.iso8601
+                  timestamp: activity.start_date.utc.iso8601
                 }
               ]
             }
@@ -645,7 +639,7 @@ describe UserActivity do
                     { inline: true, name: 'Weather', value: '70°F Rain' },
                     { inline: true, name: 'Device', value: 'Garmin' }
                   ],
-                  timestamp: tt.utc.iso8601,
+                  timestamp: activity.start_date.utc.iso8601,
                   author: {
                     name: user.athlete.name,
                     url: user.athlete.strava_url
@@ -684,7 +678,7 @@ describe UserActivity do
                   { inline: true, name: 'Weather', value: '21°C Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -722,7 +716,7 @@ describe UserActivity do
                   { inline: true, name: 'Weather', value: '70°F 21°C Rain' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -754,7 +748,7 @@ describe UserActivity do
                   { inline: true, name: 'Pace', value: '1m48s/100yd' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -786,7 +780,7 @@ describe UserActivity do
                   { inline: true, name: 'Pace', value: '1m58s/100m' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -818,7 +812,7 @@ describe UserActivity do
                   { inline: true, name: 'Pace', value: '1m48s/100yd 1m58s/100m' },
                   { inline: true, name: 'Device', value: 'Garmin' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -850,7 +844,7 @@ describe UserActivity do
                   { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
                   { inline: true, name: 'Speed', value: '24.0km/h' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -882,7 +876,7 @@ describe UserActivity do
                   { inline: true, name: 'Elapsed Time', value: '1h13m30s' },
                   { inline: true, name: 'Speed', value: '14.9mph 24.0km/h' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -913,7 +907,7 @@ describe UserActivity do
                   { inline: true, name: 'Moving Time', value: '1h15m54s' },
                   { inline: true, name: 'Elapsed Time', value: '5h40m27s' }
                 ],
-                timestamp: tt.utc.iso8601,
+                timestamp: activity.start_date.utc.iso8601,
                 author: {
                   name: user.athlete.name,
                   url: user.athlete.strava_url
@@ -1093,16 +1087,11 @@ describe UserActivity do
   end
 
   context 'with photos' do
-    let!(:tt) { Time.now }
     let(:fixture) { 'spec/fabricators/ride_activity.json' }
     let(:detailed_activity) { Strava::Models::DetailedActivity.new(JSON.parse(File.read(fixture))) }
     let(:team) { Fabricate(:team) }
     let(:user) { Fabricate(:user, team:) }
     let(:activity) { described_class.create_from_strava!(user, detailed_activity) }
-
-    before do
-      Timecop.freeze(tt)
-    end
 
     it 'includes calories' do
       expect(activity.calories).to eq 870.2
@@ -1127,7 +1116,7 @@ describe UserActivity do
               { inline: true, name: 'Elevation', value: '1692.9ft' },
               { inline: true, name: 'Device', value: 'Garmin Edge 1030' }
             ],
-            timestamp: tt.utc.iso8601,
+            timestamp: activity.start_date.utc.iso8601,
             author: {
               name: user.athlete.name,
               url: user.athlete.strava_url
@@ -1166,7 +1155,7 @@ describe UserActivity do
                 { inline: true, name: 'Elevation', value: '1692.9ft' },
                 { inline: true, name: 'Device', value: 'Garmin Edge 1030' }
               ],
-              timestamp: tt.utc.iso8601,
+              timestamp: activity.start_date.utc.iso8601,
               author: {
                 name: user.athlete.name,
                 url: user.athlete.strava_url
