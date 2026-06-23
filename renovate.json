@@ -3,6 +3,11 @@
   "extends": [
     "config:recommended"
   ],
+  "postUpgradeTasks": {
+    "commands": ["bundle install"],
+    "fileFilters": ["Gemfile.lock"],
+    "executionMode": "branch"
+  },
   "packageRules": [
     {
       "matchManagers": [

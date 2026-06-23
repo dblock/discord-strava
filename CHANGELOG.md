@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/06/23: Added Renovate `postUpgradeTasks` to run `bundle install` after Ruby version updates, keeping `Gemfile.lock` in sync - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/06/23: Added `.ruby-version` as single source of truth for Ruby version, updated CI workflows and Gemfile to read from it so Renovate updates everything - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/05/03: Throttle past due subscription notifications to at most once every 72 hours - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/05/03: Fixed repeated 404 errors from Strava when trying to rebrag an activity that was deleted and already unbragged - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
