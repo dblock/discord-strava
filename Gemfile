@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-ruby '4.0.2'
+ruby File.read(File.join(__dir__, '.ruby-version')).strip
 
 gem 'async'
 gem 'chronic'
