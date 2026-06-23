@@ -23,7 +23,7 @@ describe 'Teams', :js, type: :feature do
       allow_any_instance_of(Team).to receive(:update_info!)
       expect {
         visit '/?code=code&guild_id=guild_id&permissions=2147502080'
-        expect(page.find_by_id('messages')).to have_content 'Team successfully registered!'
+        expect(page.find_by_id('messages')).to have_text 'Team successfully registered!'
       }.to change(Team, :count).by(1)
     end
   end
