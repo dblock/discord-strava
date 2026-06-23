@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/06/23: Disabled Renovate ruby-version manager — Ruby upgrades require manual `bundle install` to keep `Gemfile.lock` in sync - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/06/23: Fixed `connect!` failing to persist athlete with Mongoid 9.1.0, which changed autosave behavior for unchanged embedded subtrees (MONGOID-5751) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/06/23: Added Renovate `postUpgradeTasks` to run `bundle install` after Ruby version updates, keeping `Gemfile.lock` in sync - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/06/23: Added `.ruby-version` as single source of truth for Ruby version, updated CI workflows and Gemfile to read from it so Renovate updates everything - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
