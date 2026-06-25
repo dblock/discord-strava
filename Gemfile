@@ -29,7 +29,7 @@ gem 'rack-robotz'
 gem 'rack-server-pages'
 gem 'ruby-enum'
 gem 'strava-ruby-client'
-gem 'stripe', '~> 13.5'
+gem 'stripe', '~> 19.0'
 gem 'wannabe_bool'
 
 group :development, :test do
