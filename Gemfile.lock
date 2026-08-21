@@ -213,7 +213,7 @@ GEM
     opus-ruby (1.0.1)
       ffi
     ostruct (0.6.3)
-    parallel (1.28.0)
+    parallel (2.1.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
@@ -290,7 +290,7 @@ GEM
     rubocop-ast (1.50.0)
       parser (>= 3.3.7.2)
       prism (~> 1.7)
-    rubocop-capybara (2.23.0)
+    rubocop-capybara (3.0.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.81)
     rubocop-rake (0.7.1)
