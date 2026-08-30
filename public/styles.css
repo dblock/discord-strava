@@ -36,6 +36,10 @@ body {
     transform: scale(1.03);
 }
 
+#messages {
+    min-height: 1.5em;
+}
+
 p.has-error {
     color: red;
 }
