@@ -5,7 +5,7 @@ $(document).ready(function() {
     var permissions = $.url('?permissions')
     if (code) {
         DiscordStrava.message('Working, please wait ...');
-        $('#register').hide();
+        $('.register').hide();
         $.ajax({
             type: "POST",
             url: "/api/teams",

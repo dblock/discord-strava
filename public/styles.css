@@ -21,14 +21,19 @@ body {
     width: 100%;
 }
 
-#register img {
+.register img {
     border: 1px solid;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 10px 16px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease-in-out;
 }
 
-#register img:hover {
+.register img:hover {
     border: 2px solid;
-    padding: 9px;
+    padding: 9px 15px;
+    transform: scale(1.03);
 }
 
 p.has-error {
