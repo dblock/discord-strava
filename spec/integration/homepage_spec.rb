@@ -24,7 +24,7 @@ describe 'Homepage', :js, type: :feature do
 
     it 'includes a link to add to discord with the client id' do
       url = "https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=#{ENV.fetch('DISCORD_CLIENT_ID', nil)}&permissions=2147502080&redirect_uri=#{ENV.fetch('URL', nil)}&response_type=code"
-      expect(find("a[href='#{url}']"))
+      expect(all("a[href='#{url}']").size).to eq(2)
     end
   end
 end

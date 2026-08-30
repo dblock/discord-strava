@@ -31,24 +31,38 @@
     <h1>Strada: Strava integration with Discord</h1>
   </p>
   <p>
-    Connects Strava to Discord. Every new activity is reposted into a Discord channel,
-    <br>including moving and elapsed time, distance, pace, speed, elevation, map, and weather.
-    <br>Perfect for your Discord running club!
+    Connects Strava to Discord. Every new activity is reposted into a Discord channel.
   </p>
-  <p>&nbsp;</p>
+  <p>
+    ⏱ Moving and elapsed time, distance, pace, speed, elevation
+    <br>🗺 Includes maps and weather
+    <br>🏃 Perfect for your Discord running or cycling club
+  </p>
   <p id='messages' />
-  <p id='register'>
+  <p class='register'>
     <a href="https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code"><img alt="Add Strada to Discord" src="img/install.png"></a>
+  </p>
+  <p>
+    <small>
+      Free 2 week trial, no credit card required. Subscribe for $19.99/yr.
+    </small>
   </p>
   <p>&nbsp;</p>
   <p class='image'>
     <img src='img/notify.png' alt="Example Strava activity notification posted to a Discord channel">
   </p>
+  <p class='register'>
+    <a href="https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code"><img alt="Add Strada to Discord" src="img/install.png"></a>
+  </p>
+  <p>&nbsp;</p>
   <p>
     <small>
-      Free 2 week trial, no credit card required. Subscribe for $19.99/yr.
-      <br>
       Money used for servers and to pay for <a href="https://www.strava.com/athletes/dblockdotorg" target="_blank">for my membership and running</a> with the non-profit <a href="https://www.nyrr.org/" target="_blank">nyrr.org</a>.
+    </small>
+  </p>
+  <p>
+    <small>
+      Looking to add Strava to Slack? Check out <a href="https://slava.playplay.io" target="_blank">Slava</a>.
     </small>
   </p>
   <p class='logo'>
