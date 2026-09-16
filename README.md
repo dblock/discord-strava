@@ -2,6 +2,7 @@ Strada
 ======
 
 [![Tests](https://github.com/dblock/discord-strava/actions/workflows/test.yml/badge.svg)](https://github.com/dblock/discord-strava/actions/workflows/test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-88.62%25-brightgreen)](https://github.com/dblock/discord-strava)
 
 Integrate Strava into Discord. Hosted at [strada.playplay.io](https://strada.playplay.io/).
 

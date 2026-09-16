@@ -56,6 +56,7 @@ group :test do
   gem 'rack-test'
   gem 'rspec'
   gem 'selenium-webdriver'
+  gem 'simplecov', require: false
   gem 'stripe-ruby-mock', '~> 5.0', require: 'stripe_mock'
   gem 'timecop'
   gem 'vcr'
