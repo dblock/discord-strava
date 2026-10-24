@@ -1,11 +1,10 @@
+<!DOCTYPE html>
 <html lang="en">
  <head>
   <title>Strada: Strava integration with Discord</title>
   <%= partial 'public/partials/_head.html.erb' %>
   <script src="/scripts/register.js"></script>
   <script src="/scripts/status.js"></script>
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <meta name="description" content="Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather."/>
   <meta property="og:title" content="Strada: Strava integration with Discord">
   <meta property="og:description" content="Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather.">
@@ -23,60 +22,81 @@
   }
   </script>
  </head>
- <body>
-  <p class='icon'>
-    <a href="/"><img src='img/icon.png' alt="Strada logo"></a>
-  </p>
-  <p>
-    <h1>Strada: Strava integration with Discord</h1>
-  </p>
-  <p>
-    Connects Strava to Discord. Every new activity is reposted into a Discord channel.
-  </p>
-  <p>
-    ⏱ Moving and elapsed time, distance, pace, speed, elevation
-    <br>🗺 Includes maps and weather
-    <br>🏃 Perfect for your Discord running or cycling club
-  </p>
-  <p id='messages' />
-  <p class='register'>
-    <a href="https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code"><img alt="Add Strada to Discord" src="img/install.png"></a>
-  </p>
-  <p>
-    <small>
-      Free 2 week trial, no credit card required. Subscribe for $19.99/yr.
-    </small>
-  </p>
-  <p>&nbsp;</p>
-  <p class='image'>
-    <img src='img/notify.png' alt="Example Strava activity notification posted to a Discord channel">
-  </p>
-  <p class='register'>
-    <a href="https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code"><img alt="Add Strada to Discord" src="img/install.png"></a>
-  </p>
-  <p>&nbsp;</p>
-  <p>
-    <small>
-      Money used for servers and to pay for <a href="https://www.strava.com/athletes/dblockdotorg" target="_blank">for my membership and running</a> with the non-profit <a href="https://www.nyrr.org/" target="_blank">nyrr.org</a>.
-    </small>
-  </p>
-  <p>
-    <small>
-      Looking to add Strava to Slack? Check out <a href="https://slava.playplay.io" target="_blank">Slava</a>.
-    </small>
-  </p>
-  <p class='logo'>
-    <a href="https://www.nyrr.org"><img src='img/nyrr.png' alt="New York Road Runners"></a>
-  </p>
-  <p class='logo'>
-    <img src='img/powered.png' alt="Powered by Strava">
-  </p>
-  <p>
-    <small>
-      (not officially affiliated with <a target="_blank" href="https://www.strava.com">Strava</a>)
-    </small>
-  </p>
+  <body id="page-top" class="site-page homepage">
+  <%= partial 'public/partials/_navigation.html.erb' %>
+  <main id="main">
+    <header class="hero">
+      <div class="page-container">
+        <div class="hero-intro">
+          <img class="hero-logo" src="/img/icon.png" width="200" height="199" alt="Strada logo">
+          <div class="hero-copy">
+            <h1>Strada</h1>
+            <p class="hero-tagline">Make every activity a team moment.</p>
+            <p class="hero-description">Bring your running or cycling club together in Discord. Share Strava activities, celebrate every finish, and keep your team moving.</p>
+            <div class="hero-actions">
+              <%= partial 'public/partials/_install_button.html.erb' %>
+              <a class="secondary-button" href="/help.html#get-started">Get started</a>
+            </div>
+            <p class="beta-note">Free 2-week trial. No credit card required. Subscribe for $19.99/yr.</p>
+            <p id="messages" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+        <figure class="hero-preview">
+          <img src="/img/notify.png" width="1031" height="658" alt="Strada sharing a Strava activity with stats and a route map in Discord">
+        </figure>
+      </div>
+    </header>
+    <section id="how-to-use" class="homepage-section">
+      <div class="page-container">
+        <h2>How to use</h2>
+        <p class="section-intro">From your next workout to your team's channel.</p>
+        <ol class="setup-steps">
+          <li>
+            <h3>Add Strada to your server</h3>
+            <p>Invite the bot to your Discord server, then choose the channel where your club gets together. Follow the <a href="/help.html#get-started">getting-started guide</a>.</p>
+          </li>
+          <li>
+            <h3>Connect your Strava account</h3>
+            <p>Send <code>/strada connect</code> in that channel and follow the link to authorize Strada on Strava.</p>
+          </li>
+          <li>
+            <h3>Share the effort</h3>
+            <p>New activities appear with time, distance, pace, and available maps and weather. Try <code>/strada leaderboard</code> and <code>/strada stats</code> to see how your team is doing.</p>
+          </li>
+        </ol>
+        <p><a href="/help.html">Explore commands and settings</a></p>
+      </div>
+    </section>
+    <section id="open-source" class="homepage-section">
+      <div class="page-container narrow-container">
+        <h2>Open source</h2>
+        <p class="section-intro">Built for teams. Open to everyone.</p>
+        <p>Strada's Ruby code is open source under the MIT license. Report a bug, suggest a feature, or help make it better for your club.</p>
+        <p><a class="secondary-button" href="https://github.com/dblock/discord-strava">View on GitHub</a></p>
+      </div>
+    </section>
+    <section id="pricing" class="homepage-section">
+      <div class="page-container narrow-container">
+        <h2>Pricing</h2>
+        <p class="section-intro">Try it free for two weeks.</p>
+        <p>No credit card is required for the trial. Subscribe for $19.99/yr to keep your team moving.</p>
+        <p class="install-cta"><%= partial 'public/partials/_install_button.html.erb' %></p>
+        <p>Subscriptions help pay for hosting and <a href="https://www.strava.com/athletes/dblockdotorg">membership</a> with the non-profit <a href="https://www.nyrr.org/">New York Road Runners</a>.</p>
+      </div>
+    </section>
+    <section id="contact" class="homepage-section">
+      <div class="page-container narrow-container">
+        <h2>About and help</h2>
+        <p>Need a hand? Read the <a href="/help.html">command guide</a>, <a href="/help.html#support">contact support</a>, or <a href="https://github.com/dblock/discord-strava/issues">open an issue</a>.</p>
+        <p>Looking to add Strava to <a href="https://slava.playplay.io">Slack</a> or <a href="https://strata.playplay.io">Microsoft Teams</a>?</p>
+        <div class="attribution-logos">
+          <a href="https://www.nyrr.org/"><img src="/img/nyrr.png" width="1200" height="450" alt="New York Road Runners" loading="lazy"></a>
+          <img src="/img/powered.png" width="199" height="86" alt="Powered by Strava" loading="lazy">
+        </div>
+        <p class="affiliation-note">Not officially affiliated with <a href="https://www.nyrr.org/">NYRR</a> or <a href="https://www.strava.com">Strava</a>.</p>
+      </div>
+    </section>
+  </main>
   <%= partial 'public/partials/_footer.html.erb' %>
  </body>
 </html>
-

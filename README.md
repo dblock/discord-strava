@@ -10,6 +10,10 @@ Integrate Strava into Discord. Hosted at [strada.playplay.io](https://strada.pla
 
 [Add to your Discord Server](https://strada.playplay.io)
 
+## Website artwork
+
+The shared website layout uses the editable `public/img/screenshot-background.svg`, adapted from Strata's ribbon artwork with a logo-derived black palette (base `#000000`). The SVG preserves `preserveAspectRatio="none"` and is painted on a fixed viewport-sized layer so expanding help does not resize the background. Keep the transparent shoe logo, matching multi-resolution favicon, and original transparent `public/img/notify.png` hero when updating the design.
+
 ### Copyright & License
 
 Copyright [Daniel Doubrovkine, Vestris LLC](https://www.vestris.com), 2023-2025

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Strada: Help</title>
@@ -8,48 +9,82 @@
     <meta name="twitter:title" content="Strada: Help">
     <meta name="twitter:description" content="How to use Strada: connect Strava, view leaderboards and stats, configure sync, privacy, retention, timezone, units, fields, and maps for your Discord server.">
   </head>
-  <body>
-    <p class='icon'>
-      <a href='/'><img src='img/icon.png' alt="Strada logo"></a>
-    </p>
-    <p>
-      <h1>Strada: Help</h1>
-    </p>
-    <p>
-      This bot is powered by Strava and posts your Strava activities to Discord.
-      It is not made by, nor is officially affiliated with <a target="_blank" href="https://www.strava.com">Strava</a>.
-    </p>
-    <p>&nbsp;</p>
-    <p>
-      <img src="img/help.png" alt="Strada Discord slash commands example">
-    </p>
-    <p>&nbsp;</p>
-    <p>
-      Use <b>/strada connect</b> to connect your Strava account and <b>/strada disconnect</b> to disconnect. Follow the prompts. Notifications will be sent to the channel where you connected.
-    </p>
-    <p>
-      Try <b>/strada leaderboard</b> to see a distance leaderboard, or <b>/strada stats</b> to see aggregate stats in the current channel for the past 30 days.
-      Try <b>/strada leaderboard distance</b>, <b>/strada leaderboard time</b> or <b>/strada leaderboard count</b>.
-      Leaderboard supports longer ranges which may require adjusting <b>retention</b>.
-      Try <b>/strada leaderboard last week</b>, or <b>/strada leaderboard elapsed time last month</b>.
-      Leaderboard also understands <b>since 2024</b> or <b>between January and March</b>.
-    </p>
-    <p>
-      Stop syncing activities with <b>/strada set sync false</b> and resume with <b>/strada set sync true</b> (default).
-      Publish private (only you) activities with <b>/strada set private true</b> or hide them with <b>/strada set private false</b> (default).
-      Publish followers only activities with <b>/strada set followers true</b> (default) or hide them with <b>/strada set followers false</b>.
-    </p>
-    <p>
-      Strada retains activities for 30 days. Discord server admins can change this with <b>/strada set retention 60 days</b> or <b>/strada set retention 3 months</b> to change this.
-      Change the team timezone with <b>/strada set timezone Pacific Time (US &amp; Canada)</b> or <b>/strada set timezone auto</b> so date-based features and daily limits use the right day boundary.
-      Limit activity floods with <b>/strada set userlimit 5</b> to cap how many activities a user can post per day, or <b>/strada set channellimit 10</b> to cap the number of activities posted in a channel per day.
-      Use <b>/strada set userlimit none</b> or <b>/strada set channellimit none</b> to remove those limits.
-      Change <b>units</b> with <b>/strada set units imperial</b> (miles, feet, yards, and degrees Fahrenheit, default), <b>/strada set units metric</b> (kilometers, meters, and degrees Celsius), or <b>/strada set units both</b> to display both values.
-      Change displayed fields with <b>/strada set fields</b>, eg. <b>/strada set fields default</b>, <b>/strada set fields all</b> or <b>/strada set fields none</b>.
-      Available fields are <%= ActivityFields.values.and { |v| '<b>' + v + '</b>' } %>.
-      Turn maps off with <b>/strada set maps off</b>, display thumbnails with <b>/strada set maps thumb</b> and full maps with <b>/strada set maps full</b> (default).
-      Disconnect users with <b>/strada disconnect @mention</b>.
-    </p>
+  <body id="page-top" class="site-page help-page">
+    <%= partial 'public/partials/_navigation.html.erb' %>
+    <main id="main" class="page-container help-content">
+      <header class="help-header">
+        <h1>Strada: Help</h1>
+        <p>Connect Strava, share activities, and manage your Discord channel.</p>
+      </header>
+      <section id="get-started" class="help-section">
+        <h2>Get started</h2>
+        <p>You'll need a Discord server and a Strava account. <a href="https://www.strava.com/register">Sign up for Strava</a> if you need one.</p>
+        <ol class="getting-started-steps">
+          <li><a href="https://discord.com/api/oauth2/authorize?scope=identify+bot&client_id=<%= ENV['DISCORD_CLIENT_ID'] %>&permissions=2147502080&redirect_uri=<%= ENV['URL'] %>&response_type=code">Add Strada to Discord</a> and choose your server. You may need a server administrator's permission.</li>
+          <li>In your activity channel, run <code>/strada help</code> to check that the bot responds.</li>
+          <li>Run <code>/strada connect</code> and follow the link to sign in and authorize Strava outside Discord.</li>
+          <li>Save a new Strava activity after connecting. Its notification will appear in that channel.</li>
+        </ol>
+        <p class="help-note">To stop sharing, use <code>/strada disconnect</code>.</p>
+      </section>
+      <section id="commands" class="help-section">
+        <h2>Commands and settings</h2>
+        <p>Send commands in the Discord channel where Strada is installed. Choose a topic for examples.</p>
+        <details class="help-topic">
+          <summary>Leaderboards and statistics</summary>
+          <dl>
+            <dt><code>/strada leaderboard</code></dt>
+            <dd>Show the channel's distance leaderboard. Choose a metric with <code>/strada leaderboard distance</code>, <code>/strada leaderboard time</code>, or <code>/strada leaderboard count</code>.</dd>
+            <dt><code>/strada stats</code></dt>
+            <dd>Show aggregate activity statistics for the past 30 days.</dd>
+            <dt><code>/strada leaderboard last week</code></dt>
+            <dd>Choose a time range, such as <code>elapsed time last month</code>, <code>since 2024</code>, or <code>between January and March</code>. Longer ranges may require increasing retention below.</dd>
+          </dl>
+        </details>
+        <details class="help-topic">
+          <summary>Sharing and privacy</summary>
+          <dl>
+            <dt><code>/strada set sync false</code></dt>
+            <dd>Pause activity sharing. Resume with <code>/strada set sync true</code> (the default).</dd>
+            <dt><code>/strada set private true</code></dt>
+            <dd>Include private activities. They are hidden by default; restore that setting with <code>/strada set private false</code>.</dd>
+            <dt><code>/strada set followers false</code></dt>
+            <dd>Hide followers-only activities. They are included by default; restore with <code>/strada set followers true</code>.</dd>
+            <dt><code>/strada disconnect</code></dt>
+            <dd>Unlink your Strava account. To disconnect another member, use <code>/strada disconnect @mention</code>.</dd>
+          </dl>
+        </details>
+        <details class="help-topic">
+          <summary>Units, maps, and fields</summary>
+          <dl>
+            <dt><code>/strada set units metric</code></dt>
+            <dd>Use kilometers, meters, and Celsius. Choose <code>imperial</code> for miles, feet, yards, and Fahrenheit (the default), or <code>both</code> to display both sets.</dd>
+            <dt><code>/strada set maps thumb</code></dt>
+            <dd>Use map thumbnails. Choose <code>off</code> to hide maps or <code>full</code> for full maps (the default).</dd>
+            <dt><code>/strada set fields</code></dt>
+            <dd>Choose displayed fields with <code>default</code>, <code>all</code>, or <code>none</code>. Available fields: <%= ActivityFields.values.and { |v| '<code>' + v + '</code>' } %>.</dd>
+          </dl>
+        </details>
+        <details class="help-topic">
+          <summary>Retention, timezone, and posting limits</summary>
+          <dl>
+            <dt><code>/strada set retention 60 days</code></dt>
+            <dd>Discord server admins can change the default 30-day retention. Durations such as <code>3 months</code> also work.</dd>
+            <dt><code>/strada set timezone Pacific Time (US &amp; Canada)</code></dt>
+            <dd>Choose the timezone for date ranges and daily limits, or use <code>auto</code>.</dd>
+            <dt><code>/strada set userlimit 5</code></dt>
+            <dd>Limit each user's daily activity posts. Use <code>/strada set userlimit none</code> to remove the limit.</dd>
+            <dt><code>/strada set channellimit 10</code></dt>
+            <dd>Limit daily posts across the channel. Use <code>/strada set channellimit none</code> to remove the limit.</dd>
+          </dl>
+        </details>
+      </section>
+      <section id="support" class="help-section">
+        <h2>Contact support</h2>
+        <p>Email <a href="mailto:dblock@vestris.com">dblock@vestris.com</a> with the command, channel type, approximate time and time zone, and any error message. Don't send passwords or access tokens.</p>
+      </section>
+      <p class="affiliation-note">Powered by Strava; not officially affiliated with <a href="https://www.nyrr.org/">NYRR</a> or <a href="https://www.strava.com">Strava</a>.</p>
+    </main>
     <%= partial 'public/partials/_footer.html.erb' %>
   </body>
 </html>
