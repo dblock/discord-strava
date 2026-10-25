@@ -3,8 +3,8 @@
  <head>
   <title>Strada: Strava integration with Discord</title>
   <%= partial 'public/partials/_head.html.erb' %>
-  <script src="/scripts/register.js"></script>
-  <script src="/scripts/status.js"></script>
+  <script src="<%=h asset_path('/scripts/register.js') %>"></script>
+  <script src="<%=h asset_path('/scripts/status.js') %>"></script>
   <meta name="description" content="Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather."/>
   <meta property="og:title" content="Strada: Strava integration with Discord">
   <meta property="og:description" content="Connects Strava in Discord and reposts athlete and club activities into Discord channels, including time, distance, pace, map and weather.">
@@ -28,7 +28,7 @@
     <header class="hero">
       <div class="page-container">
         <div class="hero-intro">
-          <img class="hero-logo" src="/img/icon.png" width="200" height="199" alt="Strada logo">
+          <img class="hero-logo" src="<%=h asset_path('/img/icon.png') %>" width="200" height="199" alt="Strada logo">
           <div class="hero-copy">
             <h1>Strada</h1>
             <p class="hero-tagline">Make every activity a team moment.</p>
@@ -42,7 +42,7 @@
           </div>
         </div>
         <figure class="hero-preview">
-          <img src="/img/notify.png" width="1031" height="658" alt="Strada sharing a Strava activity with stats and a route map in Discord">
+          <img src="<%=h asset_path('/img/notify.png') %>" width="1031" height="658" alt="Strada sharing a Strava activity with stats and a route map in Discord">
         </figure>
       </div>
     </header>
@@ -90,8 +90,8 @@
         <p>Need a hand? Read the <a href="/help.html">command guide</a>, <a href="/help.html#support">contact support</a>, or <a href="https://github.com/dblock/discord-strava/issues">open an issue</a>.</p>
         <p>Looking to add Strava to <a href="https://slava.playplay.io">Slack</a> or <a href="https://strata.playplay.io">Microsoft Teams</a>?</p>
         <div class="attribution-logos">
-          <a href="https://www.nyrr.org/"><img src="/img/nyrr.png" width="1200" height="450" alt="New York Road Runners" loading="lazy"></a>
-          <img src="/img/powered.png" width="199" height="86" alt="Powered by Strava" loading="lazy">
+          <a href="https://www.nyrr.org/"><img src="<%=h asset_path('/img/nyrr.png') %>" width="1200" height="450" alt="New York Road Runners" loading="lazy"></a>
+          <img src="<%=h asset_path('/img/powered.png') %>" width="199" height="86" alt="Powered by Strava" loading="lazy">
         </div>
         <p class="affiliation-note">Not officially affiliated with <a href="https://www.nyrr.org/">NYRR</a> or <a href="https://www.strava.com">Strava</a>.</p>
       </div>
