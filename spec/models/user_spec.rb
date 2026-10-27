@@ -1,6 +1,48 @@
 require 'spec_helper'
 
 describe User do
+  describe '#with_strava_error_handler' do
+    include_context 'team activation'
+
+    let(:user) { Fabricate(:user) }
+    let(:logger) { instance_double(Logger) }
+
+    it 'reports a response-less timeout instead of masking the original error' do
+      failure = Faraday::TimeoutError.new('request timed out')
+      allow(user).to receive(:logger).and_return(logger)
+      expect(logger).to receive(:warn).with(a_string_including(failure.message))
+      expect(NewRelic::Agent).to receive(:notice_error).with(
+        failure, custom_params: { team: user.team.to_s, response_body: nil, user: user.to_s }
+      )
+
+      expect { user.with_strava_error_handler { raise failure } }.not_to raise_error
+    end
+
+    it 'keeps the original response body when reporting a Strava error' do
+      body = { 'message' => 'Service Unavailable', 'errors' => [] }
+      failure = Strava::Errors::Fault.new(503, body: body)
+      allow(user).to receive(:logger).and_return(logger)
+      expect(logger).to receive(:warn).with(a_string_including(failure.message, body.to_s))
+      expect(NewRelic::Agent).to receive(:notice_error).with(
+        failure, custom_params: { team: user.team.to_s, response_body: body, user: user.to_s }
+      )
+
+      expect { user.with_strava_error_handler { raise failure } }.not_to raise_error
+    end
+
+    it 'reports rate limits and re-raises them so callers can back off' do
+      response = { status: 429, body: { 'message' => 'Rate Limit Exceeded', 'errors' => [] }, response_headers: {} }
+      env = Faraday::Env.from(response)
+      env.response = Faraday::Response.new(env)
+      failure = Strava::Errors::RatelimitError.new(env, response)
+      expect(NewRelic::Agent).to receive(:notice_error).with(
+        failure, custom_params: { team: user.team.to_s, response_body: response[:body], user: user.to_s }
+      )
+
+      expect { user.with_strava_error_handler { raise failure } }.to raise_error(failure)
+    end
+  end
+
   context 'activated team' do
     include_context 'team activation'
 
