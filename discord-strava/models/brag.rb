@@ -3,12 +3,12 @@ module Brag
     yield
   rescue Strava::Errors::RatelimitError => e
     logger.warn 'Strava API rate limit exceeded.'
-    NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s, response_body: e.response[:body], user: to_s })
+    NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s, response_body: e.response&.[](:body), user: to_s })
     raise e
   rescue Strava::Errors::Fault, Faraday::Error => e
     backtrace = e.backtrace.join("\n")
-    logger.warn "Error in team #{team}, #{self}, #{e.message}, #{e.response[:body]}, #{backtrace}."
-    NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s, response_body: e.response[:body], user: to_s })
+    logger.warn "Error in team #{team}, #{self}, #{e.message}, #{e.response&.[](:body)}, #{backtrace}."
+    NewRelic::Agent.notice_error(e, custom_params: { team: team.to_s, response_body: e.response&.[](:body), user: to_s })
   rescue StandardError => e
     backtrace = e.backtrace.join("\n")
     logger.warn "Error in team #{team}, #{self}, #{e.message}, #{backtrace}."

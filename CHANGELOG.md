@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/10/27: Preserve the original Strava error when an API failure has no HTTP response instead of masking it with a nil-response exception during activity delivery ([#137](https://github.com/dblock/discord-strava/pull/137)) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/10/25: Upgrade rack-server-pages to 0.3; version website assets and nested ribbon artwork with revalidating template caching while preserving installation, OAuth, payments, and API behavior - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/10/24: Redesign all website pages with shared navigation, fixed black ribbon artwork derived from the logo, transparent branding, crisp install buttons, and expandable help while preserving OAuth and payment flows - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
 * 2026/10/23: Upgrade Ruby to 4.0.9 and refresh dependencies, leaving Stripe dependencies unchanged - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
