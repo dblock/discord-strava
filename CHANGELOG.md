@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2026/11/25: Remove Renovate; dependencies are updated in periodic dependency sweeps ([#153](https://github.com/dblock/discord-strava/pull/153)) - [@dblock](https://github.com/dblock).
 * 2026/11/20: Update rack to 3.2.9 and httparty to 0.25.0 ([#152](https://github.com/dblock/discord-strava/pull/152)) - [@dblock](https://github.com/dblock).
 * 2026/11/20: Upgrade Ruby to 4.0.10 and update dependencies to their latest minor versions, leaving Stripe dependencies unchanged ([#150](https://github.com/dblock/discord-strava/pull/150)) - [@dblock](https://github.com/dblock).
 * 2026/10/27: Preserve the original Strava error when an API failure has no HTTP response instead of masking it with a nil-response exception during activity delivery ([#137](https://github.com/dblock/discord-strava/pull/137)) - [@dblock](https://github.com/dblock), [@Copilot](https://github.com/apps/copilot-swe-agent).
